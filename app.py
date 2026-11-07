@@ -15,7 +15,7 @@ import auth
 import health_engine
 import anti_cheat
 
-PORT = int(os.environ.get("PORT", 5000))
+PORT = int(os.environ.get("PORT", 5050))
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 class BaseHandler(tornado.web.RequestHandler):
