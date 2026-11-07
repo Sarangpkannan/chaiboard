@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chaiboard | Student Chai Pass &amp; Logs Window</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .profile-layout-grid {
+            display: grid;
+            grid-template-columns: 420px 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+        @media (max-width: 950px) {
+            .profile-layout-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .chai-pass-card {
+            background: linear-gradient(145deg, #241711, #100c0a);
+            border: 2px solid var(--border-highlight);
+            border-radius: var(--radius-lg);
+            padding: 1.8rem;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7), inset 0 0 20px rgba(245, 158, 11, 0.15);
+            position: relative;
+        }
+        .log-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.84rem;
+        }
+        .log-table th, .log-table td {
+            padding: 0.75rem 0.9rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .log-table th {
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-size: 0.72rem;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Global Window Dock -->
+    <header class="window-dock">
+        <div class="dock-container">
+            <a href="/chamber" class="brand-section">
+                <span class="brand-icon">🫖</span>
+                <div>
+                    <div class="brand-name">CHAIBOARD</div>
+                    <div class="brand-sub">Campus Tea Leaderboard &amp; Health Engine</div>
+                </div>
+            </a>
+
+            <!-- Multi-Window Navigation Switcher -->
+            <nav class="nav-windows-list">
+                <a href="/chamber" class="window-nav-link">
+                    <span>🫖 3D Chamber &amp; Logger</span>
+                    <button class="window-pop-btn" data-url="/chamber" data-title="ChaiChamber" title="Open in separate window">↗</button>
+                </a>
+                <a href="/metrics" class="window-nav-link">
+                    <span>📊 Health Engine</span>
+                    <button class="window-pop-btn" data-url="/metrics" data-title="ChaiMetrics" title="Open in separate window">↗</button>
+                </a>
+                <a href="/leaderboard" class="window-nav-link">
+                    <span>🏆 Leaderboards</span>
+                    <button class="window-pop-btn" data-url="/leaderboard" data-title="ChaiLeaderboard" title="Open in separate window">↗</button>
+                </a>
+                <a href="/profile" class="window-nav-link active">
+                    <span>🪪 Chai Pass &amp; Logs</span>
+                    <button class="window-pop-btn" data-url="/profile" data-title="ChaiProfile" title="Open in separate window">↗</button>
+                </a>
+                <a href="/audit" class="window-nav-link">
+                    <span>🛡️ Security Vault</span>
+                    <button class="window-pop-btn" data-url="/audit" data-title="ChaiAudit" title="Open in separate window">↗</button>
+                </a>
+            </nav>
+
+            <div class="user-dock-actions">
+                <button id="dock-sound-btn" class="btn btn-ghost btn-sm">🔊 Sound ON</button>
+                <div class="student-badge-pill">
+                    <span id="dock-student-avatar" style="font-size: 1.2rem;">☕</span>
+                    <div class="student-meta">
+                        <span id="dock-student-name" class="student-name-text">Loading...</span>
+                        <span id="dock-student-sub" class="student-sub-text">Student Session</span>
+                    </div>
+                </div>
+                <a id="dock-logout-btn" href="#" class="btn btn-ghost btn-sm">Sign Out</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="page-window-container">
+        <div class="window-header-banner">
+            <div>
+                <h1 class="window-title"><span>🪪</span> Official Campus Chai Pass &amp; Verified History</h1>
+                <p class="window-desc">
+                    Your institutional tea identification pass and full database log audit of all authenticated cuttings.
+                </p>
+            </div>
+            <button onclick="window.print()" class="btn btn-secondary">
+                🖨️ Print Digital Pass
+            </button>
+        </div>
+
+        <div class="profile-layout-grid">
+            <!-- Left: Digital Chai Pass Card -->
+            <div>
+                <div class="chai-pass-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed rgba(245, 158, 11, 0.4); padding-bottom: 0.8rem; margin-bottom: 1.2rem;">
+                        <span style="font-size: 0.74rem; font-weight: 800; color: var(--chai-cream); letter-spacing: 1px;">CHAIBOARD • CAMPUS PASS</span>
+                        <span id="card-avatar" style="font-size: 2rem;">☕</span>
+                    </div>
+
+                    <h2 id="card-name" style="font-size: 1.45rem; font-weight: 800; color: #fff;">Student Name</h2>
+                    <div id="card-email" style="font-size: 0.85rem; color: var(--chai-amber); font-family: monospace; margin: 0.2rem 0;">student@example.com</div>
+                    <div id="card-meta" style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.4rem;">Computer Science</div>
+
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; background: rgba(0,0,0,0.4); padding: 0.8rem; border-radius: var(--radius-sm); margin-bottom: 1.4rem; text-align: center;">
+                        <div>
+                            <span style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; display: block;">Today</span>
+                            <span id="card-cups-today" style="font-size: 1.2rem; font-weight: 800; color: #fff;">0</span>
+                        </div>
+                        <div>
+                            <span style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; display: block;">Active Streak</span>
+                            <span id="card-streak" style="font-size: 1.2rem; font-weight: 800; color: var(--chai-amber);">0 Days 🔥</span>
+                        </div>
+                        <div>
+                            <span style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; display: block;">All-Time</span>
+                            <span id="card-all-time" style="font-size: 1.2rem; font-weight: 800; color: var(--chai-cream);">0</span>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 0.8rem;">
+                        <div style="font-family: monospace; font-size: 1.2rem; letter-spacing: 4px; color: var(--chai-cream); opacity: 0.8;">||||| ||||||| |||| |||||||| |||||</div>
+                        <div id="card-hash" style="font-size: 0.68rem; color: var(--text-muted); font-family: monospace; margin-top: 0.3rem;">SEC_HASH: 0xFA391823B1E40812</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Database Chai Log History Table -->
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h3 style="font-size: 1.15rem; font-weight: 700;">📜 Verified Chai Logs (SQL Records)</h3>
+                    <span style="font-size: 0.75rem; color: var(--text-muted);">64-bit pHash Protected</span>
+                </div>
+
+                <div style="overflow-x: auto;">
+                    <table class="log-table">
+                        <thead>
+                            <tr>
+                                <th>Blend</th>
+                                <th>Sugar (g)</th>
+                                <th>Energy (kcal)</th>
+                                <th>Temp (°C)</th>
+                                <th>pHash Fingerprint</th>
+                                <th>Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-table-body">
+                            <tr>
+                                <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading verified logs...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/static/js/audio.js"></script>
+    <script src="/static/js/common.js"></script>
+    <script>
+        async function loadProfileData() {
+            try {
+                const res = await fetch('/api/metrics');
+                const data = await res.json();
+                const s = data.student;
+                const m = data.metrics;
+
+                document.getElementById('card-name').textContent = s.name;
+                document.getElementById('card-email').textContent = s.email;
+                document.getElementById('card-meta').textContent = s.department;
+                document.getElementById('card-avatar').textContent = s.avatar || '☕';
+                document.getElementById('card-cups-today').textContent = `${m.cups_today} Cups`;
+                document.getElementById('card-streak').textContent = `${m.streak} Days 🔥`;
+                document.getElementById('card-all-time').textContent = `${m.all_time_cups} Cups`;
+
+                const tbody = document.getElementById('history-table-body');
+                tbody.innerHTML = '';
+
+                if (!data.history || data.history.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">No cutting chai logged yet. Use the 3D Chamber to log your first cup!</td></tr>`;
+                    return;
+                }
+
+                document.getElementById('card-hash').textContent = `SEC_HASH: ${data.history[0].phash_hex}`;
+
+                data.history.forEach(log => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>${log.blend_name}</strong></td>
+                        <td>${log.sugar_grams}g</td>
+                        <td>${log.calories_kcal} kcal</td>
+                        <td>${log.tongue_temp_c}°C</td>
+                        <td><code style="background: rgba(255,255,255,0.1); padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.76rem;">${log.phash_hex}</code></td>
+                        <td style="color: var(--text-muted); font-size: 0.78rem;">${log.logged_at}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', loadProfileData);
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chaiboard | Health Engine &amp; Nutrition Dashboard</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .metrics-big-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        @media (max-width: 900px) {
+            .metrics-big-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .metric-card-box {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-card);
+        }
+        .metric-value-huge {
+            font-size: 2.8rem;
+            font-weight: 800;
+            line-height: 1;
+            color: #fff;
+        }
+        .progress-track-lg {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+        .progress-fill-lg {
+            height: 100%;
+            background: linear-gradient(90deg, var(--chai-deep), var(--chai-amber));
+            border-radius: var(--radius-full);
+            transition: width 0.5s ease;
+        }
+        .bar-limit-alert {
+            background: linear-gradient(90deg, #ea580c, #ef4444) !important;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.8) !important;
+        }
+        .humorous-alert-banner {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.5);
+            border-radius: var(--radius-md);
+            padding: 0.8rem 1rem;
+            margin-top: 0.5rem;
+        }
+        .temp-status-banner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(245, 158, 11, 0.08);
+            border: 1px solid var(--border-highlight);
+            border-radius: var(--radius-md);
+            padding: 1.2rem 1.5rem;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Global Window Dock -->
+    <header class="window-dock">
+        <div class="dock-container">
+            <a href="/chamber" class="brand-section">
+                <span class="brand-icon">🫖</span>
+                <div>
+                    <div class="brand-name">CHAIBOARD</div>
+                    <div class="brand-sub">Campus Tea Leaderboard &amp; Health Engine</div>
+                </div>
+            </a>
+
+            <!-- Multi-Window Navigation Switcher -->
+            <nav class="nav-windows-list">
+                <a href="/chamber" class="window-nav-link">
+                    <span>🫖 3D Chamber &amp; Logger</span>
+                    <button class="window-pop-btn" data-url="/chamber" data-title="ChaiChamber" title="Open in separate window">↗</button>
+                </a>
+                <a href="/metrics" class="window-nav-link active">
+                    <span>📊 Health Engine</span>
+                    <button class="window-pop-btn" data-url="/metrics" data-title="ChaiMetrics" title="Open in separate window">↗</button>
+                </a>
+                <a href="/leaderboard" class="window-nav-link">
+                    <span>🏆 Leaderboards</span>
+                    <button class="window-pop-btn" data-url="/leaderboard" data-title="ChaiLeaderboard" title="Open in separate window">↗</button>
+                </a>
+                <a href="/profile" class="window-nav-link">
+                    <span>🪪 Chai Pass &amp; Logs</span>
+                    <button class="window-pop-btn" data-url="/profile" data-title="ChaiProfile" title="Open in separate window">↗</button>
+                </a>
+                <a href="/audit" class="window-nav-link">
+                    <span>🛡️ Security Vault</span>
+                    <button class="window-pop-btn" data-url="/audit" data-title="ChaiAudit" title="Open in separate window">↗</button>
+                </a>
+            </nav>
+
+            <div class="user-dock-actions">
+                <button id="dock-sound-btn" class="btn btn-ghost btn-sm">🔊 Sound ON</button>
+                <div class="student-badge-pill">
+                    <span id="dock-student-avatar" style="font-size: 1.2rem;">☕</span>
+                    <div class="student-meta">
+                        <span id="dock-student-name" class="student-name-text">Loading...</span>
+                        <span id="dock-student-sub" class="student-sub-text">Student Session</span>
+                    </div>
+                </div>
+                <a id="dock-logout-btn" href="#" class="btn btn-ghost btn-sm">Sign Out</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="page-window-container">
+        <div class="window-header-banner">
+            <div>
+                <h1 class="window-title"><span>📊</span> Health Engine &amp; Nutrition Dashboard</h1>
+                <p class="window-desc">
+                    Calculates cumulative sugar intake, total energy, caffeine load, and humorous warnings based on PRD Section 4 standards.
+                </p>
+            </div>
+            <div style="font-size: 0.8rem; color: var(--chai-cream); background: rgba(245, 158, 11, 0.15); padding: 0.4rem 0.8rem; border-radius: var(--radius-sm); border: 1px solid var(--border-highlight);">
+                Standard 100ml Cutting Glass Baseline
+            </div>
+        </div>
+
+        <!-- Tongue Temperature Status Bar -->
+        <div class="temp-status-banner">
+            <div>
+                <div style="font-size: 0.74rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; letter-spacing: 0.5px;">
+                    Tongue Temperature Status (Thermal Safety Alert)
+                </div>
+                <div id="temp-desc" style="font-size: 0.95rem; font-weight: 600; color: #fff; margin-top: 0.2rem;">
+                    Checking recent tea heat...
+                </div>
+            </div>
+            <div id="temp-badge" class="btn btn-sm btn-secondary" style="font-weight: 700;">
+                --°C
+            </div>
+        </div>
+
+        <!-- Big 3 Nutritional Metric Cards -->
+        <div class="metrics-big-grid">
+            <!-- 1. Calories -->
+            <div class="metric-card-box">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--text-secondary);">Total Energy</span>
+                    <span style="font-size: 0.75rem; color: var(--text-muted);">Baseline: ~45 kcal/cup</span>
+                </div>
+                <div id="val-calories" class="metric-value-huge">0 <span style="font-size: 1.2rem; color: var(--text-muted);">kcal</span></div>
+                <div class="progress-track-lg">
+                    <div id="track-calories" class="progress-fill-lg" style="width: 0%;"></div>
+                </div>
+                <div style="font-size: 0.72rem; color: var(--text-muted);">Humorous Warning Threshold: &gt; 250 kcal</div>
+                <!-- Warning Container -->
+                <div id="warn-calories-box" class="humorous-alert-banner hidden">
+                    <div style="font-size: 0.68rem; font-weight: 800; color: #fca5a5;">⚠️ LIMIT EXCEEDED</div>
+                    <div class="quote-text" style="font-size: 0.82rem; font-style: italic; color: #fecaca; margin-top: 0.2rem;">
+                        “Running a marathon in your mind only” 🏃‍♂️💭
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Sugar -->
+            <div class="metric-card-box">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--text-secondary);">Cumulative Sugar</span>
+                    <span style="font-size: 0.75rem; color: var(--text-muted);">Baseline: ~7.5 g/cup</span>
+                </div>
+                <div id="val-sugar" class="metric-value-huge">0 <span style="font-size: 1.2rem; color: var(--text-muted);">g</span></div>
+                <div class="progress-track-lg">
+                    <div id="track-sugar" class="progress-fill-lg" style="width: 0%;"></div>
+                </div>
+                <div style="font-size: 0.72rem; color: var(--text-muted);">Humorous Warning Threshold: &gt; 30 g</div>
+                <!-- Warning Container -->
+                <div id="warn-sugar-box" class="humorous-alert-banner hidden">
+                    <div style="font-size: 0.68rem; font-weight: 800; color: #fca5a5;">⚠️ PANCREAS ALERT</div>
+                    <div class="quote-text" style="font-size: 0.82rem; font-style: italic; color: #fecaca; margin-top: 0.2rem;">
+                        “Pancreas requests a temporary ceasefire” 🏳️🍬
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Caffeine -->
+            <div class="metric-card-box">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--text-secondary);">Caffeine Load</span>
+                    <span style="font-size: 0.75rem; color: var(--text-muted);">Baseline: ~30 mg/cup</span>
+                </div>
+                <div id="val-caffeine" class="metric-value-huge">0 <span style="font-size: 1.2rem; color: var(--text-muted);">mg</span></div>
+                <div class="progress-track-lg">
+                    <div id="track-caffeine" class="progress-fill-lg" style="width: 0%;"></div>
+                </div>
+                <div style="font-size: 0.72rem; color: var(--text-muted);">Humorous Warning Threshold: &gt; 150 mg</div>
+                <!-- Warning Container -->
+                <div id="warn-caffeine-box" class="humorous-alert-banner hidden">
+                    <div style="font-size: 0.68rem; font-weight: 800; color: #fca5a5;">⚠️ BASS DRUM ALERT</div>
+                    <div class="quote-text" style="font-size: 0.82rem; font-style: italic; color: #fecaca; margin-top: 0.2rem;">
+                        “Heart rate keeping tempo with a bass drum” 🥁⚡
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Health Standards Documentation Card -->
+        <div class="card">
+            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.8rem;">
+                📋 Chaiboard Health Engine Calculation Standards (PRD Section 4)
+            </h3>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; font-size: 0.85rem; color: var(--text-secondary);">
+                <div style="background: rgba(0,0,0,0.25); padding: 1rem; border-radius: var(--radius-sm);">
+                    <strong style="color: var(--chai-cream);">Calories Profile:</strong>
+                    <p style="margin-top: 0.3rem; font-size: 0.8rem; color: var(--text-muted);">
+                        Calculated from whole milk and sugar content of standard campus tapri cutting chai. Excess triggers mental marathon notifications.
+                    </p>
+                </div>
+                <div style="background: rgba(0,0,0,0.25); padding: 1rem; border-radius: var(--radius-sm);">
+                    <strong style="color: var(--chai-cream);">Sugar Intake Profile:</strong>
+                    <p style="margin-top: 0.3rem; font-size: 0.8rem; color: var(--text-muted);">
+                        Based on ~2 teaspoons of granulated sugar per 100ml. Crossing 30 grams notifies student to switch to light sweet or fika cutting.
+                    </p>
+                </div>
+                <div style="background: rgba(0,0,0,0.25); padding: 1rem; border-radius: var(--radius-sm);">
+                    <strong style="color: var(--chai-cream);">Caffeine Load Profile:</strong>
+                    <p style="margin-top: 0.3rem; font-size: 0.8rem; color: var(--text-muted);">
+                        Slow boiled Assam / CTC tea leaves release approximately 30mg bioavailable caffeine per glass, pacing late night study sessions.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/static/js/audio.js"></script>
+    <script src="/static/js/common.js"></script>
+    <script>
+        async function loadHealthMetrics() {
+            try {
+                const res = await fetch('/api/metrics');
+                if (!res.ok) return;
+                const data = await res.json();
+                const m = data.metrics;
+                const h = data.health;
+
+                document.getElementById('val-calories').innerHTML = `${Math.round(m.calories_today)} <span style="font-size: 1.2rem; color: var(--text-muted);">kcal</span>`;
+                document.getElementById('val-sugar').innerHTML = `${m.sugar_today.toFixed(1)} <span style="font-size: 1.2rem; color: var(--text-muted);">g</span>`;
+                document.getElementById('val-caffeine').innerHTML = `${Math.round(m.caffeine_today)} <span style="font-size: 1.2rem; color: var(--text-muted);">mg</span>`;
+
+                const trackCal = document.getElementById('track-calories');
+                const trackSugar = document.getElementById('track-sugar');
+                const trackCaff = document.getElementById('track-caffeine');
+
+                trackCal.style.width = `${h.percent_calories}%`;
+                trackSugar.style.width = `${h.percent_sugar}%`;
+                trackCaff.style.width = `${h.percent_caffeine}%`;
+
+                if (h.percent_calories >= 100) {
+                    trackCal.classList.add('bar-limit-alert');
+                    document.getElementById('warn-calories-box').classList.remove('hidden');
+                }
+                if (h.percent_sugar >= 100) {
+                    trackSugar.classList.add('bar-limit-alert');
+                    document.getElementById('warn-sugar-box').classList.remove('hidden');
+                }
+                if (h.percent_caffeine >= 100) {
+                    trackCaff.classList.add('bar-limit-alert');
+                    document.getElementById('warn-caffeine-box').classList.remove('hidden');
+                }
+
+                // Tongue temperature
+                const tempBadge = document.getElementById('temp-badge');
+                const tempDesc = document.getElementById('temp-desc');
+                tempBadge.textContent = h.temperature.badge;
+                tempDesc.textContent = h.temperature.description;
+
+                if (h.temperature.level === 'danger') {
+                    tempBadge.style.color = '#fca5a5';
+                    tempBadge.style.background = 'rgba(239, 68, 68, 0.2)';
+                } else if (h.temperature.level === 'optimal') {
+                    tempBadge.style.color = '#6ee7b7';
+                    tempBadge.style.background = 'rgba(16, 185, 129, 0.2)';
+                } else {
+                    tempBadge.style.color = '#fde68a';
+                    tempBadge.style.background = 'rgba(245, 158, 11, 0.2)';
+                }
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', loadHealthMetrics);
+    </script>
+</body>
+</html>
+

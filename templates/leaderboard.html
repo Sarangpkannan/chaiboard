@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chaiboard | Campus Leaderboards &amp; Rivalries</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .leaderboard-subnav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .tab-btn-group {
+            display: flex;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 0.3rem;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 0.84rem;
+            font-weight: 600;
+            padding: 0.5rem 1.1rem;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .tab-btn.active {
+            background: var(--chai-amber);
+            color: #120e0b;
+            font-weight: 800;
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35);
+        }
+        .tier-select {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+        }
+        .student-rank-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: var(--radius-md);
+            padding: 0.85rem 1.2rem;
+            margin-bottom: 0.6rem;
+            transition: transform 0.15s ease, border-color 0.15s ease;
+        }
+        .student-rank-row:hover {
+            border-color: var(--chai-amber);
+            transform: translateX(4px);
+        }
+        .rank-medal {
+            font-size: 1.25rem;
+            font-weight: 800;
+            min-width: 36px;
+            text-align: center;
+        }
+        .hostel-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.2rem;
+        }
+        @media (max-width: 768px) {
+            .hostel-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .hostel-card-box {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-md);
+            padding: 1.2rem;
+        }
+        .dept-row-item {
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: var(--radius-md);
+            padding: 1rem 1.2rem;
+            margin-bottom: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Global Window Dock -->
+    <header class="window-dock">
+        <div class="dock-container">
+            <a href="/chamber" class="brand-section">
+                <span class="brand-icon">🫖</span>
+                <div>
+                    <div class="brand-name">CHAIBOARD</div>
+                    <div class="brand-sub">Campus Tea Leaderboard &amp; Health Engine</div>
+                </div>
+            </a>
+
+            <!-- Multi-Window Navigation Switcher -->
+            <nav class="nav-windows-list">
+                <a href="/chamber" class="window-nav-link">
+                    <span>🫖 3D Chamber &amp; Logger</span>
+                    <button class="window-pop-btn" data-url="/chamber" data-title="ChaiChamber" title="Open in separate window">↗</button>
+                </a>
+                <a href="/metrics" class="window-nav-link">
+                    <span>📊 Health Engine</span>
+                    <button class="window-pop-btn" data-url="/metrics" data-title="ChaiMetrics" title="Open in separate window">↗</button>
+                </a>
+                <a href="/leaderboard" class="window-nav-link active">
+                    <span>🏆 Leaderboards</span>
+                    <button class="window-pop-btn" data-url="/leaderboard" data-title="ChaiLeaderboard" title="Open in separate window">↗</button>
+                </a>
+                <a href="/profile" class="window-nav-link">
+                    <span>🪪 Chai Pass &amp; Logs</span>
+                    <button class="window-pop-btn" data-url="/profile" data-title="ChaiProfile" title="Open in separate window">↗</button>
+                </a>
+                <a href="/audit" class="window-nav-link">
+                    <span>🛡️ Security Vault</span>
+                    <button class="window-pop-btn" data-url="/audit" data-title="ChaiAudit" title="Open in separate window">↗</button>
+                </a>
+            </nav>
+
+            <div class="user-dock-actions">
+                <button id="dock-sound-btn" class="btn btn-ghost btn-sm">🔊 Sound ON</button>
+                <div class="student-badge-pill">
+                    <span id="dock-student-avatar" style="font-size: 1.2rem;">☕</span>
+                    <div class="student-meta">
+                        <span id="dock-student-name" class="student-name-text">Loading...</span>
+                        <span id="dock-student-sub" class="student-sub-text">Student Session</span>
+                    </div>
+                </div>
+                <a id="dock-logout-btn" href="#" class="btn btn-ghost btn-sm">Sign Out</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="page-window-container">
+        <div class="window-header-banner">
+            <div>
+                <h1 class="window-title"><span>🏆</span> Campus Tea Leaderboards &amp; Rivalries</h1>
+                <p class="window-desc">
+                    Real-time SQL aggregations ranking students, hostel block rivalries, and department standings.
+                </p>
+            </div>
+        </div>
+
+        <div class="leaderboard-subnav">
+            <div class="tab-btn-group">
+                <button id="tab-students" class="tab-btn active" onclick="switchTab('students')">
+                    👨‍🎓 Individual Students
+                </button>
+                <button id="tab-departments" class="tab-btn" onclick="switchTab('departments')">
+                    ⚔️ Department Rivalries
+                </button>
+            </div>
+
+            <select id="tier-select" class="tier-select" onchange="loadLeaderboard()">
+                <option value="daily">Daily Leaderboard (Today)</option>
+                <option value="weekly">Weekly Tier (Last 7 Days)</option>
+                <option value="alltime">All-Time Hall of Fame</option>
+            </select>
+        </div>
+
+        <!-- Dynamic Content Container -->
+        <div class="card" style="padding: 1.5rem;">
+            <div id="leaderboard-container">
+                <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                    Loading SQL Leaderboard data...
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/static/js/audio.js"></script>
+    <script src="/static/js/common.js"></script>
+    <script>
+        let currentTab = 'students';
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`tab-${tab}`).classList.add('active');
+
+            const tierSel = document.getElementById('tier-select');
+            tierSel.style.display = (tab === 'students') ? 'block' : 'none';
+
+            loadLeaderboard();
+        }
+
+        async function loadLeaderboard() {
+            const container = document.getElementById('leaderboard-container');
+            const tier = document.getElementById('tier-select').value;
+
+            try {
+                const res = await fetch(`/api/leaderboard?type=${currentTab}&tier=${tier}`);
+                const data = await res.json();
+
+                if (currentTab === 'students') {
+                    renderStudents(data.leaderboard, container);
+                } else {
+                    renderDepartments(data.leaderboard, container);
+                }
+            } catch (err) {
+                container.innerHTML = `<div style="color: #fca5a5; padding: 2rem;">Error loading leaderboard.</div>`;
+            }
+        }
+
+        function renderStudents(list, container) {
+            if (!list || list.length === 0) {
+                container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 2rem;">No cutting chai logged yet for this period.</div>`;
+                return;
+            }
+
+            container.innerHTML = '';
+            list.forEach((s, idx) => {
+                const rank = idx + 1;
+                let medal = rank;
+                if (rank === 1) medal = '🥇';
+                else if (rank === 2) medal = '🥈';
+                else if (rank === 3) medal = '🥉';
+
+                const row = document.createElement('div');
+                row.className = 'student-rank-row';
+                row.innerHTML = `
+                    <div class="rank-medal">${medal}</div>
+                    <div style="font-size: 1.6rem;">${s.avatar || '☕'}</div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 700; font-size: 1rem; color: #fff;">${s.name}</div>
+                        <div style="font-size: 0.74rem; color: var(--text-muted);">${s.email} • ${s.department}</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <span style="font-size: 1.5rem; font-weight: 800; color: var(--chai-cream);">${s.cups_count}</span>
+                        <span style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; display: block;">cups</span>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function renderDepartments(list, container) {
+            container.innerHTML = '';
+            const maxCups = Math.max(...list.map(d => d.cups_today), 1);
+
+            list.forEach((d, idx) => {
+                const pct = (d.cups_today / maxCups) * 100;
+                const row = document.createElement('div');
+                row.className = 'dept-row-item';
+                row.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <div style="font-weight: 700; font-size: 0.95rem;">
+                            <span style="color: var(--chai-amber); margin-right: 0.5rem;">#${idx + 1}</span>
+                            ${d.department}
+                        </div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary);">
+                            <strong style="color: #fff; font-size: 1.1rem;">${d.cups_today}</strong> cups today (${d.student_count} students)
+                        </div>
+                    </div>
+                    <div style="height: 8px; background: rgba(255,255,255,0.08); border-radius: var(--radius-full); overflow: hidden;">
+                        <div style="height: 100%; width: ${pct}%; background: linear-gradient(90deg, #9a3412, #f59e0b);"></div>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', loadLeaderboard);
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chaiboard | Student &amp; Admin Sign In</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+        .auth-box {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 480px;
+            padding: 2.4rem;
+            box-shadow: var(--shadow-card), var(--shadow-glow);
+        }
+        .auth-brand {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .auth-icon {
+            font-size: 3.2rem;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+            filter: drop-shadow(0 4px 10px rgba(245, 158, 11, 0.4));
+        }
+    </style>
+</head>
+<body>
+
+    <div class="auth-container">
+        <div class="auth-box">
+            <div class="auth-brand">
+                <span class="auth-icon">🫖</span>
+                <h1 style="font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px;">CHAIBOARD</h1>
+                <div style="font-size: 0.78rem; color: var(--chai-amber); text-transform: uppercase; font-weight: 700; letter-spacing: 0.8px;">
+                    Campus Tea Leaderboard &amp; Health Engine
+                </div>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.6rem;">
+                    Sign in with your email address to access your cutting chai tracker and leaderboards.
+                </p>
+            </div>
+
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" class="form-control" placeholder="e.g. user@gmail.com" required autocomplete="email">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" class="form-control" placeholder="Enter your password" required autocomplete="current-password">
+                </div>
+
+                <button type="submit" id="btn-submit" class="btn btn-primary full-width" style="margin-top: 1rem;">
+                    🔐 Secure Sign In
+                </button>
+            </form>
+
+            <div style="margin-top: 1.5rem; text-align: center; font-size: 0.85rem; color: var(--text-muted);">
+                Don't have an account? <a href="/register" style="color: var(--chai-amber); text-decoration: underline; font-weight: 600;">Register New Account</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const btn = document.getElementById('btn-submit');
+
+            btn.disabled = true;
+            btn.textContent = 'Verifying credentials...';
+
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    if (data.student && data.student.role === 'admin') {
+                        window.location.href = '/admin';
+                    } else {
+                        window.location.href = '/chamber';
+                    }
+                } else {
+                    alert(data.error || 'Invalid email or password');
+                    btn.disabled = false;
+                    btn.textContent = '🔐 Secure Sign In';
+                }
+            } catch (err) {
+                alert('Connection error with server');
+                btn.disabled = false;
+                btn.textContent = '🔐 Secure Sign In';
+            }
+        });
+    </script>
+</body>
+</html>

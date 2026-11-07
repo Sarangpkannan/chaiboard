@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chaiboard | Master Administration &amp; Settings Portal</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .admin-stat-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.2rem;
+            margin-bottom: 2rem;
+        }
+        @media (max-width: 900px) {
+            .admin-stat-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        .admin-stat-box {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-md);
+            padding: 1.2rem;
+        }
+        .admin-stat-val {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--chai-cream);
+            line-height: 1.1;
+            margin-top: 0.2rem;
+        }
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.84rem;
+        }
+        .admin-table th, .admin-table td {
+            padding: 0.85rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .admin-table th {
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-size: 0.72rem;
+            letter-spacing: 0.5px;
+        }
+        .role-pill {
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 0.2rem 0.5rem;
+            border-radius: var(--radius-sm);
+        }
+        .role-admin {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+        }
+        .role-student {
+            background: rgba(59, 130, 246, 0.15);
+            color: #93c5fd;
+            border: 1px solid rgba(59, 130, 246, 0.35);
+        }
+        .admin-modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 1rem;
+        }
+        .admin-modal-box {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-highlight);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 480px;
+            padding: 1.8rem;
+            box-shadow: var(--shadow-card);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Global Window Dock -->
+    <header class="window-dock">
+        <div class="dock-container">
+            <a href="/chamber" class="brand-section">
+                <span class="brand-icon">🫖</span>
+                <div>
+                    <div class="brand-name">CHAIBOARD</div>
+                    <div class="brand-sub">Campus Tea Leaderboard &amp; Health Engine</div>
+                </div>
+            </a>
+
+            <!-- Multi-Window Navigation Switcher -->
+            <nav class="nav-windows-list">
+                <a href="/chamber" class="window-nav-link">
+                    <span>🫖 3D Chamber &amp; Logger</span>
+                    <button class="window-pop-btn" data-url="/chamber" data-title="ChaiChamber" title="Open in separate window">↗</button>
+                </a>
+                <a href="/metrics" class="window-nav-link">
+                    <span>📊 Health Engine</span>
+                    <button class="window-pop-btn" data-url="/metrics" data-title="ChaiMetrics" title="Open in separate window">↗</button>
+                </a>
+                <a href="/leaderboard" class="window-nav-link">
+                    <span>🏆 Leaderboards</span>
+                    <button class="window-pop-btn" data-url="/leaderboard" data-title="ChaiLeaderboard" title="Open in separate window">↗</button>
+                </a>
+                <a href="/profile" class="window-nav-link">
+                    <span>🪪 Chai Pass &amp; Logs</span>
+                    <button class="window-pop-btn" data-url="/profile" data-title="ChaiProfile" title="Open in separate window">↗</button>
+                </a>
+                <a href="/audit" class="window-nav-link">
+                    <span>🛡️ Security Vault</span>
+                    <button class="window-pop-btn" data-url="/audit" data-title="ChaiAudit" title="Open in separate window">↗</button>
+                </a>
+                <a href="/admin" class="window-nav-link active" style="border: 1px solid var(--accent-red);">
+                    <span>👑 Admin Portal</span>
+                    <button class="window-pop-btn" data-url="/admin" data-title="ChaiAdmin" title="Open in separate window">↗</button>
+                </a>
+            </nav>
+
+            <div class="user-dock-actions">
+                <button id="dock-sound-btn" class="btn btn-ghost btn-sm">🔊 Sound ON</button>
+                <div class="student-badge-pill" style="border-color: #ef4444;">
+                    <span id="dock-student-avatar" style="font-size: 1.2rem;">👑</span>
+                    <div class="student-meta">
+                        <span id="dock-student-name" class="student-name-text">Administrator</span>
+                        <span id="dock-student-sub" class="student-sub-text">Full Control Role</span>
+                    </div>
+                </div>
+                <a id="dock-logout-btn" href="#" class="btn btn-ghost btn-sm">Sign Out</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="page-window-container">
+        <div class="window-header-banner">
+            <div>
+                <h1 class="window-title"><span>👑</span> Master Administration &amp; Settings Portal</h1>
+                <p class="window-desc">
+                    Manage users, reset credentials, configure Health Engine thresholds, and monitor SQL database integrity.
+                </p>
+            </div>
+            <div style="display: flex; gap: 0.8rem;">
+                <button onclick="openCreateUserModal()" class="btn btn-primary">
+                    ➕ Add New User
+                </button>
+                <button onclick="loadAdminData()" class="btn btn-secondary">
+                    🔄 Refresh Data
+                </button>
+            </div>
+        </div>
+
+        <!-- System Stats Grid -->
+        <div class="admin-stat-grid">
+            <div class="admin-stat-box">
+                <span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Total Users</span>
+                <div id="stat-users" class="admin-stat-val">0</div>
+            </div>
+            <div class="admin-stat-box">
+                <span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Cuttings Logged</span>
+                <div id="stat-cuttings" class="admin-stat-val">0</div>
+            </div>
+            <div class="admin-stat-box">
+                <span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Fraud Rejections</span>
+                <div id="stat-frauds" class="admin-stat-val" style="color: #fca5a5;">0</div>
+            </div>
+            <div class="admin-stat-box">
+                <span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Database Size</span>
+                <div id="stat-dbsize" class="admin-stat-val" style="color: var(--chai-amber);">0 KB</div>
+            </div>
+        </div>
+
+        <!-- Tab Controls -->
+        <div style="display: flex; gap: 0.6rem; margin-bottom: 1.5rem;">
+            <button id="admin-tab-users-btn" class="btn btn-secondary active" onclick="switchAdminTab('users')">
+                👥 User Management
+            </button>
+            <button id="admin-tab-settings-btn" class="btn btn-secondary" onclick="switchAdminTab('settings')">
+                ⚙️ Global Health &amp; Anti-Cheat Settings
+            </button>
+        </div>
+
+        <!-- 1. USER MANAGEMENT SECTION -->
+        <div id="admin-section-users" class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem;">
+                <h3 style="font-size: 1.15rem; font-weight: 700;">Registered User Accounts (SQLite `students` table)</h3>
+                <span style="font-size: 0.78rem; color: var(--text-muted);">Real-time database records</span>
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Avatar</th>
+                            <th>Name</th>
+                            <th>Email Address</th>
+                            <th>Department</th>
+                            <th>Role</th>
+                            <th>Total Cuttings</th>
+                            <th>Registered</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-table-body">
+                        <tr>
+                            <td colspan="9" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading users...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 2. GLOBAL SETTINGS SECTION -->
+        <div id="admin-section-settings" class="card hidden">
+            <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.5rem;">Global Engine &amp; Security Configuration</h3>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+                Values saved here directly update the SQL `app_settings` table and apply to all students.
+            </p>
+
+            <form id="settings-form" style="max-width: 600px;">
+                <div class="form-group">
+                    <label for="cfg-calories">Humorous Calorie Warning Threshold (kcal)</label>
+                    <input type="number" step="0.1" id="cfg-calories" class="form-control" value="250.0" required>
+                    <small style="color: var(--text-muted); font-size: 0.72rem;">Default: 250 kcal ("Running a marathon in your mind only")</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="cfg-sugar">Humorous Sugar Warning Threshold (grams)</label>
+                    <input type="number" step="0.1" id="cfg-sugar" class="form-control" value="30.0" required>
+                    <small style="color: var(--text-muted); font-size: 0.72rem;">Default: 30.0 grams ("Pancreas requests a temporary ceasefire")</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="cfg-caffeine">Humorous Caffeine Warning Threshold (mg)</label>
+                    <input type="number" step="0.1" id="cfg-caffeine" class="form-control" value="150.0" required>
+                    <small style="color: var(--text-muted); font-size: 0.72rem;">Default: 150.0 mg ("Heart rate keeping tempo with a bass drum")</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="cfg-hamming">Anti-Cheat Minimum Hamming Distance (dHash / pHash)</label>
+                    <input type="number" id="cfg-hamming" class="form-control" value="5" required>
+                    <small style="color: var(--text-muted); font-size: 0.72rem;">Default: 5 (Any duplicate within 12h having distance &lt; 5 is rejected)</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="cfg-tapri">Tapri Stall Display Name</label>
+                    <input type="text" id="cfg-tapri" class="form-control" value="Central Campus Tapri">
+                </div>
+
+                <button type="submit" id="btn-save-settings" class="btn btn-primary" style="margin-top: 1rem;">
+                    💾 Save Global Settings to SQL
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <!-- Modal: Edit User -->
+    <div id="modal-edit-user" class="admin-modal-overlay hidden">
+        <div class="admin-modal-box">
+            <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem;">✏️ Edit User Details</h3>
+            <form id="form-edit-user">
+                <input type="hidden" id="edit-user-id">
+
+                <div class="form-group">
+                    <label for="edit-name">Full Name</label>
+                    <input type="text" id="edit-name" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-email">Email Address</label>
+                    <input type="email" id="edit-email" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-dept">Department</label>
+                    <select id="edit-dept" class="form-control">
+                        <option value="Computer Science">Computer Science</option>
+                        <option value="Mechanical Engineering">Mechanical Engineering</option>
+                        <option value="Electronics & Comm">Electronics &amp; Comm</option>
+                        <option value="Biotechnology">Biotechnology</option>
+                        <option value="Civil Engineering">Civil Engineering</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-role">Role</label>
+                    <select id="edit-role" class="form-control">
+                        <option value="student">Student</option>
+                        <option value="admin">Administrator</option>
+                    </select>
+                </div>
+
+                <div style="display: flex; gap: 0.8rem; margin-top: 1.2rem;">
+                    <button type="submit" class="btn btn-primary full-width">Save Changes</button>
+                    <button type="button" onclick="closeModals()" class="btn btn-secondary full-width">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Reset Password -->
+    <div id="modal-reset-pwd" class="admin-modal-overlay hidden">
+        <div class="admin-modal-box">
+            <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem;">🔑 Reset User Password</h3>
+            <form id="form-reset-pwd">
+                <input type="hidden" id="reset-user-id">
+                <p id="reset-user-desc" style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1rem;"></p>
+
+                <div class="form-group">
+                    <label for="reset-new-password">New Password</label>
+                    <input type="password" id="reset-new-password" class="form-control" placeholder="Enter new password (min 4 chars)" required>
+                </div>
+
+                <div style="display: flex; gap: 0.8rem; margin-top: 1.2rem;">
+                    <button type="submit" class="btn btn-primary full-width">Reset Password</button>
+                    <button type="button" onclick="closeModals()" class="btn btn-secondary full-width">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Create User -->
+    <div id="modal-create-user" class="admin-modal-overlay hidden">
+        <div class="admin-modal-box">
+            <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem;">➕ Create New User</h3>
+            <form id="form-create-user">
+                <div class="form-group">
+                    <label for="create-name">Full Name</label>
+                    <input type="text" id="create-name" class="form-control" placeholder="e.g. Neha Gupta" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="create-email">Email Address</label>
+                    <input type="email" id="create-email" class="form-control" placeholder="e.g. neha@example.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="create-dept">Department</label>
+                    <select id="create-dept" class="form-control">
+                        <option value="Computer Science">Computer Science</option>
+                        <option value="Mechanical Engineering">Mechanical Engineering</option>
+                        <option value="Electronics & Comm">Electronics &amp; Comm</option>
+                        <option value="Biotechnology">Biotechnology</option>
+                        <option value="Civil Engineering">Civil Engineering</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="create-role">Role</label>
+                    <select id="create-role" class="form-control">
+                        <option value="student">Student</option>
+                        <option value="admin">Administrator</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="create-pwd">Password</label>
+                    <input type="password" id="create-pwd" class="form-control" placeholder="Min 4 characters" required>
+                </div>
+
+                <div style="display: flex; gap: 0.8rem; margin-top: 1.2rem;">
+                    <button type="submit" class="btn btn-primary full-width">Create User</button>
+                    <button type="button" onclick="closeModals()" class="btn btn-secondary full-width">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/static/js/audio.js"></script>
+    <script src="/static/js/common.js"></script>
+    <script>
+        let allUsers = [];
+
+        function switchAdminTab(tab) {
+            document.getElementById('admin-section-users').classList.toggle('hidden', tab !== 'users');
+            document.getElementById('admin-section-settings').classList.toggle('hidden', tab !== 'settings');
+            document.getElementById('admin-tab-users-btn').classList.toggle('active', tab === 'users');
+            document.getElementById('admin-tab-settings-btn').classList.toggle('active', tab === 'settings');
+        }
+
+        function closeModals() {
+            document.querySelectorAll('.admin-modal-overlay').forEach(m => m.classList.add('hidden'));
+        }
+
+        async function loadAdminData() {
+            try {
+                const res = await fetch('/api/admin/overview');
+                if (res.status === 403) {
+                    alert('Access Denied: Administrator role required.');
+                    window.location.href = '/chamber';
+                    return;
+                }
+                const data = await res.json();
+                allUsers = data.users;
+
+                // Render stats
+                document.getElementById('stat-users').textContent = data.stats.total_users;
+                document.getElementById('stat-cuttings').textContent = data.stats.total_cuttings;
+                document.getElementById('stat-frauds').textContent = data.stats.rejected_frauds;
+                document.getElementById('stat-dbsize').textContent = `${data.stats.db_size_kb} KB`;
+
+                // Render settings
+                if (data.settings) {
+                    if (data.settings.threshold_calories) document.getElementById('cfg-calories').value = data.settings.threshold_calories;
+                    if (data.settings.threshold_sugar) document.getElementById('cfg-sugar').value = data.settings.threshold_sugar;
+                    if (data.settings.threshold_caffeine) document.getElementById('cfg-caffeine').value = data.settings.threshold_caffeine;
+                    if (data.settings.anti_cheat_hamming_min) document.getElementById('cfg-hamming').value = data.settings.anti_cheat_hamming_min;
+                    if (data.settings.tapri_name) document.getElementById('cfg-tapri').value = data.settings.tapri_name;
+                }
+
+                renderUsersTable(allUsers);
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function renderUsersTable(users) {
+            const tbody = document.getElementById('users-table-body');
+            tbody.innerHTML = '';
+
+            if (!users || users.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: var(--text-muted); padding: 2rem;">No users found in database.</td></tr>`;
+                return;
+            }
+
+            users.forEach(u => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>#${u.id}</strong></td>
+                    <td style="font-size: 1.3rem;">${u.avatar || '☕'}</td>
+                    <td><strong>${u.name}</strong></td>
+                    <td><code>${u.email}</code></td>
+                    <td>${u.department}</td>
+                    <td><span class="role-pill ${u.role === 'admin' ? 'role-admin' : 'role-student'}">${u.role.toUpperCase()}</span></td>
+                    <td><strong style="color: var(--chai-cream);">${u.total_cups_logged}</strong> cups</td>
+                    <td style="font-size: 0.74rem; color: var(--text-muted);">${u.created_at}</td>
+                    <td>
+                        <div style="display: flex; gap: 0.4rem;">
+                            <button class="btn btn-secondary btn-sm" onclick="openEditModal(${u.id})">✏️</button>
+                            <button class="btn btn-secondary btn-sm" onclick="openResetPwdModal(${u.id})">🔑</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteUser(${u.id}, '${u.email}')">🗑️</button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function openEditModal(userId) {
+            const u = allUsers.find(x => x.id === userId);
+            if (!u) return;
+            document.getElementById('edit-user-id').value = u.id;
+            document.getElementById('edit-name').value = u.name;
+            document.getElementById('edit-email').value = u.email;
+            document.getElementById('edit-dept').value = u.department;
+            document.getElementById('edit-role').value = u.role;
+            document.getElementById('modal-edit-user').classList.remove('hidden');
+        }
+
+        function openResetPwdModal(userId) {
+            const u = allUsers.find(x => x.id === userId);
+            if (!u) return;
+            document.getElementById('reset-user-id').value = u.id;
+            document.getElementById('reset-user-desc').textContent = `Resetting password for: ${u.name} (${u.email})`;
+            document.getElementById('reset-new-password').value = '';
+            document.getElementById('modal-reset-pwd').classList.remove('hidden');
+        }
+
+        function openCreateUserModal() {
+            document.getElementById('form-create-user').reset();
+            document.getElementById('modal-create-user').classList.remove('hidden');
+        }
+
+        async function deleteUser(userId, email) {
+            if (!confirm(`Are you sure you want to delete user "${email}"? This will delete all their chai logs and active sessions.`)) {
+                return;
+            }
+            try {
+                const res = await fetch(`/api/admin/users?id=${userId}`, { method: 'DELETE' });
+                const data = await res.json();
+                if (res.ok) {
+                    Chaiboard.showToast('User deleted from database.');
+                    loadAdminData();
+                } else {
+                    alert(data.error || 'Failed to delete user.');
+                }
+            } catch (e) {
+                alert('Connection error');
+            }
+        }
+
+        // Form Submit: Edit User
+        document.getElementById('form-edit-user').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('edit-user-id').value;
+            const name = document.getElementById('edit-name').value.trim();
+            const email = document.getElementById('edit-email').value.trim();
+            const department = document.getElementById('edit-dept').value;
+            const role = document.getElementById('edit-role').value;
+
+            try {
+                const res = await fetch('/api/admin/users', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id, name, email, department, role })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    closeModals();
+                    Chaiboard.showToast('User updated successfully.');
+                    loadAdminData();
+                } else {
+                    alert(data.error || 'Update failed');
+                }
+            } catch (err) {
+                alert('Connection error');
+            }
+        });
+
+        // Form Submit: Reset Password
+        document.getElementById('form-reset-pwd').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('reset-user-id').value;
+            const password = document.getElementById('reset-new-password').value;
+
+            try {
+                const res = await fetch('/api/admin/reset-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id, password })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    closeModals();
+                    Chaiboard.showToast('Password reset successfully.');
+                } else {
+                    alert(data.error || 'Reset failed');
+                }
+            } catch (err) {
+                alert('Connection error');
+            }
+        });
+
+        // Form Submit: Create User
+        document.getElementById('form-create-user').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('create-name').value.trim();
+            const email = document.getElementById('create-email').value.trim();
+            const department = document.getElementById('create-dept').value;
+            const role = document.getElementById('create-role').value;
+            const password = document.getElementById('create-pwd').value;
+
+            try {
+                const res = await fetch('/api/admin/users', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, department, role, password })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    closeModals();
+                    Chaiboard.showToast('User created successfully.');
+                    loadAdminData();
+                } else {
+                    alert(data.error || 'Failed to create user');
+                }
+            } catch (err) {
+                alert('Connection error');
+            }
+        });
+
+        // Form Submit: Save Settings
+        document.getElementById('settings-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                threshold_calories: document.getElementById('cfg-calories').value,
+                threshold_sugar: document.getElementById('cfg-sugar').value,
+                threshold_caffeine: document.getElementById('cfg-caffeine').value,
+                anti_cheat_hamming_min: document.getElementById('cfg-hamming').value,
+                tapri_name: document.getElementById('cfg-tapri').value
+            };
+
+            try {
+                const res = await fetch('/api/admin/settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (res.ok) {
+                    Chaiboard.showToast('Global settings updated in SQLite database!');
+                } else {
+                    alert('Failed to save settings.');
+                }
+            } catch (err) {
+                alert('Connection error');
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', loadAdminData);
+    </script>
+</body>
+</html>
+

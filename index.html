@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chaiboard | Campus Tea Leaderboard & Health Tracker</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Three.js for 3D Hero Glass -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+
+    <!-- Top Application Header -->
+    <header class="app-header">
+        <div class="header-container">
+            <div class="logo-area">
+                <span class="brand-icon">🫖</span>
+                <div>
+                    <h1 class="brand-title">CHAIBOARD</h1>
+                    <div class="brand-tag">Campus Tea Leaderboard &amp; Health Tracker</div>
+                </div>
+            </div>
+
+            <div class="user-nav">
+                <button id="toggle-sound-btn" class="btn btn-ghost btn-sm" title="Toggle Sound FX">
+                    🔊 Sound ON
+                </button>
+                <div id="logged-student-pill" class="student-badge-pill">
+                    <span id="header-avatar" class="student-avatar">☕</span>
+                    <div class="student-meta">
+                        <span id="header-student-name" class="student-name">Student</span>
+                        <span id="header-student-meta" class="student-sub">CS23B104 • CSE</span>
+                    </div>
+                </div>
+                <button id="btn-chai-pass" class="btn btn-secondary btn-sm" title="View Student Chai ID">
+                    🪪 Chai Pass
+                </button>
+                <button id="switch-student-btn" class="btn btn-secondary btn-sm" title="Switch or Logout">
+                    ⇄ Switch Student
+                </button>
+                <button id="logout-btn" class="btn btn-ghost btn-sm">
+                    Sign Out
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 1. STUDENT AUTHENTICATION / LOGIN SECTION -->
+    <section id="login-section" class="auth-wrapper">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-icon">☕</div>
+                <h2>Campus Chai Access</h2>
+                <p class="auth-subtitle">Sign in to track your cutting chai intake, compete on hostel leaderboards &amp; prevent sugar crashes.</p>
+            </div>
+
+            <!-- Quick Demo Student Accounts -->
+            <div class="demo-accounts-box">
+                <div class="demo-title">⚡ Quick Login As Demo Student:</div>
+                <div class="demo-buttons-grid">
+                    <button class="demo-login-btn" data-roll="CS23B104">
+                        <span>☕ Aarav Sharma (CS23B104)</span>
+                        <span class="demo-role-tag">Hostel Everest • CS</span>
+                    </button>
+                    <button class="demo-login-btn" data-roll="ME22B019">
+                        <span>⚡ Priya Patel (ME22B019)</span>
+                        <span class="demo-role-tag">Hostel Nilgiri • Mech</span>
+                    </button>
+                    <button class="demo-login-btn" data-roll="EC24B088">
+                        <span>📻 Rohan Verma (EC24B088)</span>
+                        <span class="demo-role-tag">Hostel Aravali • ECE</span>
+                    </button>
+                    <button class="demo-login-btn" data-roll="BT23B045">
+                        <span>🧬 Ananya Deshmukh (BT23B045)</span>
+                        <span class="demo-role-tag">Hostel Ganga • Biotech</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="auth-divider">
+                <span>or student roll number sign in</span>
+            </div>
+
+            <!-- Student Login Form -->
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-roll">Student Roll Number / ID</label>
+                    <input type="text" id="login-roll" class="form-control" placeholder="e.g. CS23B104, ME22B019" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="login-pin">Campus PIN / Password</label>
+                    <input type="password" id="login-pin" class="form-control" placeholder="Enter PIN (Default: 1234)" value="1234" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary full-width">
+                    Sign In to Chaiboard
+                </button>
+
+                <div class="form-footer-toggle">
+                    Don't have a tea profile? <a id="show-register-btn">Register New Student</a>
+                </div>
+            </form>
+
+            <!-- Student Registration Form -->
+            <form id="register-form" class="hidden">
+                <div class="form-group">
+                    <label for="reg-name">Full Name</label>
+                    <input type="text" id="reg-name" class="form-control" placeholder="e.g. Rahul Sharma" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="reg-roll">Roll Number</label>
+                    <input type="text" id="reg-roll" class="form-control" placeholder="e.g. CS24B055" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="reg-hostel">Hostel Block</label>
+                    <select id="reg-hostel" class="form-control">
+                        <option value="Hostel Everest (Block A)">Hostel Everest (Block A)</option>
+                        <option value="Hostel Nilgiri (Block B)">Hostel Nilgiri (Block B)</option>
+                        <option value="Hostel Aravali (Block C)">Hostel Aravali (Block C)</option>
+                        <option value="Hostel Ganga (Girls Block)">Hostel Ganga (Girls Block)</option>
+                        <option value="Day Scholar">Day Scholar</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="reg-dept">Academic Department</label>
+                    <select id="reg-dept" class="form-control">
+                        <option value="Computer Science">Computer Science</option>
+                        <option value="Mechanical Engineering">Mechanical Engineering</option>
+                        <option value="Electronics & Comm">Electronics &amp; Comm</option>
+                        <option value="Biotechnology">Biotechnology</option>
+                        <option value="Civil Engineering">Civil Engineering</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="reg-pin">Create PIN</label>
+                    <input type="password" id="reg-pin" class="form-control" placeholder="Create a 4-digit PIN" value="1234" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary full-width">
+                    Create Student Chai Account
+                </button>
+
+                <div class="form-footer-toggle">
+                    Already registered? <a id="show-login-btn">Back to Sign In</a>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- 2. MAIN APPLICATION DASHBOARD SECTION -->
+    <main id="dashboard-section" class="dashboard-container hidden">
+
+        <!-- Live Campus Tapri Radar Ticker -->
+        <div class="tapri-radar-bar">
+            <div class="radar-live-badge"><span class="radar-dot"></span> LIVE TAPRI RADAR</div>
+            <div class="radar-ticker-content">
+                <span>🔥 <strong>Ramesh Tapri (Gate 1):</strong> Adrak Masala batch steaming (72°C) • 24 students served</span>
+                <span class="ticker-sep">•</span>
+                <span>⚡ <strong>Hostel Block B Kiosk:</strong> Fresh cardamom cutting available • Nilgiri lead +4 cups</span>
+                <span class="ticker-sep">•</span>
+                <span>🫖 <strong>Library Night Point:</strong> Bun maska + cutting chai combo active till 2 AM</span>
+            </div>
+        </div>
+
+        <div class="grid-main">
+
+            <!-- Left Hero Column: 3D Cutting Glass & Profile -->
+            <aside class="hero-column">
+
+                <!-- 3D Hero Glass Card (WebGL / Three.js) -->
+                <div class="card glass-hero-card">
+                    <div class="section-title">
+                        <span>🫖</span> Interactive 3D Hero Glass
+                    </div>
+                    <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem;">
+                        Dynamic cutting chai glass with real-time fluid shaders, orbital rotation &amp; thermal steam FX.
+                    </p>
+
+                    <!-- WebGL Canvas Container -->
+                    <div class="hero-3d-wrapper">
+                        <div id="chai-3d-container"></div>
+                    </div>
+
+                    <!-- Daily Cup and Volume Banner -->
+                    <div class="hero-stats-banner">
+                        <div class="hero-stat-item">
+                            <span id="hero-cups-count" class="stat-num">0</span>
+                            <span class="stat-label">Cups Today</span>
+                        </div>
+                        <div class="hero-stat-item">
+                            <span id="hero-volume-count" class="stat-num">0 ml</span>
+                            <span class="stat-label">Intake Volume</span>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Controls -->
+                    <div class="hero-actions">
+                        <button id="btn-log-chai" class="btn btn-primary full-width">
+                            📸 Image-Authenticated Logging
+                        </button>
+                        <button id="btn-slosh" class="btn btn-secondary full-width">
+                            💫 Slosh Fluid Physics
+                        </button>
+                    </div>
+                    <div class="hero-hint">
+                        💡 Click &amp; drag 3D glass to rotate 360°. Fluid sloshes dynamically!
+                    </div>
+                </div>
+
+                <!-- Student Profile Card -->
+                <div class="card profile-card">
+                    <div class="profile-header">
+                        <div>
+                            <h3 id="profile-name" class="profile-title-name">Student Name</h3>
+                            <div id="profile-title" class="profile-tag">Tapri Veteran</div>
+                        </div>
+                        <div id="profile-streak" class="badge" style="background: rgba(245, 158, 11, 0.2); color: var(--chai-amber); font-size: 0.82rem;">
+                            18 Days 🔥
+                        </div>
+                    </div>
+
+                    <div class="profile-info-grid">
+                        <div class="p-item">
+                            <div class="p-label">Roll Number</div>
+                            <div id="profile-roll" class="p-val">CS23B104</div>
+                        </div>
+                        <div class="p-item">
+                            <div class="p-label">Hostel Block</div>
+                            <div id="profile-hostel" class="p-val">Hostel Everest</div>
+                        </div>
+                        <div class="p-item" style="grid-column: span 2;">
+                            <div class="p-label">Department</div>
+                            <div id="profile-dept" class="p-val">Computer Science</div>
+                        </div>
+                    </div>
+                </div>
+
+            </aside>
+
+            <!-- Right Column: Health Engine Metrics, Leaderboards & Logs -->
+            <section class="content-column">
+
+                <!-- 1. Chai Metrics Dashboard (PRD Section 4) -->
+                <div class="card">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <span>📊</span> Chai Metrics Dashboard
+                        </div>
+                        <div class="badge" style="background: rgba(245, 158, 11, 0.15); color: var(--chai-cream);">
+                            Baseline: ~100ml Cutting Glass
+                        </div>
+                    </div>
+
+                    <div class="metrics-grid">
+                        <!-- Calories -->
+                        <div class="metric-card">
+                            <div class="metric-top">
+                                <span class="metric-label">Total Energy</span>
+                                <span class="metric-baseline">~45 kcal/cup</span>
+                            </div>
+                            <div id="metric-calories" class="metric-val">0 kcal</div>
+                            <div class="progress-track">
+                                <div id="bar-calories" class="progress-fill" style="width: 0%"></div>
+                            </div>
+                            <!-- Humorous Warning (PRD: > 250 kcal) -->
+                            <div id="warn-calories" class="humorous-warning hidden"></div>
+                        </div>
+
+                        <!-- Sugar -->
+                        <div class="metric-card">
+                            <div class="metric-top">
+                                <span class="metric-label">Sugar Intake</span>
+                                <span class="metric-baseline">~7.5 g/cup</span>
+                            </div>
+                            <div id="metric-sugar" class="metric-val">0 g</div>
+                            <div class="progress-track">
+                                <div id="bar-sugar" class="progress-fill" style="width: 0%"></div>
+                            </div>
+                            <!-- Humorous Warning (PRD: > 30g) -->
+                            <div id="warn-sugar" class="humorous-warning hidden"></div>
+                        </div>
+
+                        <!-- Caffeine -->
+                        <div class="metric-card">
+                            <div class="metric-top">
+                                <span class="metric-label">Caffeine Load</span>
+                                <span class="metric-baseline">~30 mg/cup</span>
+                            </div>
+                            <div id="metric-caffeine" class="metric-val">0 mg</div>
+                            <div class="progress-track">
+                                <div id="bar-caffeine" class="progress-fill" style="width: 0%"></div>
+                            </div>
+                            <!-- Humorous Warning (PRD: > 150mg) -->
+                            <div id="warn-caffeine" class="humorous-warning hidden"></div>
+                        </div>
+                    </div>
+
+                    <!-- Tongue Temperature Alert Bar (PRD Section 2 & 4) -->
+                    <div class="tongue-temp-card">
+                        <div>
+                            <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">
+                                Tongue Temperature Status
+                            </div>
+                            <div id="tongue-temp-quote" style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.15rem;">
+                                Ready for freshly brewed campus tea.
+                            </div>
+                        </div>
+                        <div id="tongue-temp-badge" class="status-pill green">
+                            65°C • Optimal Heat
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Campus Leaderboards (PRD Section 2) -->
+                <div class="card">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <span>🏆</span> Campus Leaderboards &amp; Rivalries
+                        </div>
+                        <select id="lb-tier-select" class="lb-tier-select">
+                            <option value="daily">Daily Leaderboard</option>
+                            <option value="weekly">Weekly Tier</option>
+                            <option value="alltime">All-Time Hall of Fame</option>
+                        </select>
+                    </div>
+
+                    <!-- Navigation Tabs -->
+                    <div class="leaderboard-controls">
+                        <div class="lb-tabs-wrapper">
+                            <button class="lb-tab active" data-target="students">Students</button>
+                            <button class="lb-tab" data-target="hostels">Hostel Block vs Block</button>
+                            <button class="lb-tab" data-target="departments">Department Rivalries</button>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Leaderboard Content Container -->
+                    <div id="leaderboard-content"></div>
+                </div>
+
+                <!-- 3. Authenticated Chai Log History -->
+                <div class="card">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <span>📜</span> Today's Verified Chai Logs
+                        </div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">
+                            64-bit pHash Protected
+                        </div>
+                    </div>
+
+                    <div id="chai-history-list"></div>
+                </div>
+
+            </section>
+        </div>
+    </main>
+
+    <!-- 3. IMAGE-AUTHENTICATED LOGGING MODAL (Anti-Cheat & Fraud Prevention) -->
+    <div id="camera-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <span>📸</span> Image-Authenticated Logging
+                </div>
+                <button id="btn-close-camera" class="close-btn">&times;</button>
+            </div>
+
+            <!-- Camera Viewfinder with AI Reticle -->
+            <div class="camera-viewfinder">
+                <video id="camera-feed" playsinline autoplay muted></video>
+                <canvas id="capture-preview" class="hidden" width="320" height="320"></canvas>
+
+                <div class="scanner-hud">
+                    <div class="reticle-box">
+                        <div class="reticle-label">AI TEACUP DETECTION</div>
+                        <div class="scan-laser-line"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status -->
+            <div id="ai-scanner-status" class="ai-status-text">
+                Point live camera at cutting chai glass.
+            </div>
+
+            <!-- Chai Customization Options -->
+            <div class="custom-chai-grid">
+                <div class="form-group" style="margin-bottom: 0.5rem;">
+                    <label for="chai-blend-select" style="font-size: 0.76rem;">Blend / Style</label>
+                    <select id="chai-blend-select" class="form-control" style="padding: 0.5rem; font-size: 0.82rem;">
+                        <option value="classic">Standard Tapri Cutting (100ml)</option>
+                        <option value="masala">Kadak Masala Chai (+5 kcal)</option>
+                        <option value="adrak">Ginger / Adrak Strong (+3 kcal)</option>
+                        <option value="elaichi">Shahi Elaichi Special (+5 kcal)</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 0.5rem;">
+                    <label for="chai-sugar-select" style="font-size: 0.76rem;">Sugar Preference</label>
+                    <select id="chai-sugar-select" class="form-control" style="padding: 0.5rem; font-size: 0.82rem;">
+                        <option value="standard">Standard Sweet (7.5g sugar)</option>
+                        <option value="light">Kam Cheeni / Light (3.5g sugar)</option>
+                        <option value="sugarfree">Fika / Zero Sugar (0g sugar)</option>
+                        <option value="extra">Ekdum Meethi (12.0g sugar)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <button id="btn-snap-chai" class="btn btn-primary full-width">
+                🔍 Verify Cutting Chai &amp; Compute pHash
+            </button>
+
+            <!-- Anti-Cheat & Fraud Prevention Testing Panel (PRD Section 3) -->
+            <div class="test-scenarios-box">
+                <div class="test-scenarios-title">🛡️ Fraud Prevention &amp; Anti-Cheat Logic Testing:</div>
+                <div class="test-buttons-row">
+                    <button id="btn-test-duplicate" class="btn btn-danger btn-sm" style="flex: 1;">
+                        ⚠️ Test Duplicate Cup (pHash Hamming &lt; 5 Rejection)
+                    </button>
+                    <button id="btn-test-nontea" class="btn btn-secondary btn-sm" style="flex: 1;">
+                        🧪 Test Non-Chai Object (MobileNet Rejection)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Verification Results Output -->
+            <div id="verification-results"></div>
+        </div>
+    </div>
+
+    <!-- 4. STUDENT DIGITAL CHAI PASS MODAL -->
+    <div id="chai-pass-modal" class="modal-overlay hidden">
+        <div class="modal-content" style="max-width: 440px;">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <span>🪪</span> Campus Chai Pass
+                </div>
+                <button id="btn-close-pass" class="close-btn">&times;</button>
+            </div>
+
+            <div class="digital-chai-pass">
+                <div class="pass-top">
+                    <div class="pass-brand">CHAIBOARD • CAMPUS VERIFIED</div>
+                    <div id="pass-avatar" class="pass-avatar">☕</div>
+                </div>
+
+                <div class="pass-body">
+                    <h3 id="pass-name" class="pass-name">Student Name</h3>
+                    <div id="pass-roll" class="pass-roll">CS23B104</div>
+                    <div id="pass-hostel-dept" class="pass-hostel">Hostel Everest • Computer Science</div>
+
+                    <div class="pass-grid">
+                        <div class="pass-cell">
+                            <span class="p-c-label">Today</span>
+                            <span id="pass-cups-today" class="p-c-val">4 Cups</span>
+                        </div>
+                        <div class="pass-cell">
+                            <span class="p-c-label">Daily Streak</span>
+                            <span id="pass-streak" class="p-c-val">18 Days 🔥</span>
+                        </div>
+                        <div class="pass-cell">
+                            <span class="p-c-label">All-Time</span>
+                            <span id="pass-all-time" class="p-c-val">342 Cups</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pass-footer">
+                    <div class="pass-barcode">|||||| | |||||||| |||| | |||||||||||| |||</div>
+                    <div id="pass-fingerprint" class="pass-hash">AUTH_ID: 0xFA391823B1E40812</div>
+                </div>
+            </div>
+
+            <button id="btn-print-pass" class="btn btn-secondary full-width" style="margin-top: 1rem;">
+                🖨️ Print / Save Chai Pass
+            </button>
+        </div>
+    </div>
+
+    <!-- Application Scripts -->
+    <script src="js/audio.js"></script>
+    <script src="js/three-chai.js"></script>
+    <script src="js/camera-ai.js"></script>
+    <script src="js/app.js"></script>
+
+</body>
+</html>
+

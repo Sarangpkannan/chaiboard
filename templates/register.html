@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chaiboard | Register New Account</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+
+        .auth-box {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 480px;
+            padding: 2.4rem;
+            box-shadow: var(--shadow-card), var(--shadow-glow);
+        }
+
+        .auth-brand {
+            text-align: center;
+            margin-bottom: 1.8rem;
+        }
+
+        .auth-icon {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+            filter: drop-shadow(0 4px 10px rgba(245, 158, 11, 0.4));
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="auth-container">
+        <div class="auth-box">
+            <div class="auth-brand">
+                <span class="auth-icon">☕</span>
+                <h1 style="font-size: 1.7rem; font-weight: 800; letter-spacing: -0.5px;">Create Your Account</h1>
+                <div style="font-size: 0.78rem; color: var(--chai-amber); text-transform: uppercase; font-weight: 700;">
+                    Database-Backed Identity
+                </div>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.4rem;">
+                    Create your profile to start tracking cutting chai, calculating health metrics, and competing on
+                    leaderboards.
+                </p>
+            </div>
+
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" class="form-control" placeholder="e.g. Siddharth Rao" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" class="form-control" placeholder="e.g. user@gmail.com" required
+                        autocomplete="email">
+                </div>
+
+                <div class="form-group">
+                    <label for="department">Academic Department</label>
+                    <select id="department" class="form-control" required>
+                        <option value="Computer Science">Computer Science</option>
+                        <option value="Mechanical Engineering">Mechanical Engineering</option>
+                        <option value="Electronics & Comm">Electronics &amp; Comm</option>
+                        <option value="Biotechnology">Biotechnology</option>
+                        <option value="Civil Engineering">Civil Engineering</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Create Password</label>
+                    <input type="password" id="password" class="form-control" placeholder="At least 4 characters"
+                        required autocomplete="new-password">
+                </div>
+
+                <button type="submit" id="btn-submit" class="btn btn-primary full-width" style="margin-top: 1rem;">
+                    📝 Register Account
+                </button>
+            </form>
+
+            <div style="margin-top: 1.5rem; text-align: center; font-size: 0.85rem; color: var(--text-muted);">
+                Already registered? <a href="/login"
+                    style="color: var(--chai-amber); text-decoration: underline; font-weight: 600;">Back to Sign In</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const department = document.getElementById('department').value;
+            const password = document.getElementById('password').value;
+            const btn = document.getElementById('btn-submit');
+
+            btn.disabled = true;
+            btn.textContent = 'Registering...';
+
+            try {
+                const res = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, department, password })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    alert('Registration successful! Please sign in.');
+                    window.location.href = '/login';
+                } else {
+                    alert(data.error || 'Registration failed');
+                    btn.disabled = false;
+                    btn.textContent = '📝 Register Account';
+                }
+            } catch (err) {
+                alert('Connection error with server');
+                btn.disabled = false;
+                btn.textContent = '📝 Register Account';
+            }
+        });
+    </script>
+</body>
+
+</html>

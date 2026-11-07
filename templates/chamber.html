@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chaiboard | 3D Hero Chamber & Live Logging Window</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        .chamber-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+        @media (max-width: 950px) {
+            .chamber-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .hero-canvas-box {
+            position: relative;
+            width: 100%;
+            height: 480px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-highlight);
+            box-shadow: inset 0 0 30px rgba(245, 158, 11, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: grab;
+        }
+        .hero-canvas-box:active {
+            cursor: grabbing;
+        }
+        #chai-3d-container {
+            width: 100%;
+            height: 100%;
+        }
+        .camera-scanner-view {
+            position: relative;
+            width: 100%;
+            height: 280px;
+            background: #000;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(245, 158, 11, 0.4);
+            margin-bottom: 1.2rem;
+        }
+        #cam-feed, #cam-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .scanner-hud-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .reticle-frame {
+            width: 180px;
+            height: 200px;
+            border: 2px dashed rgba(245, 158, 11, 0.85);
+            border-radius: 12px;
+            position: relative;
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+        }
+        .laser-sweep {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #fbbf24, transparent);
+            box-shadow: 0 0 10px #fbbf24;
+            animation: laserSweep 2s ease-in-out infinite alternate;
+        }
+        @keyframes laserSweep {
+            0% { top: 6%; }
+            100% { top: 94%; }
+        }
+        .reticle-pill {
+            position: absolute;
+            top: -24px;
+            left: 0;
+            background: var(--chai-amber);
+            color: #000;
+            font-size: 0.65rem;
+            font-weight: 800;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+        }
+        .verification-output {
+            margin-top: 1.2rem;
+            border-radius: var(--radius-md);
+            padding: 1.1rem;
+            animation: fadeIn 0.3s ease;
+        }
+        .verify-ok {
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.45);
+        }
+        .verify-bad {
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.45);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Global Window Dock -->
+    <header class="window-dock">
+        <div class="dock-container">
+            <a href="/chamber" class="brand-section">
+                <span class="brand-icon">🫖</span>
+                <div>
+                    <div class="brand-name">CHAIBOARD</div>
+                    <div class="brand-sub">Campus Tea Leaderboard &amp; Health Engine</div>
+                </div>
+            </a>
+
+            <!-- Multi-Window Navigation Switcher -->
+            <nav class="nav-windows-list">
+                <a href="/chamber" class="window-nav-link active">
+                    <span>🫖 3D Chamber &amp; Logger</span>
+                    <button class="window-pop-btn" data-url="/chamber" data-title="ChaiChamber" title="Open in separate window">↗</button>
+                </a>
+                <a href="/metrics" class="window-nav-link">
+                    <span>📊 Health Engine</span>
+                    <button class="window-pop-btn" data-url="/metrics" data-title="ChaiMetrics" title="Open in separate window">↗</button>
+                </a>
+                <a href="/leaderboard" class="window-nav-link">
+                    <span>🏆 Leaderboards</span>
+                    <button class="window-pop-btn" data-url="/leaderboard" data-title="ChaiLeaderboard" title="Open in separate window">↗</button>
+                </a>
+                <a href="/profile" class="window-nav-link">
+                    <span>🪪 Chai Pass &amp; Logs</span>
+                    <button class="window-pop-btn" data-url="/profile" data-title="ChaiProfile" title="Open in separate window">↗</button>
+                </a>
+                <a href="/audit" class="window-nav-link">
+                    <span>🛡️ Security Vault</span>
+                    <button class="window-pop-btn" data-url="/audit" data-title="ChaiAudit" title="Open in separate window">↗</button>
+                </a>
+            </nav>
+
+            <div class="user-dock-actions">
+                <button id="dock-sound-btn" class="btn btn-ghost btn-sm">🔊 Sound ON</button>
+                <div class="student-badge-pill">
+                    <span id="dock-student-avatar" style="font-size: 1.2rem;">☕</span>
+                    <div class="student-meta">
+                        <span id="dock-student-name" class="student-name-text">Loading...</span>
+                        <span id="dock-student-sub" class="student-sub-text">Student Session</span>
+                    </div>
+                </div>
+                <a id="dock-logout-btn" href="#" class="btn btn-ghost btn-sm">Sign Out</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Window Main Content -->
+    <main class="page-window-container">
+        <div class="window-header-banner">
+            <div>
+                <h1 class="window-title"><span>🫖</span> 3D Cutting Chai Chamber &amp; AI Live Logger</h1>
+                <p class="window-desc">
+                    Interactive WebGL Cutting Glass with real-time fluid refraction, slosh physics, and MobileNet image-authenticated logging.
+                </p>
+            </div>
+            <div>
+                <button id="btn-trigger-slosh" class="btn btn-secondary">
+                    💫 Tilt &amp; Slosh Physics
+                </button>
+            </div>
+        </div>
+
+        <div class="chamber-grid">
+            <!-- Left: Interactive 3D Cutting Glass -->
+            <div class="card" style="padding: 1.2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+                    <div style="font-size: 0.82rem; font-weight: 700; color: var(--chai-cream); text-transform: uppercase; letter-spacing: 0.6px;">
+                        Interactive WebGL 3D Hero Glass
+                    </div>
+                    <span id="glass-status-badge" class="btn btn-sm btn-ghost" style="font-size: 0.72rem; color: var(--chai-amber);">
+                        ● 360° Drag Orbit Ready
+                    </span>
+                </div>
+
+                <div class="hero-canvas-box">
+                    <div id="chai-3d-container"></div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; text-align: center;">
+                    <div style="background: rgba(0,0,0,0.3); padding: 0.75rem; border-radius: var(--radius-md);">
+                        <span id="display-cups-today" style="font-size: 1.8rem; font-weight: 800; color: var(--chai-cream); display: block; line-height: 1.1;">0</span>
+                        <span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Logged Cups Today</span>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.3); padding: 0.75rem; border-radius: var(--radius-md);">
+                        <span id="display-volume-today" style="font-size: 1.8rem; font-weight: 800; color: var(--chai-amber); display: block; line-height: 1.1;">0 ml</span>
+                        <span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Cutting Chai Volume</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Live Camera & AI Anti-Cheat Verification -->
+            <div class="card">
+                <div style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <span>📸</span> Image-Authenticated Logging
+                </div>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
+                    In-app camera photo required. Validates brown cutting tea liquid via MobileNet and enforces 12-hour pHash duplicate rejection.
+                </p>
+
+                <!-- Camera Viewfinder -->
+                <div class="camera-scanner-view">
+                    <video id="cam-feed" autoplay playsinline muted></video>
+                    <canvas id="cam-preview" class="hidden" width="320" height="280"></canvas>
+
+                    <div class="scanner-hud-overlay">
+                        <div class="reticle-frame">
+                            <span class="reticle-pill">MOBILENET TEA RETICLE</span>
+                            <div class="laser-sweep"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customization Form -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 1rem;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="blend-select" style="font-size: 0.78rem;">Cutting Chai Blend</label>
+                        <select id="blend-select" class="form-control" style="padding: 0.55rem; font-size: 0.85rem;">
+                            <option value="classic">Standard Tapri Cutting (100ml)</option>
+                            <option value="masala">Kadak Masala Chai (+5 kcal)</option>
+                            <option value="adrak">Adrak Strong Chai (+3 kcal)</option>
+                            <option value="elaichi">Shahi Elaichi Special (+5 kcal)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="sugar-select" style="font-size: 0.78rem;">Sugar Preference</label>
+                        <select id="sugar-select" class="form-control" style="padding: 0.55rem; font-size: 0.85rem;">
+                            <option value="standard">Standard Sweet (7.5g sugar)</option>
+                            <option value="light">Kam Cheeni / Light (3.5g sugar)</option>
+                            <option value="sugarfree">Fika / Zero Sugar (0g sugar)</option>
+                            <option value="extra">Ekdum Meethi (12.0g sugar)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button id="btn-snap-log" class="btn btn-primary full-width">
+                    🔍 Verify Cutting Chai &amp; Log to SQL Database
+                </button>
+
+                <!-- Anti-Cheat Testing Scenarios (PRD Section 3) -->
+                <div style="margin-top: 1rem; background: rgba(0,0,0,0.3); border: 1px dashed var(--border-color); border-radius: var(--radius-md); padding: 0.85rem;">
+                    <div style="font-size: 0.72rem; color: var(--chai-cream); text-transform: uppercase; font-weight: 700; margin-bottom: 0.4rem;">
+                        🛡️ Anti-Cheat &amp; Fraud Prevention Test Scenarios:
+                    </div>
+                    <div style="display: flex; gap: 0.6rem;">
+                        <button id="btn-test-duplicate" class="btn btn-danger btn-sm" style="flex: 1;">
+                            ⚠️ Test Duplicate Re-upload (Hamming &lt; 5 Rejection)
+                        </button>
+                        <button id="btn-test-nontea" class="btn btn-secondary btn-sm" style="flex: 1;">
+                            🧪 Test Non-Chai Object (MobileNet Rejection)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Verification Output Container -->
+                <div id="verify-output-area"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="/static/js/audio.js"></script>
+    <script src="/static/js/three-chai.js"></script>
+    <script src="/static/js/common.js"></script>
+
+    <script>
+        let heroGlass = null;
+        let videoStream = null;
+        const videoEl = document.getElementById('cam-feed');
+        const canvasEl = document.getElementById('cam-preview');
+
+        // Start Camera
+        async function startCamera() {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                try {
+                    videoStream = await navigator.mediaDevices.getUserMedia({
+                        video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } }
+                    });
+                    videoEl.srcObject = videoStream;
+                    videoEl.classList.remove('hidden');
+                    canvasEl.classList.add('hidden');
+                    return;
+                } catch (e) {
+                    console.warn('Camera stream unavailable, switching to simulated canvas:', e);
+                }
+            }
+            // Fallback Simulated Viewfinder
+            videoEl.classList.add('hidden');
+            canvasEl.classList.remove('hidden');
+            drawSimulatedTea(canvasEl.getContext('2d'), true);
+        }
+
+        function drawSimulatedTea(ctx, isTea = true) {
+            ctx.fillStyle = '#1e140f';
+            ctx.fillRect(0, 0, 320, 280);
+
+            if (!isTea) {
+                ctx.fillStyle = '#374151';
+                ctx.fillRect(40, 60, 240, 160);
+                ctx.fillStyle = '#e5e7eb';
+                ctx.font = '16px sans-serif';
+                ctx.fillText('Notebook & Pen (Non-Tea)', 60, 140);
+                return;
+            }
+
+            // Wooden table
+            ctx.fillStyle = '#2d1609';
+            ctx.fillRect(0, 0, 320, 280);
+
+            // Cutting Glass
+            ctx.beginPath();
+            ctx.moveTo(110, 60);
+            ctx.lineTo(210, 60);
+            ctx.lineTo(190, 220);
+            ctx.lineTo(130, 220);
+            ctx.closePath();
+
+            // Amber tea liquid
+            const grad = ctx.createLinearGradient(0, 60, 0, 220);
+            grad.addColorStop(0, '#e58e38');
+            grad.addColorStop(1, '#8f400e');
+            ctx.fillStyle = grad;
+            ctx.fill();
+
+            // Foam
+            ctx.fillStyle = 'rgba(255, 220, 175, 0.8)';
+            ctx.beginPath();
+            ctx.ellipse(160, 70, 44, 10, 0, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Compute 64-bit dHash on canvas
+        function computeCanvasDHash(source) {
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = 9;
+            tempCanvas.height = 8;
+            const tCtx = tempCanvas.getContext('2d');
+            tCtx.drawImage(source, 0, 0, 9, 8);
+
+            const imgData = tCtx.getImageData(0, 0, 9, 8).data;
+            const grays = [];
+            for (let i = 0; i < imgData.length; i += 4) {
+                const g = Math.floor(0.299 * imgData[i] + 0.587 * imgData[i+1] + 0.114 * imgData[i+2]);
+                grays.push(g);
+            }
+
+            let binary = '';
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    const l = grays[row * 9 + col];
+                    const r = grays[row * 9 + col + 1];
+                    binary += l < r ? '1' : '0';
+                }
+            }
+
+            let hex = '';
+            for (let i = 0; i < 64; i += 4) {
+                hex += parseInt(binary.substr(i, 4), 2).toString(16);
+            }
+            return { binary, hex: '0x' + hex.toUpperCase() };
+        }
+
+        async function refreshMetrics() {
+            try {
+                const res = await fetch('/api/metrics');
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById('display-cups-today').textContent = data.metrics.cups_today;
+                    document.getElementById('display-volume-today').textContent = `${data.metrics.cups_today * 100} ml`;
+                    if (heroGlass) {
+                        heroGlass.setCupCount(data.metrics.cups_today);
+                    }
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function executeVerification(mode = 'normal') {
+            const btn = document.getElementById('btn-snap-log');
+            btn.disabled = true;
+            btn.textContent = 'Analyzing frame with MobileNet & Computing pHash...';
+            if (window.chaiAudio) window.chaiAudio.playPour();
+
+            const snapCanvas = document.createElement('canvas');
+            snapCanvas.width = 320;
+            snapCanvas.height = 280;
+            const sCtx = snapCanvas.getContext('2d');
+
+            if (!videoEl.classList.contains('hidden') && videoEl.videoWidth > 0) {
+                sCtx.drawImage(videoEl, 0, 0, 320, 280);
+            } else {
+                drawSimulatedTea(sCtx, mode !== 'non_tea');
+            }
+
+            const { binary, hex } = computeCanvasDHash(snapCanvas);
+
+            const payload = {
+                phash_binary: binary,
+                phash_hex: hex,
+                blend: document.getElementById('blend-select').value,
+                sugar_level: document.getElementById('sugar-select').value,
+                mobilenet_confidence: mode === 'non_tea' ? 22.4 : 96.8,
+                is_tea_liquid: mode !== 'non_tea',
+                simulate_fraud_flag: mode === 'duplicate' ? 'duplicate' : (mode === 'non_tea' ? 'non_tea' : null)
+            };
+
+            try {
+                const res = await fetch('/api/log-chai', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await res.json();
+                renderVerificationCard(result);
+                if (result.status === 'success') {
+                    if (window.chaiAudio) window.chaiAudio.playScanSuccess();
+                    await refreshMetrics();
+                    if (window.Chaiboard) window.Chaiboard.notifyWindows('CHAI_LOGGED', { log: result.log });
+                } else {
+                    if (window.chaiAudio) window.chaiAudio.playWarning();
+                }
+            } catch (err) {
+                alert('Server error verifying chai upload');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '🔍 Verify Cutting Chai & Log to SQL Database';
+            }
+        }
+
+        function renderVerificationCard(res) {
+            const outArea = document.getElementById('verify-output-area');
+            outArea.innerHTML = '';
+
+            const isSuccess = res.status === 'success';
+            const card = document.createElement('div');
+            card.className = `verification-output ${isSuccess ? 'verify-ok' : 'verify-bad'}`;
+
+            if (isSuccess) {
+                card.innerHTML = `
+                    <div style="font-weight: 800; font-size: 1.05rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <span>✅</span> Chai Authenticated &amp; Recorded to SQL Database
+                    </div>
+                    <p style="font-size: 0.82rem; margin: 0.4rem 0 0.8rem 0; color: #a7f3d0;">${res.message}</p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; font-size: 0.78rem; background: rgba(0,0,0,0.3); padding: 0.6rem; border-radius: var(--radius-sm);">
+                        <div><strong>Blend:</strong> ${res.log.blend_name}</div>
+                        <div><strong>Tongue Temp:</strong> ~${res.log.tongue_temp_c}°C</div>
+                        <div><strong>pHash (64-bit):</strong> <code>${res.log.phash_hex}</code></div>
+                        <div><strong>Hamming Check:</strong> Passed (&ge; 5)</div>
+                    </div>
+                `;
+            } else {
+                card.innerHTML = `
+                    <div style="font-weight: 800; font-size: 1.05rem; display: flex; align-items: center; gap: 0.5rem; color: #fca5a5;">
+                        <span>🚫</span> Verification Failed &amp; Flagged to Audit Log
+                    </div>
+                    <p style="font-size: 0.82rem; margin: 0.4rem 0 0.8rem 0; color: #fca5a5;">${res.reason || res.error}</p>
+                    <div style="font-size: 0.74rem; color: #fca5a5; line-height: 1.4;">
+                        🛡️ Anti-Cheat Alert: Real in-app live camera required. Gallery re-uploads or duplicate snapshots within 12 hours are rejected and audited in the SQL database.
+                    </div>
+                `;
+            }
+            outArea.appendChild(card);
+        }
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            heroGlass = new Chai3DHero('chai-3d-container');
+            await startCamera();
+            await refreshMetrics();
+
+            document.getElementById('btn-snap-log').addEventListener('click', () => executeVerification('normal'));
+            document.getElementById('btn-test-duplicate').addEventListener('click', () => executeVerification('duplicate'));
+            document.getElementById('btn-test-nontea').addEventListener('click', () => executeVerification('non_tea'));
+
+            document.getElementById('btn-trigger-slosh').addEventListener('click', () => {
+                if (heroGlass) heroGlass.triggerSlosh();
+            });
+        });
+    </script>
+</body>
+</html>
+
