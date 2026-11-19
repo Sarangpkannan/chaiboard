@@ -518,11 +518,18 @@ if __name__ == "__main__":
     database.init_db()
     seed_sample_students_if_empty()
     app = make_app()
-    app.listen(PORT)
+    server_port = PORT
+    for try_port in [PORT, 5001, 8000, 8080]:
+        try:
+            app.listen(try_port)
+            server_port = try_port
+            break
+        except OSError:
+            continue
     print(f"============================================================")
-    print(f"[CHAIBOARD] INDUSTRIAL PYTHON & SQL MULTI-WINDOW BACKEND SERVER ACTIVE")
-    print(f"   Listening on: http://localhost:{PORT}")
-    print(f"   Admin Portal: http://localhost:{PORT}/admin")
+    print(f"[CHAIBOARD] MULTI-WINDOW BACKEND SERVER ACTIVE")
+    print(f"   Listening on: http://localhost:{server_port}")
+    print(f"   Admin Portal: http://localhost:{server_port}/admin")
     print(f"   Database: SQLite3 relational database (chaiboard.db)")
     print(f"============================================================")
     tornado.ioloop.IOLoop.current().start()

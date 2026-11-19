@@ -1,49 +1,111 @@
 /**
  * Chaiboard 3D Interactive Background & Motion Engine
- * Cursor-reactive WebGL neon tubes + 3D card tilt + scroll reveal + letter animations.
- * The CDN `threejs-components` import is ESM-only. We skip that and go straight to
- * the high-quality canvas fallback that always works.
+ * Features:
+ * 1. 3D Neon Tubes Cursor from threejs-components (with click-to-randomize colors)
+ * 2. GSAP ScrollTrigger Horizontal Continuous Ticker Sentence
+ * 3. 3D Card Hover Perspective Tilt & Letter Animations
  */
 
 (function () {
+    'use strict';
+
+    // Helper for random hex colors
+    const randomColors = (count) => {
+        return new Array(count)
+            .fill(0)
+            .map(() => "#" + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0'));
+    };
+
+    let tubesApp = null;
+    let isTubesLoaded = false;
 
     /* ------------------------------------------------------------------ */
-    /*  Theme Palettes                                                      */
+    /*  1. Initialize 3D Neon Tubes Cursor (threejs-components)           */
     /* ------------------------------------------------------------------ */
-    const THEME_PALETTES = [
-        { stroke: '#f59e0b', shadow: '#06b6d4', glow: '#fbbf24' },
-        { stroke: '#ec4899', shadow: '#7c3aed', glow: '#c084fc' },
-        { stroke: '#06b6d4', shadow: '#10b981', glow: '#38bdf8' }
-    ];
-
-    let paletteIndex = 0;
-
-    /* ------------------------------------------------------------------ */
-    /*  Canvas 2D Cursor Trail                                              */
-    /* ------------------------------------------------------------------ */
-    function initCursorTrail() {
+    async function initTubesBackground() {
         let canvas = document.getElementById('tubes-cursor-canvas');
         if (!canvas) {
-            const wrap = document.createElement('div');
-            wrap.id = 'interactive-bg-wrapper';
-            wrap.className = 'interactive-bg-container';
-            document.body.prepend(wrap);
+            let container = document.getElementById('interactive-bg-wrapper');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'interactive-bg-wrapper';
+                container.className = 'interactive-bg-container';
+                document.body.prepend(container);
+            }
 
             canvas = document.createElement('canvas');
             canvas.id = 'tubes-cursor-canvas';
             canvas.className = 'tubes-cursor-canvas';
-            wrap.appendChild(canvas);
+            canvas.style.touchAction = 'none';
+            container.appendChild(canvas);
         }
 
-        let w = canvas.width  = window.innerWidth;
+        try {
+            // Dynamic import of the threejs-components tubes cursor module
+            const module = await import('https://cdn.jsdelivr.net/npm/threejs-components@0.0.19/build/cursors/tubes1.min.js');
+            const TubesCursor = module.default;
+
+            const app = TubesCursor(canvas, {
+                tubes: {
+                    colors: ["#f967fb", "#53bc28", "#6958d5"],
+                    lights: {
+                        intensity: 200,
+                        colors: ["#83f36e", "#fe8a2e", "#ff008a", "#60aed5"]
+                    }
+                }
+            });
+
+            tubesApp = app;
+            window.tubesApp = app;
+            isTubesLoaded = true;
+            console.log('[Chaiboard] 3D Neon Tubes Cursor initialized successfully');
+        } catch (err) {
+            console.warn('[Chaiboard] 3D Tubes CDN import unavailable, starting WebGL fallback:', err);
+            initFallbackGlowTrail(canvas);
+        }
+
+        // Click interaction: clicking anywhere randomizes neon tube and light colors
+        window.addEventListener('click', (e) => {
+            // Do not switch if clicking on interactive controls
+            if (e.target.closest('button, input, select, a, .card, form, label, .modal-content, .cube-wrapper')) {
+                return;
+            }
+            randomizeTubesColors();
+        });
+    }
+
+    // Color randomizer matching reference
+    function randomizeTubesColors() {
+        if (!tubesApp || !tubesApp.tubes) return;
+        try {
+            const colors = randomColors(3);
+            const lightsColors = randomColors(4);
+            tubesApp.tubes.setColors(colors);
+            tubesApp.tubes.setLightsColors(lightsColors);
+        } catch (e) {
+            console.error('Error randomizing colors:', e);
+        }
+    }
+    window.randomizeTubesColors = randomizeTubesColors;
+
+    /* ------------------------------------------------------------------ */
+    /*  Fallback Glow Trail (if WebGL/CDN is unavailable)                */
+    /* ------------------------------------------------------------------ */
+    function initFallbackGlowTrail(canvas) {
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        let w = canvas.width = window.innerWidth;
         let h = canvas.height = window.innerHeight;
 
-        const ctx = canvas.getContext('2d');
+        window.addEventListener('resize', () => {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+        });
+
         const points = [];
         const MAX_PTS = 65;
         let mouse = { x: w / 2, y: h / 2 };
 
-        /* ---- respond to mouse ---- */
         window.addEventListener('mousemove', e => {
             mouse.x = e.clientX;
             mouse.y = e.clientY;
@@ -51,89 +113,90 @@
             if (points.length > MAX_PTS) points.shift();
         });
 
-        /* ---- click cycles palette ---- */
-        window.addEventListener('click', e => {
-            if (e.target.closest('button, input, select, a, .card, form, label')) return;
-            paletteIndex = (paletteIndex + 1) % THEME_PALETTES.length;
-        });
-
-        /* ---- resize ---- */
-        window.addEventListener('resize', () => {
-            w = canvas.width  = window.innerWidth;
-            h = canvas.height = window.innerHeight;
-        });
-
-        /* ---- render loop ---- */
-        const pal = () => THEME_PALETTES[paletteIndex];
+        const palette = ["#f967fb", "#53bc28", "#6958d5"];
 
         function render() {
             ctx.clearRect(0, 0, w, h);
-
             if (points.length > 2) {
                 ctx.save();
                 ctx.globalCompositeOperation = 'screen';
-
                 for (let i = 1; i < points.length; i++) {
                     const p0 = points[i - 1];
                     const p1 = points[i];
                     p1.age++;
-
-                    const alpha = Math.max(0, 1 - p1.age / 55);
+                    const alpha = Math.max(0, 1 - p1.age / 50);
                     if (alpha < 0.01) continue;
 
-                    const lw = Math.max(0.5, (1 - p1.age / 55) * 14);
-
                     ctx.beginPath();
                     ctx.moveTo(p0.x, p0.y);
                     ctx.lineTo(p1.x, p1.y);
-                    ctx.strokeStyle = hexAlpha(pal().stroke, alpha * 0.72);
-                    ctx.lineWidth   = lw;
-                    ctx.lineCap     = 'round';
-                    ctx.shadowBlur  = 22;
-                    ctx.shadowColor = pal().shadow;
-                    ctx.stroke();
-
-                    /* thinner inner glow */
-                    ctx.beginPath();
-                    ctx.moveTo(p0.x, p0.y);
-                    ctx.lineTo(p1.x, p1.y);
-                    ctx.strokeStyle = hexAlpha(pal().glow, alpha * 0.45);
-                    ctx.lineWidth   = lw * 0.3;
-                    ctx.shadowBlur  = 8;
-                    ctx.shadowColor = pal().glow;
+                    ctx.strokeStyle = `rgba(249, 103, 251, ${alpha * 0.75})`;
+                    ctx.lineWidth = Math.max(1, (1 - p1.age / 50) * 14);
+                    ctx.lineCap = 'round';
+                    ctx.shadowBlur = 20;
+                    ctx.shadowColor = '#6958d5';
                     ctx.stroke();
                 }
                 ctx.restore();
             }
-
             requestAnimationFrame(render);
         }
-
         requestAnimationFrame(render);
     }
 
-    /* Hex + alpha helper */
-    function hexAlpha(hex, a) {
-        const r = parseInt(hex.slice(1, 3), 16);
-        const g = parseInt(hex.slice(3, 5), 16);
-        const b = parseInt(hex.slice(5, 7), 16);
-        return `rgba(${r},${g},${b},${a.toFixed(3)})`;
+    /* ------------------------------------------------------------------ */
+    /*  2. GSAP ScrollTrigger Continuous Horizontal Text Flow             */
+    /* ------------------------------------------------------------------ */
+    function initHorizontalScrollTicker() {
+        if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
+            console.warn('[Chaiboard] GSAP / ScrollTrigger not loaded');
+            return;
+        }
+
+        gsap.registerPlugin(ScrollTrigger);
+
+        const section = document.getElementById('horizontal-ticker');
+        const track = document.getElementById('ticker-track');
+
+        if (!section || !track) return;
+
+        // Calculate total horizontal travel distance
+        const getScrollDistance = () => {
+            return Math.max(0, track.scrollWidth - window.innerWidth + window.innerWidth * 0.12);
+        };
+
+        // Smooth continuous horizontal scroll animation
+        gsap.to(track, {
+            x: () => -getScrollDistance(),
+            ease: "none",
+            scrollTrigger: {
+                trigger: section,
+                start: "top top",
+                end: () => `+=${getScrollDistance() * 1.3}`,
+                pin: true,
+                scrub: 1.1,
+                anticipatePin: 1,
+                invalidateOnRefresh: true
+            }
+        });
+
+        console.log('[Chaiboard] GSAP ScrollTrigger Horizontal Ticker active');
     }
 
     /* ------------------------------------------------------------------ */
-    /*  3D Card Tilt on Hover                                              */
+    /*  3. 3D Card Hover Perspective Tilt                                 */
     /* ------------------------------------------------------------------ */
     function init3DCardTilt() {
-        document.querySelectorAll('.card, .auth-card, .metric-card').forEach(card => {
+        document.querySelectorAll('.card, .auth-card, .metric-card, .sub-project-card, .featured-project-card').forEach(card => {
             if (card.dataset.tiltInit) return;
             card.dataset.tiltInit = 'true';
 
             card.addEventListener('mousemove', e => {
-                const rect  = card.getBoundingClientRect();
-                const cx    = rect.width  / 2;
-                const cy    = rect.height / 2;
-                const rx    = ((e.clientY - rect.top  - cy) / cy) * -5.5;
-                const ry    = ((e.clientX - rect.left - cx) / cx) *  5.5;
+                const rect = card.getBoundingClientRect();
+                const cx = rect.width / 2;
+                const cy = rect.height / 2;
+                const rx = ((e.clientY - rect.top - cy) / cy) * -6.5;
+                const ry = ((e.clientX - rect.left - cx) / cx) * 6.5;
                 card.style.transform = `perspective(900px) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg) translateY(-2px)`;
             });
 
@@ -144,42 +207,20 @@
     }
 
     /* ------------------------------------------------------------------ */
-    /*  Intersection Observer Scroll Reveal                                */
-    /* ------------------------------------------------------------------ */
-    function initScrollReveal() {
-        const obs = new IntersectionObserver(entries => {
-            entries.forEach(e => {
-                if (e.isIntersecting) e.target.classList.add('reveal-in-view');
-            });
-        }, { threshold: 0.08 });
-
-        document.querySelectorAll(
-            '.card, .section-header, .metrics-grid, .sub-project-card, .featured-project-card, .case-studies-container'
-        ).forEach(el => {
-            if (!el.classList.contains('scroll-3d-reveal')) {
-                el.classList.add('scroll-3d-reveal');
-            }
-            obs.observe(el);
-        });
-    }
-
-    /* ------------------------------------------------------------------ */
-    /*  Letter-by-Letter Heading Animation                                 */
+    /*  4. Letter-by-Letter Animated Headings                             */
     /* ------------------------------------------------------------------ */
     function initAnimatedHeadings() {
-        document.querySelectorAll(
-            '.animated-h3, .window-title, .section-title, .brand-title'
-        ).forEach(h => {
+        document.querySelectorAll('.animated-h3, .window-title, .section-title, .brand-title').forEach(h => {
             if (h.dataset.lettersInit) return;
             h.dataset.lettersInit = 'true';
 
             const rawText = h.textContent.trim();
             if (!rawText) return;
 
-            h.innerHTML  = '';
+            h.innerHTML = '';
             h.classList.add('letter-anim-h3');
 
-            const words  = rawText.split(' ');
+            const words = rawText.split(' ');
             let globalIdx = 0;
 
             words.forEach((word, wIdx) => {
@@ -188,9 +229,9 @@
 
                 for (const c of word) {
                     const ls = document.createElement('span');
-                    ls.className   = 'letter-span';
+                    ls.className = 'letter-span';
                     ls.textContent = c;
-                    ls.style.animationDelay = `${globalIdx * 32}ms`;
+                    ls.style.animationDelay = `${globalIdx * 28}ms`;
                     wordWrap.appendChild(ls);
                     globalIdx++;
                 }
@@ -199,8 +240,8 @@
 
                 if (wIdx < words.length - 1) {
                     const sp = document.createElement('span');
-                    sp.className   = 'letter-space';
-                    sp.innerHTML   = '&nbsp;';
+                    sp.className = 'letter-space';
+                    sp.innerHTML = '&nbsp;';
                     h.appendChild(sp);
                     globalIdx++;
                 }
@@ -209,53 +250,17 @@
     }
 
     /* ------------------------------------------------------------------ */
-    /*  Hero Cube Drag / Pause on Interaction                              */
-    /* ------------------------------------------------------------------ */
-    function initHeroCubeDrag() {
-        const cube = document.getElementById('hero-cube');
-        if (!cube) return;
-
-        let isDragging = false;
-        let startX = 0;
-        let currentRot = 0;
-        let animPaused = false;
-
-        cube.addEventListener('mousedown', e => {
-            isDragging  = true;
-            startX      = e.clientX;
-            animPaused  = true;
-            cube.style.animationPlayState = 'paused';
-            e.preventDefault();
-        });
-
-        window.addEventListener('mousemove', e => {
-            if (!isDragging) return;
-            const delta = e.clientX - startX;
-            currentRot += delta * 0.4;
-            startX = e.clientX;
-            cube.style.transform = `rotateX(${currentRot}deg)`;
-        });
-
-        window.addEventListener('mouseup', () => {
-            if (!isDragging) return;
-            isDragging = false;
-            cube.style.animationPlayState = 'running';
-        });
-    }
-
-    /* ------------------------------------------------------------------ */
     /*  Boot                                                               */
     /* ------------------------------------------------------------------ */
     function boot() {
-        initCursorTrail();
-        initHeroCubeDrag();
+        initTubesBackground();
 
-        /* Slight delay so the DOM is fully painted before tilt/reveal */
+        // Allow DOM to settle before layout measurements
         setTimeout(() => {
+            initHorizontalScrollTicker();
             init3DCardTilt();
-            initScrollReveal();
             initAnimatedHeadings();
-        }, 120);
+        }, 150);
     }
 
     if (document.readyState === 'loading') {

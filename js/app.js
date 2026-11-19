@@ -512,8 +512,8 @@
                     <div class="history-left">
                         <div class="cup-icon" style="font-size: 0.82rem; font-weight: 800; color: var(--chai-amber);">UNIT #${cupNumber}</div>
                         <div>
-                            <div class="history-title" style="color: #fff; font-weight: 700;">${log.blend || 'Cutting Tea Verified'} ${log.sugar !== undefined ? `(${log.sugar}g sugar)` : ''}</div>
-                            <div class="history-meta" style="color: var(--text-muted); font-size: 0.74rem;">${log.time} &bull; Temp: ${log.temp || 64}&deg;C &bull; pHash: <code>${log.hash.substring(0, 10)}...</code></div>
+                            <div class="history-title" style="color: #fff; font-weight: 700;">${log.blend || 'Kadak Cutting Chai'} ${log.sugar !== undefined ? `(${log.sugar}g sugar)` : ''}</div>
+                            <div class="history-meta" style="color: var(--text-muted); font-size: 0.74rem;">${log.time} &bull; Temp: ${log.temp || 64}&deg;C &bull; Verified Fresh Cup</div>
                         </div>
                     </div>
                     <div class="history-right">
@@ -690,7 +690,7 @@
 
         runVerificationFlow(mode = 'normal') {
             this.btnSnapChai.disabled = true;
-            this.aiScannerStatus.textContent = 'Executing Computer Vision & 64-bit dHash Verification...';
+            this.aiScannerStatus.textContent = 'Checking your chai glass...';
             if (window.chaiAudio && typeof window.chaiAudio.playPour === 'function') {
                 window.chaiAudio.playPour();
             }
@@ -733,19 +733,17 @@
                 }
                 card.innerHTML = `
                     <div class="verify-header" style="color: #34d399; font-weight: 800; font-size: 1.05rem; margin-bottom: 0.5rem;">
-                        [VERIFIED AUTHENTIC // NO CAP] Cutting Chai Confirmed
+                        Real Cutting Chai Verified!
                     </div>
-                    <p style="font-size: 0.82rem; color: #a7f3d0; margin-bottom: 0.8rem;">${res.reason}</p>
-                    <div class="verify-specs" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; font-size: 0.78rem; background: rgba(0,0,0,0.35); padding: 0.7rem; border-radius: 8px;">
-                        <div><strong>Vessel:</strong> 16-Facet Tumbler</div>
-                        <div><strong>Confidence:</strong> ${res.confidence}</div>
-                        <div><strong>Liquid:</strong> Kadak Milk Tea</div>
-                        <div><strong>Serving Temp:</strong> ~${res.estimatedTemp}&deg;C</div>
-                        <div><strong>pHash (64-bit):</strong> <code style="font-family: monospace;">${res.pHash}</code></div>
-                        <div><strong>Duplicate Check:</strong> Passed (&ge; 5)</div>
+                    <p style="font-size: 0.85rem; color: #a7f3d0; margin-bottom: 0.8rem;">Looks like a genuine glass of hot chai. Enjoy your drink!</p>
+                    <div class="verify-specs" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.82rem; background: rgba(0,0,0,0.35); padding: 0.75rem; border-radius: 10px;">
+                        <div><strong>Cup:</strong> Glass Tumbler</div>
+                        <div><strong>Tea:</strong> Kadak Milk Chai</div>
+                        <div><strong>Temperature:</strong> ~${res.estimatedTemp || 65}&deg;C (Hot)</div>
+                        <div><strong>Status:</strong> Fresh new photo</div>
                     </div>
                     <button id="btn-confirm-log" class="btn btn-primary full-width" style="margin-top: 1rem;">
-                        LOCK IN THIS CHAI (+150 AURA)
+                        RECORD THIS CHAI (+150 AURA)
                     </button>
                 `;
                 container.appendChild(card);
@@ -759,15 +757,11 @@
                 }
                 card.innerHTML = `
                     <div class="verify-header" style="color: #f87171; font-weight: 800; font-size: 1.05rem; margin-bottom: 0.5rem;">
-                        [CAUGHT IN 4K // FRAUD DETECTED] Fake Tea Rejected
+                        Not Recognized as Chai
                     </div>
                     <p style="font-size: 0.84rem; color: #fca5a5; font-weight: 600; margin-bottom: 0.6rem;">${res.reason}</p>
-                    <div class="verify-specs" style="font-size: 0.78rem; background: rgba(0,0,0,0.35); padding: 0.7rem; border-radius: 8px;">
-                        <div><strong>Diagnostic Stage:</strong> ${res.stepFailed || 'COMPUTER_VISION_REJECTION'}</div>
-                        <div><strong>Calculated pHash:</strong> <code style="font-family: monospace;">${res.pHash}</code></div>
-                    </div>
-                    <div class="fraud-notice" style="margin-top: 0.8rem; font-size: 0.76rem; color: #fca5a5; line-height: 1.45;">
-                        Compliance Rule: Real ones drink genuine Kadak chai in a cutting glass tumbler. Empty glasses, coffee, brown tables, and recycled photos get zero aura points and instant fraud rejection.
+                    <div class="fraud-notice" style="margin-top: 0.6rem; font-size: 0.8rem; color: #cbd5e1; line-height: 1.5; background: rgba(0,0,0,0.3); padding: 0.8rem; border-radius: 8px;">
+                        Tip: Hold up a clear glass of authentic cutting chai to the camera or upload a clear photo of your chai glass. Empty glasses, desks, or repeated photos won't count!
                     </div>
                 `;
                 container.appendChild(card);
