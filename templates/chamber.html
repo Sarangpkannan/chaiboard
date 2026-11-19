@@ -251,18 +251,41 @@
                     Computer Vision Intake Authentication
                 </div>
                 <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.1rem;">
-                    Captures live optical frame or user image. Analyzes fluted glass geometry, warm amber milk tea spectrum, liquid fill cohesion, and enforces 12-hour pHash duplicate rejection. Only authentic cutting chai in glass is accepted.
+                    Captures live optical frame or chaya image. Analyzes traditional glass tumbler geometry, warm CTC caramel milk tea spectrum, froth meniscus, and enforces 12-hour pHash duplicate rejection. Only authentic chaya in a glass tumbler is accepted.
                 </p>
+
+                <!-- Camera / Upload Controls Bar -->
+                <div style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem; align-items: center; flex-wrap: wrap;">
+                    <button id="btn-toggle-cam" type="button" class="btn btn-secondary btn-sm" style="display: flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.8rem; font-size: 0.8rem;">
+                        <span id="cam-status-dot" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #ef4444;"></span>
+                        <span id="cam-btn-text">Start Camera</span>
+                    </button>
+                    <button id="btn-browse-file" type="button" class="btn btn-secondary btn-sm" style="display: flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.8rem; font-size: 0.8rem;">
+                        📁 Upload Chaya Photo
+                    </button>
+                    <button id="btn-capture-freeze" type="button" class="btn btn-secondary btn-sm hidden" style="display: flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.8rem; font-size: 0.8rem;">
+                        📸 Snap Frame
+                    </button>
+                    <input type="file" id="image-file-input" accept="image/*" class="hidden" />
+                    <span id="scanner-status-text" style="font-size: 0.75rem; color: var(--text-muted); margin-left: auto;">
+                        Camera idle / Ready
+                    </span>
+                </div>
 
                 <!-- Camera / Upload Viewfinder -->
                 <div class="camera-scanner-view">
-                    <video id="cam-feed" autoplay playsinline muted></video>
+                    <div id="cam-placeholder" style="position: absolute; text-align: center; color: #94a3b8; pointer-events: none; z-index: 2;">
+                        <div style="font-size: 2.2rem; margin-bottom: 0.35rem;">🍵</div>
+                        <div style="font-weight: 700; font-size: 0.88rem; color: var(--chai-cream);">Chaya Scanner Viewfinder</div>
+                        <div style="font-size: 0.74rem; color: #64748b; margin-top: 0.25rem;">Click <strong>Start Camera</strong> or <strong>Upload Chaya Photo</strong></div>
+                    </div>
+                    <video id="cam-feed" class="hidden" autoplay playsinline muted></video>
                     <canvas id="cam-preview" class="hidden" width="320" height="290"></canvas>
-                    <img id="image-upload-preview" class="hidden" alt="Uploaded Image Preview" />
+                    <img id="image-upload-preview" class="hidden" alt="Uploaded Chaya Preview" />
 
                     <div class="scanner-hud-overlay">
                         <div class="reticle-frame">
-                            <span class="reticle-pill">ALIGN CUTTING GLASS HERE</span>
+                            <span class="reticle-pill">ALIGN CHAYA GLASS HERE</span>
                             <div class="laser-sweep"></div>
                         </div>
                     </div>
@@ -333,92 +356,78 @@
         const canvasEl = document.getElementById('cam-preview');
         const imgPreviewEl = document.getElementById('image-upload-preview');
         const fileInput = document.getElementById('image-file-input');
+        const camPlaceholder = document.getElementById('cam-placeholder');
+        const camStatusDot = document.getElementById('cam-status-dot');
+        const camBtnText = document.getElementById('cam-btn-text');
+        const scannerStatusText = document.getElementById('scanner-status-text');
+        const btnCaptureFreeze = document.getElementById('btn-capture-freeze');
 
-        // Start Camera
-        async function startCamera() {
-            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                try {
-                    videoStream = await navigator.mediaDevices.getUserMedia({
-                        video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } }
-                    });
-                    videoEl.srcObject = videoStream;
-                    videoEl.classList.remove('hidden');
-                    canvasEl.classList.add('hidden');
-                    imgPreviewEl.classList.add('hidden');
-                    return;
-                } catch (e) {
-                    console.warn('Camera access unavailable:', e);
-                }
-            }
-            // Fallback Simulated Viewfinder
-            videoEl.classList.add('hidden');
-            imgPreviewEl.classList.add('hidden');
-            canvasEl.classList.remove('hidden');
-            drawSimulatedCuttingChai(canvasEl.getContext('2d'), true);
-        }
-
-        function drawSimulatedCuttingChai(ctx, isAuthentic = true) {
-            ctx.fillStyle = '#080a0f';
-            ctx.fillRect(0, 0, 320, 290);
-
-            if (!isAuthentic) {
-                // Fraud simulation: Car / Notebook non-tea object
-                ctx.fillStyle = '#1e293b';
-                ctx.fillRect(30, 50, 260, 180);
-                ctx.fillStyle = '#94a3b8';
-                ctx.font = '14px sans-serif';
-                ctx.fillText('NON-TEA OBJECT (FRAUD SIMULATION)', 45, 145);
-                currentUploadedBase64 = canvasEl.toDataURL('image/jpeg');
+        // Turn on camera stream
+        async function startCamera(facingMode = 'environment') {
+            stopCamera();
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                scannerStatusText.textContent = 'Camera not supported. Please upload photo.';
+                scannerStatusText.style.color = '#f87171';
                 return;
             }
 
-            // Authentic Cutting Chai Glass simulation:
-            // Background table
-            ctx.fillStyle = '#161922';
-            ctx.fillRect(0, 0, 320, 290);
+            try {
+                videoStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: facingMode, width: { ideal: 640 }, height: { ideal: 480 } },
+                    audio: false
+                });
+                videoEl.srcObject = videoStream;
+                await videoEl.play().catch(e => console.log('Autoplay handled:', e));
 
-            // Stainless Steel Tapri Base
-            ctx.fillStyle = '#2d3748';
-            ctx.beginPath();
-            ctx.ellipse(160, 235, 75, 18, 0, 0, Math.PI * 2);
-            ctx.fill();
+                videoEl.classList.remove('hidden');
+                canvasEl.classList.add('hidden');
+                imgPreviewEl.classList.add('hidden');
+                if (camPlaceholder) camPlaceholder.classList.add('hidden');
+                if (btnCaptureFreeze) btnCaptureFreeze.classList.remove('hidden');
 
-            // Cutting Glass Tumbler Outlines
-            ctx.beginPath();
-            ctx.moveTo(105, 55);
-            ctx.lineTo(215, 55);
-            ctx.lineTo(192, 225);
-            ctx.lineTo(128, 225);
-            ctx.closePath();
-
-            // Rich warm Kadak Cutting Chai liquid
-            const grad = ctx.createLinearGradient(0, 55, 0, 225);
-            grad.addColorStop(0, '#c46922');
-            grad.addColorStop(0.3, '#b45309');
-            grad.addColorStop(1, '#8f3e09');
-            ctx.fillStyle = grad;
-            ctx.fill();
-
-            // Glass facet reflections
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
-            ctx.lineWidth = 2.5;
-            ctx.beginPath();
-            ctx.moveTo(118, 65);
-            ctx.lineTo(135, 218);
-            ctx.moveTo(202, 65);
-            ctx.lineTo(185, 218);
-            ctx.stroke();
-
-            // Creamy tea froth surface
-            ctx.fillStyle = '#e8a86a';
-            ctx.beginPath();
-            ctx.ellipse(160, 68, 48, 11, 0, 0, Math.PI * 2);
-            ctx.fill();
-
-            currentUploadedBase64 = canvasEl.toDataURL('image/jpeg');
+                camStatusDot.style.background = '#10b981';
+                camBtnText.textContent = 'Stop Camera';
+                scannerStatusText.textContent = '● Live Camera Active';
+                scannerStatusText.style.color = '#34d399';
+                currentUploadedBase64 = null;
+            } catch (e) {
+                console.warn('Camera access unavailable:', e);
+                stopCamera();
+                scannerStatusText.textContent = 'Camera access denied or unavailable. Please upload photo.';
+                scannerStatusText.style.color = '#f87171';
+            }
         }
 
-        // File Upload Handler
+        // Stop camera stream
+        function stopCamera() {
+            if (videoStream) {
+                videoStream.getTracks().forEach(track => track.stop());
+                videoStream = null;
+            }
+            if (videoEl) {
+                videoEl.srcObject = null;
+                videoEl.classList.add('hidden');
+            }
+            if (btnCaptureFreeze) btnCaptureFreeze.classList.add('hidden');
+            if (camStatusDot) camStatusDot.style.background = '#ef4444';
+            if (camBtnText) camBtnText.textContent = 'Start Camera';
+            if (!currentUploadedBase64 && camPlaceholder) {
+                camPlaceholder.classList.remove('hidden');
+                scannerStatusText.textContent = 'Camera idle / Ready';
+                scannerStatusText.style.color = 'var(--text-muted)';
+            }
+        }
+
+        // Toggle camera button
+        document.getElementById('btn-toggle-cam').addEventListener('click', () => {
+            if (videoStream) {
+                stopCamera();
+            } else {
+                startCamera();
+            }
+        });
+
+        // Browse / Upload Image
         document.getElementById('btn-browse-file').addEventListener('click', () => {
             fileInput.click();
         });
@@ -427,6 +436,7 @@
             const file = e.target.files[0];
             if (!file) return;
 
+            stopCamera();
             const reader = new FileReader();
             reader.onload = (event) => {
                 currentUploadedBase64 = event.target.result;
@@ -434,9 +444,99 @@
                 imgPreviewEl.classList.remove('hidden');
                 videoEl.classList.add('hidden');
                 canvasEl.classList.add('hidden');
+                if (camPlaceholder) camPlaceholder.classList.add('hidden');
+                scannerStatusText.textContent = `📁 Image Loaded (${file.name})`;
+                scannerStatusText.style.color = '#38bdf8';
             };
             reader.readAsDataURL(file);
         });
+
+        // Freeze / Snap frame from active video
+        btnCaptureFreeze.addEventListener('click', () => {
+            if (!videoStream || videoEl.videoWidth === 0) return;
+            const snapCanvas = document.createElement('canvas');
+            snapCanvas.width = videoEl.videoWidth;
+            snapCanvas.height = videoEl.videoHeight;
+            const sCtx = snapCanvas.getContext('2d');
+            sCtx.drawImage(videoEl, 0, 0, snapCanvas.width, snapCanvas.height);
+            currentUploadedBase64 = snapCanvas.toDataURL('image/jpeg', 0.92);
+
+            imgPreviewEl.src = currentUploadedBase64;
+            imgPreviewEl.classList.remove('hidden');
+            videoEl.classList.add('hidden');
+            scannerStatusText.textContent = '📸 Video Frame Frozen. Click Authenticate below.';
+            scannerStatusText.style.color = '#fbbf24';
+        });
+
+        function generateSyntheticSample(isAuthentic = true) {
+            const sCanvas = document.createElement('canvas');
+            sCanvas.width = 320;
+            sCanvas.height = 320;
+            const ctx = sCanvas.getContext('2d');
+
+            if (!isAuthentic) {
+                // Non-chai fraud simulation (e.g. blue metallic car / random object)
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(0, 0, 320, 320);
+                ctx.fillStyle = '#0284c7';
+                ctx.fillRect(40, 70, 240, 160);
+                ctx.fillStyle = '#ffffff';
+                ctx.font = '14px sans-serif';
+                ctx.fillText('NON-TEA FRAUD OBJECT', 60, 155);
+                return sCanvas.toDataURL('image/jpeg', 0.9);
+            }
+
+            // Authentic Kerala / Indian Cutting Chai in Glass Tumbler:
+            // 1. Dark table backdrop
+            ctx.fillStyle = '#181b22';
+            ctx.fillRect(0, 0, 320, 320);
+
+            // 2. Stainless steel saucer base
+            ctx.fillStyle = '#334155';
+            ctx.beginPath();
+            ctx.ellipse(160, 268, 85, 20, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 3. Transparent Cutting Glass Tumbler Outlines
+            ctx.beginPath();
+            ctx.moveTo(98, 68);
+            ctx.lineTo(222, 68);
+            ctx.lineTo(200, 260);
+            ctx.lineTo(120, 260);
+            ctx.closePath();
+
+            // 4. Rich warm caramel CTC Paal Chaya liquid
+            const grad = ctx.createLinearGradient(0, 68, 0, 260);
+            grad.addColorStop(0, '#c2621b');
+            grad.addColorStop(0.35, '#b45309');
+            grad.addColorStop(1, '#8c3a08');
+            ctx.fillStyle = grad;
+            ctx.fill();
+
+            // 5. Vertical glass facet reflections & highlights (transparent optical reflections)
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.moveTo(112, 75);
+            ctx.lineTo(130, 255);
+            ctx.moveTo(208, 75);
+            ctx.lineTo(190, 255);
+            ctx.stroke();
+
+            // 6. Froth / aerated foam layer on top (characteristic meter chaya foam)
+            ctx.fillStyle = '#e5a567';
+            ctx.beginPath();
+            ctx.ellipse(160, 72, 58, 12, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Specular bubble foam highlights
+            ctx.fillStyle = '#fed7aa';
+            ctx.beginPath();
+            ctx.ellipse(152, 71, 24, 5, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            return sCanvas.toDataURL('image/jpeg', 0.9);
+        }
 
         async function refreshMetrics() {
             try {
@@ -455,40 +555,48 @@
         }
 
         async function executeVerification(mode = 'normal') {
+            const outArea = document.getElementById('verify-output-area');
             const btn = document.getElementById('btn-snap-log');
+
+            let imagePayload = null;
+
+            if (mode === 'authentic') {
+                imagePayload = generateSyntheticSample(true);
+            } else if (mode === 'non_tea') {
+                imagePayload = generateSyntheticSample(false);
+            } else if (mode === 'duplicate') {
+                imagePayload = generateSyntheticSample(true);
+            } else {
+                // Normal User Mode
+                if (currentUploadedBase64) {
+                    imagePayload = currentUploadedBase64;
+                } else if (videoStream && videoEl.videoWidth > 0) {
+                    const snapCanvas = document.createElement('canvas');
+                    snapCanvas.width = videoEl.videoWidth;
+                    snapCanvas.height = videoEl.videoHeight;
+                    const sCtx = snapCanvas.getContext('2d');
+                    sCtx.drawImage(videoEl, 0, 0, snapCanvas.width, snapCanvas.height);
+                    imagePayload = snapCanvas.toDataURL('image/jpeg', 0.90);
+                } else {
+                    // Neither camera active nor image loaded
+                    outArea.innerHTML = `
+                        <div class="verification-output verify-bad">
+                            <div style="font-weight: 800; font-size: 1rem; color: #f87171; margin-bottom: 0.35rem;">
+                                [CAMERA OR IMAGE REQUIRED]
+                            </div>
+                            <p style="font-size: 0.82rem; margin: 0; color: #fca5a5;">
+                                The optical scanner is idle. Please click <strong>Start Camera</strong> to capture live chaya, or click <strong>Upload Chaya Photo</strong> to select an image from your device.
+                            </p>
+                        </div>
+                    `;
+                    return;
+                }
+            }
+
             btn.disabled = true;
             btn.textContent = 'Executing Computer Vision & Forensic Analysis...';
             if (window.chaiAudio && typeof window.chaiAudio.playPour === 'function') {
                 window.chaiAudio.playPour();
-            }
-
-            let imagePayload = currentUploadedBase64;
-
-            // If webcam stream is active and user didn't explicitly upload an image file
-            if (!videoEl.classList.contains('hidden') && videoEl.videoWidth > 0 && !imagePayload) {
-                const snapCanvas = document.createElement('canvas');
-                snapCanvas.width = 320;
-                snapCanvas.height = 290;
-                const sCtx = snapCanvas.getContext('2d');
-                sCtx.drawImage(videoEl, 0, 0, 320, 290);
-                imagePayload = snapCanvas.toDataURL('image/jpeg', 0.88);
-            }
-
-            if (!imagePayload) {
-                // If in testing mode, generate appropriate frame
-                const snapCanvas = document.createElement('canvas');
-                snapCanvas.width = 320;
-                snapCanvas.height = 290;
-                drawSimulatedCuttingChai(snapCanvas.getContext('2d'), mode !== 'non_tea');
-                imagePayload = snapCanvas.toDataURL('image/jpeg', 0.88);
-            }
-
-            if (mode === 'non_tea') {
-                const snapCanvas = document.createElement('canvas');
-                snapCanvas.width = 320;
-                snapCanvas.height = 290;
-                drawSimulatedCuttingChai(snapCanvas.getContext('2d'), false);
-                imagePayload = snapCanvas.toDataURL('image/jpeg', 0.88);
             }
 
             const payload = {
@@ -536,11 +644,11 @@
             if (isSuccess) {
                 card.innerHTML = `
                     <div style="font-weight: 800; font-size: 1.05rem; display: flex; align-items: center; gap: 0.5rem; color: #34d399;">
-                        <span>[VERIFIED AUTHENTIC]</span> Cutting Chai Glass Confirmed
+                        <span>[VERIFIED AUTHENTIC]</span> Chaya in Glass Tumbler Confirmed
                     </div>
                     <p style="font-size: 0.82rem; margin: 0.4rem 0 0.8rem 0; color: #a7f3d0;">${res.message}</p>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.45rem; font-size: 0.78rem; background: rgba(0,0,0,0.35); padding: 0.7rem; border-radius: var(--radius-sm); border: 1px solid rgba(16, 185, 129, 0.25);">
-                        <div><strong>Vessel Type:</strong> 16-Facet Glass Tumbler</div>
+                        <div><strong>Vessel Type:</strong> Cutting Glass Tumbler</div>
                         <div><strong>Formulation:</strong> ${res.log.blend_name}</div>
                         <div><strong>Serving Temp:</strong> ${res.log.tongue_temp_c}&deg;C</div>
                         <div><strong>pHash (64-bit):</strong> <code style="font-family: var(--font-mono);">${res.log.phash_hex}</code></div>
@@ -553,7 +661,7 @@
                     </div>
                     <p style="font-size: 0.84rem; margin: 0.4rem 0 0.8rem 0; color: #fca5a5; font-weight: 600;">${res.error || res.reason}</p>
                     <div style="font-size: 0.76rem; color: #cbd5e1; line-height: 1.45; background: rgba(0,0,0,0.35); padding: 0.7rem; border-radius: var(--radius-sm); border: 1px solid rgba(239, 68, 68, 0.25);">
-                        <strong>Compliance Criteria:</strong> Verification requires an authentic Indian cutting chai glass with characteristic milk tea caramel liquid. Replay attacks (&lt; 12h hash collision), empty cups, opaque mugs, flat surfaces, or non-tea images are rejected and archived in the immutable security audit database.
+                        <strong>Authenticity Criteria:</strong> Verification requires an authentic Indian / Kerala cutting chai in a transparent glass tumbler with warm caramel CTC milk tea and aerated froth meniscus. Portraits/selfies, non-tea beverages, ceramic mugs, wooden desks, and duplicate images (<12h) are rejected.
                     </div>
                 `;
             }
@@ -563,8 +671,10 @@
         window.addEventListener('DOMContentLoaded', async () => {
             window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
             heroGlass = new Chai3DHero('chai-3d-container');
-            await startCamera();
             await refreshMetrics();
+
+            // Try starting camera smoothly on load if supported
+            startCamera();
 
             document.getElementById('btn-snap-log').addEventListener('click', () => executeVerification('normal'));
             document.getElementById('btn-test-authentic').addEventListener('click', () => executeVerification('authentic'));
