@@ -136,19 +136,61 @@
 
             this.initDOM();
             this.bindEvents();
-            this.autoLoginDemo('aarav@example.com');
+            this.checkSessionOnStartup();
+        }
+
+        checkSessionOnStartup() {
+            try {
+                const sessionRaw = localStorage.getItem('chaiboard_active_session');
+                if (sessionRaw) {
+                    const session = JSON.parse(sessionRaw);
+                    if (session && session.email) {
+                        const student = this.students.find(s => s.email.toLowerCase() === session.email.toLowerCase());
+                        if (student) {
+                            this.setCurrentStudent(student);
+                            return;
+                        }
+                    }
+                }
+            } catch (e) {
+                console.warn('Session restore error:', e);
+            }
+            // If no active session, ensure landing page is shown cleanly
+            this.handleLogout(false);
         }
 
         initDOM() {
-            this.loginSection = document.getElementById('login-section');
+            this.landingWrapper = document.getElementById('landing-wrapper');
+            this.authSection = document.getElementById('auth-section') || document.getElementById('login-section');
+            this.loginSection = this.authSection; // Compatibility
             this.dashboardSection = document.getElementById('dashboard-section');
+
+            // Auth tabs & panes
+            this.tabBtnLogin = document.getElementById('tab-btn-login');
+            this.tabBtnRegister = document.getElementById('tab-btn-register');
+            this.paneLogin = document.getElementById('pane-login');
+            this.paneRegister = document.getElementById('pane-register');
+            this.linkToRegister = document.getElementById('link-to-register');
+            this.linkToLogin = document.getElementById('link-to-login');
+
             this.loginForm = document.getElementById('login-form');
             this.registerForm = document.getElementById('register-form');
-            this.showRegisterBtn = document.getElementById('show-register-btn');
-            this.showLoginBtn = document.getElementById('show-login-btn');
             this.logoutBtn = document.getElementById('logout-btn');
             this.switchStudentBtn = document.getElementById('switch-student-btn');
 
+            // Nav elements
+            this.navLinksLoggedOut = document.getElementById('nav-links-logged-out');
+            this.navLinksLoggedIn = document.getElementById('nav-links-logged-in');
+            this.navBtnScanQuick = document.getElementById('nav-btn-scan-quick');
+            this.btnLockIn = document.getElementById('btn-lock-in');
+            this.loggedStudentPill = document.getElementById('logged-student-pill');
+
+            // Dashboard hero banner
+            this.dashWelcomeName = document.getElementById('dash-welcome-name');
+            this.btnDashScan = document.getElementById('btn-dash-scan');
+            this.btnDashPass = document.getElementById('btn-dash-pass');
+
+            // Camera / Scan Modal
             this.btnLogChai = document.getElementById('btn-log-chai');
             this.btnSlosh = document.getElementById('btn-slosh');
             this.cameraModal = document.getElementById('camera-modal');
@@ -162,6 +204,7 @@
             this.aiScannerStatus = document.getElementById('ai-scanner-status');
             this.verificationResults = document.getElementById('verification-results');
 
+            // Pass Modal
             this.btnChaiPass = document.getElementById('btn-chai-pass');
             this.chaiPassModal = document.getElementById('chai-pass-modal');
             this.btnClosePass = document.getElementById('btn-close-pass');
@@ -170,17 +213,99 @@
             this.toggleSoundBtn = document.getElementById('toggle-sound-btn');
         }
 
+        switchAuthTab(tab) {
+            if (tab === 'register') {
+                if (this.tabBtnRegister) this.tabBtnRegister.classList.add('active');
+                if (this.tabBtnLogin) this.tabBtnLogin.classList.remove('active');
+                if (this.paneRegister) this.paneRegister.classList.remove('hidden');
+                if (this.paneLogin) this.paneLogin.classList.add('hidden');
+            } else {
+                if (this.tabBtnLogin) this.tabBtnLogin.classList.add('active');
+                if (this.tabBtnRegister) this.tabBtnRegister.classList.remove('active');
+                if (this.paneLogin) this.paneLogin.classList.remove('hidden');
+                if (this.paneRegister) this.paneRegister.classList.add('hidden');
+            }
+        }
+
+        scrollToAuth(tab = 'login') {
+            this.switchAuthTab(tab);
+            if (this.landingWrapper) this.landingWrapper.classList.remove('hidden');
+            if (this.authSection) {
+                this.authSection.classList.remove('hidden');
+                this.authSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
         bindEvents() {
-            this.showRegisterBtn.addEventListener('click', () => {
-                this.loginForm.classList.add('hidden');
-                this.registerForm.classList.remove('hidden');
+            // Tab switching
+            if (this.tabBtnLogin) this.tabBtnLogin.addEventListener('click', () => this.switchAuthTab('login'));
+            if (this.tabBtnRegister) this.tabBtnRegister.addEventListener('click', () => this.switchAuthTab('register'));
+            if (this.linkToRegister) this.linkToRegister.addEventListener('click', () => this.switchAuthTab('register'));
+            if (this.linkToLogin) this.linkToLogin.addEventListener('click', () => this.switchAuthTab('login'));
+
+            // Smooth jump to auth from visitor nav & hero buttons
+            const navLinkSignin = document.getElementById('nav-link-signin');
+            if (navLinkSignin) navLinkSignin.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.scrollToAuth('login');
             });
 
-            this.showLoginBtn.addEventListener('click', () => {
-                this.registerForm.classList.add('hidden');
-                this.loginForm.classList.remove('hidden');
+            const navLinkCreate = document.getElementById('nav-link-create');
+            if (navLinkCreate) navLinkCreate.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.scrollToAuth('register');
             });
 
+            if (this.btnLockIn) {
+                this.btnLockIn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.scrollToAuth('login');
+                });
+            }
+
+            const heroSignInBtn = document.getElementById('hero-btn-signin');
+            if (heroSignInBtn) {
+                heroSignInBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.scrollToAuth('login');
+                });
+            }
+
+            const heroRegisterBtn = document.getElementById('hero-btn-register');
+            if (heroRegisterBtn) {
+                heroRegisterBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.scrollToAuth('register');
+                });
+            }
+
+            // Check URL parameters or hash on load
+            if (window.location.search.includes('tab=register') || window.location.hash.includes('register')) {
+                this.switchAuthTab('register');
+            }
+
+            const navBrandLink = document.getElementById('nav-brand-link');
+            if (navBrandLink) {
+                navBrandLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (this.currentStudent) {
+                        const dashTop = document.getElementById('dashboard-top');
+                        if (dashTop) dashTop.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        else window.scrollTo({ top: 0, behavior: 'smooth' });
+                    } else {
+                        const heroEl = document.getElementById('hero');
+                        if (heroEl) heroEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        else window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                });
+            }
+
+            // Quick Scan triggers
+            if (this.navBtnScanQuick) this.navBtnScanQuick.addEventListener('click', () => this.openCameraFlow());
+            if (this.btnDashScan) this.btnDashScan.addEventListener('click', () => this.openCameraFlow());
+            if (this.btnDashPass) this.btnDashPass.addEventListener('click', () => this.openPassModal());
+
+            // Demo Profiles
             document.querySelectorAll('.demo-login-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const email = btn.getAttribute('data-email');
@@ -188,20 +313,29 @@
                 });
             });
 
-            this.loginForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const email    = document.getElementById('login-email').value.trim();
-                const password = document.getElementById('login-password').value.trim();
-                this.handleLogin(email, password);
-            });
+            // Forms
+            if (this.loginForm) {
+                this.loginForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const email    = document.getElementById('login-email').value.trim();
+                    const clsEl    = document.getElementById('login-class');
+                    const yearEl   = document.getElementById('login-year');
+                    const cls      = clsEl ? clsEl.value : 'CSA';
+                    const year     = yearEl ? yearEl.value : '1';
+                    const password = document.getElementById('login-password').value.trim();
+                    this.handleLogin(email, cls, year, password);
+                });
+            }
 
-            this.registerForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                this.handleRegister();
-            });
+            if (this.registerForm) {
+                this.registerForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.handleRegister();
+                });
+            }
 
-            this.logoutBtn.addEventListener('click', () => this.handleLogout());
-            this.switchStudentBtn.addEventListener('click', () => this.handleLogout());
+            if (this.logoutBtn) this.logoutBtn.addEventListener('click', () => this.handleLogout());
+            if (this.switchStudentBtn) this.switchStudentBtn.addEventListener('click', () => this.handleLogout());
 
             if (this.btnSlosh) {
                 this.btnSlosh.addEventListener('click', () => {
@@ -306,61 +440,146 @@
             }
         }
 
-        handleLogin(email, password) {
-            const student = this.students.find(s => s.email.toLowerCase() === email.toLowerCase());
-            if (!student) {
-                this.showToast('No account found with that email. Please sign up first.');
+        async handleLogin(email, cls, year, password) {
+            if (!email || !password) {
+                this.showToast('Please enter your email and password.');
                 return;
             }
-            if (student.password !== password) {
-                this.showToast('Wrong password. Please try again.');
-                return;
+
+            // Sync with backend session
+            try {
+                fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                }).catch(() => {});
+            } catch (e) {}
+
+            let student = this.students.find(s => s.email.toLowerCase() === email.toLowerCase());
+            if (student) {
+                if (student.password && student.password !== password) {
+                    this.showToast('Wrong password. Please try again.');
+                    return;
+                }
+                if (cls) student.studentClass = cls;
+                if (year) student.year = year;
+                this.saveStudents(this.students);
+            } else {
+                const namePart = email.split('@')[0].replace(/[._]/g, ' ');
+                const formattedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
+                const initials = formattedName.substring(0, 2).toUpperCase() || 'CH';
+                student = {
+                    email: email.toLowerCase(),
+                    name: formattedName,
+                    password: password,
+                    studentClass: cls || 'CSA',
+                    year: year || '1',
+                    avatar: initials,
+                    cupsToday: 0,
+                    weeklyCups: 0,
+                    allTimeCups: 0,
+                    streak: 1,
+                    title: 'Chai Enthusiast',
+                    logs: []
+                };
+                this.students.push(student);
+                this.saveStudents(this.students);
             }
             this.setCurrentStudent(student);
+            this.showToast(`Welcome ${student.name}! Signed into ${student.studentClass} Year ${student.year}`);
         }
 
-        handleRegister() {
-            const name     = document.getElementById('reg-name').value.trim();
-            const email    = document.getElementById('reg-email').value.trim().toLowerCase();
-            const cls      = document.getElementById('reg-class').value;
-            const year     = document.getElementById('reg-year').value;
-            const password = document.getElementById('reg-password').value.trim();
+        async handleRegister() {
+            const nameEl     = document.getElementById('reg-name');
+            const emailEl    = document.getElementById('reg-email');
+            const clsEl      = document.getElementById('reg-class');
+            const yearEl     = document.getElementById('reg-year');
+            const pwdEl      = document.getElementById('reg-password');
+            const pwdConfEl  = document.getElementById('reg-password-confirm');
 
-            if (!name || !email || !cls || !year || !password) {
-                this.showToast('Please fill in all fields.');
+            const name       = nameEl ? nameEl.value.trim() : '';
+            const email      = emailEl ? emailEl.value.trim().toLowerCase() : '';
+            const cls        = clsEl ? clsEl.value : 'CSA';
+            const year       = yearEl ? yearEl.value : '1';
+            const password   = pwdEl ? pwdEl.value.trim() : '';
+            const confirmPwd = pwdConfEl ? pwdConfEl.value.trim() : password;
+
+            if (!name || !email || !password) {
+                this.showToast('Please fill in your name, email, and password.');
                 return;
             }
 
-            if (this.students.some(s => s.email === email)) {
-                this.showToast('An account with this email already exists.');
+            if (confirmPwd && password !== confirmPwd) {
+                this.showToast('Passwords do not match. Please verify.');
                 return;
             }
+
+            // Sync with backend API
+            try {
+                fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, department: cls, password })
+                }).catch(() => {});
+            } catch (e) {}
 
             const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'CH';
-            const newStudent = {
-                email,
-                name,
-                password,
-                studentClass: cls,
-                year,
-                avatar: initials,
-                cupsToday: 0,
-                weeklyCups: 0,
-                allTimeCups: 0,
-                streak: 1,
-                title: 'Chai Enthusiast',
-                logs: []
-            };
 
-            this.students.push(newStudent);
-            this.saveStudents(this.students);
-            this.setCurrentStudent(newStudent);
+            let student = this.students.find(s => s.email.toLowerCase() === email);
+            if (student) {
+                // Account already exists in local records: update info and log straight in!
+                student.name = name;
+                student.password = password;
+                student.studentClass = cls;
+                student.year = year;
+                student.avatar = initials;
+                this.saveStudents(this.students);
+                this.setCurrentStudent(student);
+                this.showToast(`Welcome back ${student.name}! Account updated & signed in.`);
+            } else {
+                student = {
+                    email,
+                    name,
+                    password,
+                    studentClass: cls,
+                    year,
+                    avatar: initials,
+                    cupsToday: 0,
+                    weeklyCups: 0,
+                    allTimeCups: 0,
+                    streak: 1,
+                    title: 'Chai Enthusiast',
+                    logs: []
+                };
+                this.students.push(student);
+                this.saveStudents(this.students);
+                this.setCurrentStudent(student);
+                this.showToast(`Account created for ${student.name}! Ready to track.`);
+            }
         }
 
         setCurrentStudent(student) {
             this.currentStudent = student;
-            this.loginSection.classList.add('hidden');
-            this.dashboardSection.classList.remove('hidden');
+            localStorage.setItem('chaiboard_active_session', JSON.stringify({ email: student.email }));
+
+            // Collapse landing marketing view & auth hub
+            if (this.landingWrapper) this.landingWrapper.classList.add('hidden');
+            if (this.authSection) this.authSection.classList.add('hidden');
+            if (this.dashboardSection) this.dashboardSection.classList.remove('hidden');
+
+            // Switch navigation to logged-in mode
+            if (this.navLinksLoggedIn) this.navLinksLoggedIn.classList.remove('hidden');
+            if (this.navLinksLoggedOut) this.navLinksLoggedOut.classList.add('hidden');
+            if (this.navBtnScanQuick) this.navBtnScanQuick.classList.remove('hidden');
+            if (this.btnLockIn) this.btnLockIn.style.display = 'none';
+
+            if (this.loggedStudentPill) this.loggedStudentPill.style.display = 'inline-flex';
+            if (this.btnChaiPass) this.btnChaiPass.style.display = 'inline-flex';
+            if (this.logoutBtn) this.logoutBtn.style.display = 'inline-flex';
+
+            if (this.dashWelcomeName) {
+                this.dashWelcomeName.textContent = student.name.split(' ')[0] || student.name;
+            }
 
             this.renderHeaderPill();
             this.renderStudentProfile();
@@ -372,13 +591,35 @@
                 this.hero3D = new Chai3DHero('chai-3d-container');
             }
             this.hero3D.setCupCount(this.currentStudent.cupsToday);
+
+            // Immediate scroll to top: eliminates any blank page or scroll offsets
+            window.scrollTo({ top: 0, behavior: 'instant' });
         }
 
-        handleLogout() {
+        handleLogout(showNotification = true) {
             this.currentStudent = null;
-            this.dashboardSection.classList.add('hidden');
-            this.loginSection.classList.remove('hidden');
-            this.loginForm.reset();
+            localStorage.removeItem('chaiboard_active_session');
+
+            if (this.dashboardSection) this.dashboardSection.classList.add('hidden');
+            if (this.landingWrapper) this.landingWrapper.classList.remove('hidden');
+            if (this.authSection) this.authSection.classList.remove('hidden');
+
+            if (this.navLinksLoggedIn) this.navLinksLoggedIn.classList.add('hidden');
+            if (this.navLinksLoggedOut) this.navLinksLoggedOut.classList.remove('hidden');
+            if (this.navBtnScanQuick) this.navBtnScanQuick.classList.add('hidden');
+            if (this.btnLockIn) this.btnLockIn.style.display = 'inline-flex';
+
+            if (this.loggedStudentPill) this.loggedStudentPill.style.display = 'none';
+            if (this.btnChaiPass) this.btnChaiPass.style.display = 'none';
+            if (this.logoutBtn) this.logoutBtn.style.display = 'none';
+
+            if (this.loginForm) this.loginForm.reset();
+            if (this.registerForm) this.registerForm.reset();
+
+            if (showNotification) {
+                this.showToast('You have logged out.');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
         }
 
         renderHeaderPill() {

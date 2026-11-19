@@ -44,89 +44,63 @@
             z-index: 10;
         }
 
-        /* ── Malayalam comic strip ── */
+        /* ── Malayalam Pure Art Comic Gallery ── */
         .comic-chai-strip {
             overflow: hidden;
-            padding: 5rem 0 6rem 0;
+            padding: 3rem 0 5rem 0;
             background: transparent !important;
         }
 
         .comic-strip-inner {
-            display: flex;
-            gap: 2rem;
-            align-items: flex-end;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
             padding: 0 2rem;
-            max-width: 90rem;
+            max-width: 88rem;
             margin: 0 auto;
-            flex-wrap: wrap;
         }
 
         .comic-panel {
             position: relative;
-            flex: 1;
-            min-width: 220px;
-            border-radius: 20px;
+            border-radius: 24px;
             overflow: hidden;
-            border: var(--border-glass);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             aspect-ratio: 3/4;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-            transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), border-color 0.3s;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 25px rgba(6, 182, 212, 0.08);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.35s ease, box-shadow 0.4s ease;
+            background: #0f131c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .comic-panel:hover {
-            transform: translateY(-8px) rotate(-0.5deg) scale(1.03);
-            border-color: rgba(6,182,212,0.6);
+            transform: translateY(-10px) scale(1.03);
+            border-color: rgba(6, 182, 212, 0.65);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.9), 0 0 35px rgba(236, 72, 153, 0.25);
         }
 
-        .comic-panel img {
+        .comic-art-svg {
             width: 100%;
             height: 100%;
-            object-fit: cover;
-            filter: saturate(1.25) contrast(1.08);
-            mix-blend-mode: luminosity;
-            transition: filter 0.4s ease, mix-blend-mode 0.4s;
+            display: block;
+            transition: transform 0.4s ease;
         }
 
-        .comic-panel:hover img {
-            filter: saturate(1.5) contrast(1.1);
-            mix-blend-mode: normal;
+        .comic-panel:hover .comic-art-svg {
+            transform: scale(1.04);
         }
 
-        .comic-panel-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 1.4rem 1.2rem;
-            background: linear-gradient(to top, rgba(5,5,5,0.98) 0%, rgba(5,5,5,0.5) 60%, transparent 100%);
+        @media (max-width: 1024px) {
+            .comic-strip-inner {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
-        .comic-bubble {
-            display: inline-block;
-            background: var(--accent-gradient);
-            color: #fff;
-            font-family: var(--font-heading);
-            font-size: 0.72rem;
-            font-weight: 900;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-            padding: 0.3rem 0.7rem;
-            border-radius: 9999px;
-            margin-bottom: 0.4rem;
-        }
-
-        .comic-panel-title {
-            font-family: var(--font-heading);
-            font-size: 1.1rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            color: #fff;
-            line-height: 1.1;
-        }
-
-        .comic-panel.featured {
-            flex: 1.4;
-            min-width: 280px;
+        @media (max-width: 640px) {
+            .comic-strip-inner {
+                grid-template-columns: 1fr;
+            }
         }
 
         /* ── Toast ── */
@@ -201,16 +175,22 @@
             <span class="nav-brand-title">CHAIBOARD</span>
         </a>
 
-        <nav class="nav-links-center">
-            <a href="#hero"               class="nav-link-item">THE CUBE</a>
-            <a href="#comics"             class="nav-link-item">CHAI COMICS</a>
-            <a href="#horizontal-ticker"  class="nav-link-item">REAL MAGIC</a>
-            <a href="#dashboard-anchor"   class="nav-link-item">MY DASHBOARD</a>
-            <a href="#login-section"      class="nav-link-item">LOG IN</a>
+        <nav id="nav-links-logged-out" class="nav-links-center">
+            <a href="#hero" class="nav-link-item">HOME</a>
+            <a href="#auth-section" class="nav-link-item" id="nav-link-signin">SIGN IN</a>
+            <a href="#auth-section" class="nav-link-item" id="nav-link-create">CREATE ACCOUNT</a>
+        </nav>
+
+        <nav id="nav-links-logged-in" class="nav-links-center hidden">
+            <a href="#dashboard-top" class="nav-link-item">OVERVIEW</a>
+            <a href="#health-tracker-anchor" class="nav-link-item">HEALTH METER</a>
+            <a href="#leaderboard-anchor" class="nav-link-item">LEADERBOARD</a>
+            <a href="#history-anchor" class="nav-link-item">MY LOGS</a>
         </nav>
 
         <div style="display:flex;align-items:center;gap:0.8rem;">
             <button id="toggle-sound-btn" class="btn btn-ghost btn-sm" style="color:#fff;font-size:0.72rem;">SFX: ON</button>
+            <button id="nav-btn-scan-quick" class="nav-btn-scan hidden">📸 SCAN CHAI</button>
             <div id="logged-student-pill" class="student-badge-pill" style="display:none;">
                 <span id="header-avatar" class="student-avatar-badge">CH</span>
                 <div class="student-meta">
@@ -219,121 +199,295 @@
                 </div>
             </div>
             <button id="btn-chai-pass"      class="btn btn-secondary btn-sm" style="display:none;">MY PASS</button>
-            <button id="switch-student-btn" class="btn btn-secondary btn-sm" style="display:none;">SWITCH</button>
             <button id="logout-btn"          class="btn btn-ghost btn-sm"     style="display:none;color:#fff;">LOG OUT</button>
-            <a href="#login-section" id="btn-lock-in" class="btn-cta-cinematic">TRACK MY CHAI &rarr;</a>
+            <button id="btn-lock-in" class="btn-cta-cinematic">SIGN IN &rarr;</button>
         </div>
     </header>
 
-    <!-- ── HERO (3D Rolodex Cube) ── -->
-    <section id="hero" class="hero-rolodex-viewport">
+    <!-- ── VISITOR LANDING VIEW (Hero, Comics, Ticker - collapses on login) ── -->
+    <div id="landing-wrapper">
+    <!-- ── OPENING HERO SECTION (Clean & Typographic - No Cube - 3D Neon Trail Active) ── -->
+    <section id="hero" class="hero-rolodex-viewport" style="flex-direction: column; text-align: center; padding: 4rem 1.5rem; justify-content: center;">
         <div class="massive-bg-text">CHAIBOARD</div>
 
-        <div class="cube-wrapper" id="hero-cube">
-            <!-- Face 1 -->
-            <div class="cube-face cube-face-front">
-                <img src="https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=800&q=80" alt="Kadak Cutting Chai" loading="lazy" />
-                <div class="cube-face-content">
-                    <div class="cube-face-title">KADAK TAPRI RUN</div>
-                    <div class="cube-face-tag">CAMPUS FUEL &bull; NO CAP</div>
-                </div>
+        <div style="position: relative; z-index: 2; max-width: 840px; margin: 0 auto;">
+            <div class="label-secondary" style="color: var(--accent-cyan); font-size: 0.85rem; margin-bottom: 0.9rem; letter-spacing: 0.25em;">
+                CAMPUS CHAI TRACKER // REAL ONES ONLY
             </div>
-            <!-- Face 2 -->
-            <div class="cube-face cube-face-bottom">
-                <img src="https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=800&q=80" alt="Night Chai" loading="lazy" />
-                <div class="cube-face-content">
-                    <div class="cube-face-title">HOSTEL NIGHT MODE</div>
-                    <div class="cube-face-tag">2 AM &bull; MAXIMUM AURA</div>
-                </div>
-            </div>
-            <!-- Face 3 -->
-            <div class="cube-face cube-face-back">
-                <img src="https://images.unsplash.com/photo-1517256064527-09c73fc73e38?auto=format&fit=crop&w=800&q=80" alt="Vibe Check" loading="lazy" />
-                <div class="cube-face-content">
-                    <div class="cube-face-title">CAUGHT IN 4K</div>
-                    <div class="cube-face-tag">FAKE TEA REJECTED &bull; REAL ONES ONLY</div>
-                </div>
-            </div>
-            <!-- Face 4 -->
-            <div class="cube-face cube-face-top">
-                <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80" alt="Class Wars" loading="lazy" />
-                <div class="cube-face-content">
-                    <div class="cube-face-title">CLASS WARS</div>
-                    <div class="cube-face-tag">WHO'S DRINKING MORE?</div>
-                </div>
+            <h1 class="cinematic-heading animated-h3" style="font-size: clamp(3rem, 7.5vw, 6.2rem); margin-bottom: 1.2rem; line-height: 1.05;">
+                ONE CUP AT A TIME.<br>
+                <span style="background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">ZERO CAP.</span>
+            </h1>
+            <p style="font-size: clamp(1rem, 1.8vw, 1.25rem); color: var(--text-secondary); max-width: 620px; margin: 0 auto 2.5rem auto; line-height: 1.6;">
+                Every cutting chai you drink earns points for your class. Log your cup with a camera scan, beat your rival branches, and never crash out during exams.
+            </p>
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <button type="button" id="hero-btn-signin" class="btn btn-primary" style="padding: 0.9rem 2.2rem; font-size: 0.95rem;">
+                    SIGN IN &rarr;
+                </button>
+                <button type="button" id="hero-btn-register" class="btn btn-secondary" style="padding: 0.9rem 2.2rem; font-size: 0.95rem;">
+                    CREATE ACCOUNT &rarr;
+                </button>
             </div>
         </div>
     </section>
 
-    <!-- ── MALAYALAM CARTOON CHAI COMIC STRIP ── -->
+    <!-- ── MALAYALAM CARTOON CHAI COMIC GALLERY (Pure Artistic Visuals) ── -->
     <section id="comics" class="comic-chai-strip">
         <div class="comic-strip-inner">
-            <!-- Panel 1 -->
+            <!-- Cartoon 1: Morning Tea Stall -->
             <div class="comic-panel">
-                <img
-                    src="https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=600&q=85"
-                    alt="Morning chai Kerala style"
-                    loading="lazy"
-                    style="filter: hue-rotate(20deg) saturate(1.6) brightness(0.85);"
-                />
-                <div class="comic-panel-overlay">
-                    <div class="comic-bubble">RAAVILTHE CHAI</div>
-                    <div class="comic-panel-title">RAAVILTHE CHAI KUDIKKATHE POTILLE!</div>
-                </div>
+                <svg class="comic-art-svg" viewBox="0 0 320 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Sky & Morning Sunburst -->
+                    <rect width="320" height="420" fill="#131722"/>
+                    <circle cx="160" cy="110" r="90" fill="url(#sun-grad)" opacity="0.35"/>
+                    <path d="M160 20 L160 200 M70 110 L250 110 M96 46 L224 174 M96 174 L224 46" stroke="#F59E0B" stroke-width="1.5" stroke-dasharray="4 6" opacity="0.3"/>
+
+                    <!-- Kerala Coconut Palms Silhouette in background -->
+                    <path d="M20 180 Q 40 140 70 150 Q 50 165 20 180 Z" fill="#1e293b"/>
+                    <path d="M70 150 Q 110 135 125 155 Q 95 165 70 150 Z" fill="#1e293b"/>
+
+                    <!-- Thattukada Bench & Counter -->
+                    <rect x="0" y="270" width="320" height="150" fill="#1e1815"/>
+                    <rect x="0" y="260" width="320" height="16" fill="#382923"/>
+
+                    <!-- Authentic Glass Tumbler with Cutting Chai -->
+                    <g transform="translate(115, 170)">
+                        <!-- Outer Glass Facets -->
+                        <path d="M12 25 L22 110 Q 24 118 45 118 Q 66 118 68 110 L78 25 Z" fill="rgba(255,255,255,0.08)" stroke="#38BDF8" stroke-width="2.5"/>
+                        <!-- Chai Liquid -->
+                        <path d="M16 48 L23 108 Q 25 114 45 114 Q 65 114 67 108 L74 48 Q 45 52 16 48 Z" fill="url(#chai-liquid-1)"/>
+                        <!-- Thick Malai Foam Head -->
+                        <ellipse cx="45" cy="48" rx="29" ry="7" fill="#FEF08A"/>
+                        <ellipse cx="45" cy="47" rx="25" ry="4.5" fill="#FFFBEB"/>
+                        <!-- Glass Rim & Reflections -->
+                        <ellipse cx="45" cy="25" rx="33" ry="7" fill="none" stroke="#E0F2FE" stroke-width="2"/>
+                        <line x1="28" y1="36" x2="32" y2="105" stroke="#FFFFFF" stroke-width="2.5" opacity="0.4" stroke-linecap="round"/>
+                        <line x1="38" y1="36" x2="41" y2="105" stroke="#FFFFFF" stroke-width="1.5" opacity="0.25"/>
+                    </g>
+
+                    <!-- Billowing Steam Curls with Comic Style -->
+                    <path d="M150 160 Q 140 130 155 105 T 145 60" stroke="#FDE68A" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.75"/>
+                    <path d="M165 155 Q 180 125 165 95 T 175 50" stroke="#FDE68A" stroke-width="3.5" fill="none" stroke-linecap="round" opacity="0.85"/>
+                    <path d="M180 160 Q 195 135 185 110 T 195 75" stroke="#FDE68A" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.65"/>
+
+                    <!-- Comic Speech Bubble -->
+                    <g transform="translate(18, 40)">
+                        <rect width="180" height="42" rx="14" fill="#FFFFFF"/>
+                        <polygon points="40,42 50,55 60,42" fill="#FFFFFF"/>
+                        <text x="90" y="26" font-family="'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="900" fill="#111827" text-anchor="middle">
+                            ഒരു ചായ കുടിച്ചാലോ? ☕
+                        </text>
+                    </g>
+
+                    <defs>
+                        <radialGradient id="sun-grad" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.8"/>
+                            <stop offset="100%" stop-color="#F59E0B" stop-opacity="0"/>
+                        </radialGradient>
+                        <linearGradient id="chai-liquid-1" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#D97706"/>
+                            <stop offset="50%" stop-color="#B45309"/>
+                            <stop offset="100%" stop-color="#78350F"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
             </div>
 
-            <!-- Panel 2 (Featured / Taller) -->
-            <div class="comic-panel featured">
-                <img
-                    src="https://images.unsplash.com/photo-1571091718767-18b5b1457add?auto=format&fit=crop&w=800&q=85"
-                    alt="Cutting chai glass"
-                    loading="lazy"
-                    style="filter: sepia(0.4) saturate(2.2) hue-rotate(-10deg) brightness(0.8);"
-                />
-                <div class="comic-panel-overlay">
-                    <div class="comic-bubble">TAPRI LIFE</div>
-                    <div class="comic-panel-title">ORU CUTTING CHAI PLEASE CHETTA&hellip;</div>
-                </div>
-            </div>
-
-            <!-- Panel 3 -->
+            <!-- Cartoon 2: Meter Chai Action Pour -->
             <div class="comic-panel">
-                <img
-                    src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=600&q=85"
-                    alt="Exam night chai"
-                    loading="lazy"
-                    style="filter: hue-rotate(340deg) saturate(1.8) brightness(0.75);"
-                />
-                <div class="comic-panel-overlay">
-                    <div class="comic-bubble">EXAM MODE</div>
-                    <div class="comic-panel-title">EXAMS VANNU, CHAI KIDAKKUNNU</div>
-                </div>
+                <svg class="comic-art-svg" viewBox="0 0 340 450" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="340" height="450" fill="#0D111A"/>
+
+                    <!-- Action Speed Lines (Comic High Pour Vibe) -->
+                    <line x1="40" y1="30" x2="130" y2="160" stroke="#38BDF8" stroke-width="1.5" stroke-dasharray="6 8" opacity="0.4"/>
+                    <line x1="300" y1="40" x2="210" y2="170" stroke="#EC4899" stroke-width="1.5" stroke-dasharray="6 8" opacity="0.4"/>
+                    <line x1="170" y1="60" x2="170" y2="340" stroke="#F59E0B" stroke-width="1" stroke-dasharray="4 6" opacity="0.25"/>
+
+                    <!-- Tea Master's Top Steel Pitcher / Mug (High Pour) -->
+                    <g transform="translate(130, 20)">
+                        <path d="M10 20 L25 70 Q 55 75 70 65 L60 20 Z" fill="#94A3B8" stroke="#E2E8F0" stroke-width="2"/>
+                        <!-- Spout pouring tea -->
+                        <path d="M10 20 Q 5 28 0 32 Q 10 36 20 34 Z" fill="#CBD5E1"/>
+                        <path d="M55 25 Q 85 30 75 55 Q 65 65 55 60" fill="none" stroke="#CBD5E1" stroke-width="4"/>
+                    </g>
+
+                    <!-- The Iconic 1-Meter Flying Stream of Golden Caramel Tea -->
+                    <path d="M130 52 C 145 100, 195 180, 168 280 C 158 315, 172 335, 175 350" stroke="url(#meter-tea-stream)" stroke-width="10" fill="none" stroke-linecap="round"/>
+                    <path d="M132 54 C 147 100, 193 180, 169 280 C 160 315, 171 335, 174 350" stroke="#FEF08A" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+                    <!-- Tea Splash & Droplets Action Sparks -->
+                    <circle cx="160" cy="335" r="3.5" fill="#F59E0B"/>
+                    <circle cx="190" cy="338" r="4.5" fill="#FEF08A"/>
+                    <circle cx="152" cy="320" r="3" fill="#D97706"/>
+                    <circle cx="196" cy="315" r="3" fill="#F59E0B"/>
+
+                    <!-- Bottom Glass Tumbler Catching the Stream with Mountain of Foam -->
+                    <g transform="translate(135, 330)">
+                        <!-- Glass Body -->
+                        <path d="M10 18 L18 85 Q 20 92 40 92 Q 60 92 62 85 L70 18 Z" fill="rgba(255,255,255,0.08)" stroke="#38BDF8" stroke-width="2.5"/>
+                        <!-- Tea Liquid -->
+                        <path d="M13 36 L19 84 Q 21 88 40 88 Q 59 88 61 84 L67 36 Z" fill="url(#chai-liquid-2)"/>
+                        <!-- Overflowing Foamy Head (Froth) -->
+                        <path d="M6 20 Q 20 5 40 8 Q 60 6 74 20 Q 80 30 68 34 Q 40 38 12 34 Q 0 28 6 20 Z" fill="#FEF08A"/>
+                        <ellipse cx="40" cy="18" rx="28" ry="7" fill="#FFFBEB"/>
+                        <!-- Froth Bubbles -->
+                        <circle cx="28" cy="16" r="3" fill="#FEF9C3"/>
+                        <circle cx="52" cy="18" r="3.5" fill="#FEF9C3"/>
+                        <circle cx="40" cy="14" r="2.5" fill="#FEF9C3"/>
+                    </g>
+
+                    <!-- Giant Comic Speech Bubble -->
+                    <g transform="translate(145, 140)">
+                        <path d="M0 16 Q 0 0 16 0 L154 0 Q 170 0 170 16 L170 46 Q 170 62 154 62 L35 62 L15 80 L18 62 L16 62 Q 0 62 0 46 Z" fill="#FACC15" stroke="#000000" stroke-width="2.5"/>
+                        <text x="85" y="27" font-family="'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="900" fill="#000000" text-anchor="middle">
+                            ചേട്ടാ... ഒരു
+                        </text>
+                        <text x="85" y="47" font-family="'Plus Jakarta Sans', sans-serif" font-size="14" font-weight="900" fill="#7C2D12" text-anchor="middle">
+                            മീറ്റർ ചായ! 🔥
+                        </text>
+                    </g>
+
+                    <defs>
+                        <linearGradient id="meter-tea-stream" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#D97706"/>
+                            <stop offset="50%" stop-color="#F59E0B"/>
+                            <stop offset="100%" stop-color="#B45309"/>
+                        </linearGradient>
+                        <linearGradient id="chai-liquid-2" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#F59E0B"/>
+                            <stop offset="50%" stop-color="#B45309"/>
+                            <stop offset="100%" stop-color="#78350F"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
             </div>
 
-            <!-- Panel 4 -->
+            <!-- Cartoon 3: Late Night Study Chai Energy -->
             <div class="comic-panel">
-                <img
-                    src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=600&q=85"
-                    alt="Friends chai canteen"
-                    loading="lazy"
-                    style="filter: sepia(0.3) saturate(1.9) hue-rotate(10deg) brightness(0.78);"
-                />
-                <div class="comic-panel-overlay">
-                    <div class="comic-bubble">FRIENDS & CHAI</div>
-                    <div class="comic-panel-title">CANTEEN-IL KUTTI FRIENDS, KADAKKAN CHAI</div>
-                </div>
-            </div>
-        </div>
+                <svg class="comic-art-svg" viewBox="0 0 320 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="320" height="420" fill="#0A0E17"/>
 
-        <div style="text-align:center; margin-top: 3rem;">
-            <p style="font-size:0.9rem; color:var(--text-muted);">
-                Every cup you drink gets tracked here. Your class earns aura points. Don't let your friends win.
-            </p>
+                    <!-- Desk Lamp Light Cone -->
+                    <polygon points="260,30 60,380 320,380" fill="#FACC15" opacity="0.08"/>
+                    <circle cx="260" cy="30" r="18" fill="#FDE047" opacity="0.3"/>
+
+                    <!-- Wall Clock -->
+                    <circle cx="65" cy="65" r="28" fill="#1E293B" stroke="#475569" stroke-width="2"/>
+                    <circle cx="65" cy="65" r="3" fill="#F8FAFC"/>
+                    <line x1="65" y1="65" x2="65" y2="46" stroke="#F8FAFC" stroke-width="2" stroke-linecap="round"/>
+                    <line x1="65" y1="65" x2="80" y2="72" stroke="#EF4444" stroke-width="2" stroke-linecap="round"/>
+
+                    <!-- Engineering Study Books Stack -->
+                    <g transform="translate(30, 240)">
+                        <rect x="0" y="50" width="130" height="24" rx="4" fill="#3B82F6"/>
+                        <rect x="10" y="54" width="115" height="16" fill="#1E40AF"/>
+                        <rect x="10" y="26" width="120" height="24" rx="4" fill="#10B981"/>
+                        <rect x="20" y="30" width="105" height="16" fill="#065F46"/>
+                        <rect x="18" y="2" width="110" height="24" rx="4" fill="#EC4899"/>
+                    </g>
+
+                    <!-- Glowing Kadak Chai with Super-Power Energy Ring -->
+                    <g transform="translate(180, 210)">
+                        <!-- Power Aura Radiating from Chai -->
+                        <circle cx="45" cy="70" r="55" fill="url(#power-glow)" opacity="0.45"/>
+                        <!-- Lightning Sparks -->
+                        <path d="M-10 40 L-2 48 L-14 62 L6 50 Z" fill="#FDE047"/>
+                        <path d="M100 35 L92 45 L106 58 L88 47 Z" fill="#FDE047"/>
+
+                        <!-- Glass Tumbler -->
+                        <path d="M14 25 L23 105 Q 25 112 45 112 Q 65 112 67 105 L76 25 Z" fill="rgba(255,255,255,0.08)" stroke="#38BDF8" stroke-width="2.5"/>
+                        <!-- Deep Kadak Tea -->
+                        <path d="M17 46 L24 103 Q 26 108 45 108 Q 64 108 66 103 L73 46 Z" fill="url(#kadak-grad)"/>
+                        <ellipse cx="45" cy="46" rx="28" ry="6.5" fill="#F59E0B"/>
+                        <!-- Glowing Steam -->
+                        <path d="M35 30 Q 30 10 45 -10 T 38 -35" stroke="#FDE047" stroke-width="3" fill="none" stroke-linecap="round"/>
+                        <path d="M55 26 Q 65 5 50 -15 T 58 -45" stroke="#FDE047" stroke-width="3" fill="none" stroke-linecap="round"/>
+                    </g>
+
+                    <!-- Comic Speech Bubble -->
+                    <g transform="translate(115, 120)">
+                        <rect width="180" height="50" rx="14" fill="#FFFFFF"/>
+                        <polygon points="120,50 130,64 140,50" fill="#FFFFFF"/>
+                        <text x="90" y="24" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="900" fill="#000000" text-anchor="middle">
+                            സപ്ലി പേടി മാറ്റാൻ
+                        </text>
+                        <text x="90" y="42" font-family="'Plus Jakarta Sans', sans-serif" font-size="13" font-weight="900" fill="#DC2626" text-anchor="middle">
+                            കട്ടൻ ചായ! ⚡
+                        </text>
+                    </g>
+
+                    <defs>
+                        <radialGradient id="power-glow" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.9"/>
+                            <stop offset="100%" stop-color="#F59E0B" stop-opacity="0"/>
+                        </radialGradient>
+                        <linearGradient id="kadak-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#D97706"/>
+                            <stop offset="60%" stop-color="#9A3412"/>
+                            <stop offset="100%" stop-color="#451A03"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+
+            <!-- Cartoon 4: Canteen Cheers Toast -->
+            <div class="comic-panel">
+                <svg class="comic-art-svg" viewBox="0 0 320 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="320" height="420" fill="#141926"/>
+
+                    <!-- Clink Impact Starburst & Confetti -->
+                    <polygon points="160,110 172,138 202,142 178,162 186,192 160,174 134,192 142,162 118,142 148,138" fill="#FDE047" opacity="0.95"/>
+                    <circle cx="160" cy="152" r="16" fill="#FFFFFF"/>
+                    <circle cx="120" cy="90" r="4.5" fill="#38BDF8"/>
+                    <circle cx="205" cy="85" r="4" fill="#EC4899"/>
+                    <circle cx="105" cy="180" r="3.5" fill="#10B981"/>
+                    <circle cx="218" cy="175" r="5" fill="#F59E0B"/>
+
+                    <!-- Left Cutting Chai Tumbler (Angled in Toast) -->
+                    <g transform="translate(90, 160) rotate(16)">
+                        <path d="M10 20 L18 95 Q 20 102 38 102 Q 56 102 58 95 L66 20 Z" fill="rgba(255,255,255,0.08)" stroke="#38BDF8" stroke-width="2.5"/>
+                        <path d="M13 38 L19 94 Q 21 98 38 98 Q 55 98 57 94 L63 38 Z" fill="url(#toast-chai-left)"/>
+                        <ellipse cx="38" cy="38" rx="25" ry="6" fill="#FEF08A"/>
+                        <path d="M28 25 Q 22 10 32 0 T 26 -20" stroke="#FEF08A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                    </g>
+
+                    <!-- Right Cutting Chai Tumbler (Angled in Toast) -->
+                    <g transform="translate(165, 180) rotate(-16)">
+                        <path d="M10 20 L18 95 Q 20 102 38 102 Q 56 102 58 95 L66 20 Z" fill="rgba(255,255,255,0.08)" stroke="#38BDF8" stroke-width="2.5"/>
+                        <path d="M13 38 L19 94 Q 21 98 38 98 Q 55 98 57 94 L63 38 Z" fill="url(#toast-chai-right)"/>
+                        <ellipse cx="38" cy="38" rx="25" ry="6" fill="#FEF08A"/>
+                        <path d="M48 25 Q 54 10 44 0 T 50 -20" stroke="#FEF08A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                    </g>
+
+                    <!-- Comic Speech Bubble -->
+                    <g transform="translate(45, 30)">
+                        <rect width="230" height="46" rx="14" fill="#FFFFFF"/>
+                        <polygon points="150,46 160,60 170,46" fill="#FFFFFF"/>
+                        <text x="115" y="22" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="900" fill="#1F2937" text-anchor="middle">
+                            ചായ കുടിച്ച് വൈബ് ആക്കാം
+                        </text>
+                        <text x="115" y="38" font-family="'Plus Jakarta Sans', sans-serif" font-size="13" font-weight="900" fill="#0284C7" text-anchor="middle">
+                            മച്ചാനേ! 🤝
+                        </text>
+                    </g>
+
+                    <defs>
+                        <linearGradient id="toast-chai-left" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#F59E0B"/>
+                            <stop offset="100%" stop-color="#92400E"/>
+                        </linearGradient>
+                        <linearGradient id="toast-chai-right" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#F59E0B"/>
+                            <stop offset="100%" stop-color="#92400E"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
         </div>
     </section>
 
     <!-- ── GSAP SCROLLTRIGGER HORIZONTAL TEXT FLOW TICKER ── -->
-    <!-- Content: 'In every bottle, discover the undeniable Real Magic of sharing pure Refreshment that brings us Together' -->
     <section id="horizontal-ticker" class="ticker-scroll-section">
         <div class="ticker-flow-wrapper">
             <div id="ticker-track" class="ticker-flow-track">
@@ -423,132 +577,210 @@
             </div>
         </div>
     </section>
+    </div> <!-- /#landing-wrapper -->
 
-    <!-- ── DASHBOARD ANCHOR ── -->
-    <div id="dashboard-anchor"></div>
-
-    <!-- ── LOGIN / REGISTER SECTION ── -->
-    <section id="login-section" class="auth-wrapper">
+    <!-- ── AUTHENTICATION HUB (Sign In & Create Account Tabs) ── -->
+    <section id="auth-section" class="auth-wrapper">
         <div class="auth-card tilt-card-3d">
-            <div class="auth-header">
-                <div class="auth-icon-badge">
-                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M17 8h1a4 4 0 1 1 0 8h-1"></path>
-                        <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"></path>
-                        <line x1="6" y1="2" x2="6" y2="4"></line>
-                        <line x1="10" y1="2" x2="10" y2="4"></line>
-                        <line x1="14" y1="2" x2="14" y2="4"></line>
-                    </svg>
-                </div>
-                <h2 class="animated-h3" style="font-size:1.6rem;font-weight:900;">SIGN IN</h2>
-                <p class="auth-subtitle">Log your daily chai, track your class, and see who's winning.</p>
+            <!-- Tabs Header -->
+            <div class="auth-tabs-nav">
+                <button type="button" id="tab-btn-login" class="auth-tab-btn active">SIGN IN</button>
+                <button type="button" id="tab-btn-register" class="auth-tab-btn">CREATE ACCOUNT</button>
             </div>
 
-            <!-- Demo quick-login buttons -->
-            <div class="demo-accounts-box">
-                <div class="demo-title">TRY A DEMO ACCOUNT:</div>
-                <div class="demo-buttons-grid">
-                    <button class="demo-login-btn" data-email="aarav@example.com">
-                        <span>Aarav Sharma</span>
-                        <span class="demo-role-tag">CSA · Year 2</span>
-                    </button>
-                    <button class="demo-login-btn" data-email="priya@example.com">
-                        <span>Priya Patel</span>
-                        <span class="demo-role-tag">ECA · Year 3</span>
-                    </button>
-                    <button class="demo-login-btn" data-email="rohan@example.com">
-                        <span>Rohan Verma</span>
-                        <span class="demo-role-tag">ME · Year 1</span>
-                    </button>
-                    <button class="demo-login-btn" data-email="ananya@example.com">
-                        <span>Ananya Deshmukh</span>
-                        <span class="demo-role-tag">CSB · Year 4</span>
-                    </button>
-                </div>
-            </div>
-
-            <div class="auth-divider">
-                <span>OR SIGN IN WITH YOUR EMAIL</span>
-            </div>
-
-            <!-- Login Form -->
-            <form id="login-form">
-                <div class="form-group">
-                    <label for="login-email">Email Address</label>
-                    <input type="email" id="login-email" class="form-control" placeholder="your@email.com" required>
-                </div>
-                <div class="form-group">
-                    <label for="login-password">Password</label>
-                    <input type="password" id="login-password" class="form-control" placeholder="Your password" required>
-                </div>
-                <button type="submit" class="btn btn-primary full-width">SIGN IN &amp; TRACK CHAI</button>
-                <div class="form-footer-toggle">
-                    New here? <a id="show-register-btn">Create account</a>
-                </div>
-            </form>
-
-            <!-- Register Form -->
-            <form id="register-form" class="hidden">
-                <div class="form-group">
-                    <label for="reg-name">Your Name</label>
-                    <input type="text" id="reg-name" class="form-control" placeholder="e.g. Rahul Sharma" required>
-                </div>
-                <div class="form-group">
-                    <label for="reg-email">Email Address</label>
-                    <input type="email" id="reg-email" class="form-control" placeholder="your@email.com" required>
-                </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;">
-                    <div class="form-group">
-                        <label for="reg-class">Class</label>
-                        <select id="reg-class" class="form-control">
-                            <option value="CSA">CSA</option>
-                            <option value="CSB">CSB</option>
-                            <option value="CSC">CSC</option>
-                            <option value="ECA">ECA</option>
-                            <option value="ECB">ECB</option>
-                            <option value="EB">EB</option>
-                            <option value="ME">ME</option>
-                            <option value="CU">CU</option>
-                            <option value="EV">EV</option>
-                            <option value="EEE">EEE</option>
-                        </select>
+            <!-- PANE 1: SIGN IN -->
+            <div id="pane-login">
+                <div class="auth-header">
+                    <div class="auth-icon-badge">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 8h1a4 4 0 1 1 0 8h-1"></path>
+                            <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"></path>
+                            <line x1="6" y1="2" x2="6" y2="4"></line>
+                            <line x1="10" y1="2" x2="10" y2="4"></line>
+                            <line x1="14" y1="2" x2="14" y2="4"></line>
+                        </svg>
                     </div>
-                    <div class="form-group">
-                        <label for="reg-year">Year</label>
-                        <select id="reg-year" class="form-control">
-                            <option value="1">Year 1</option>
-                            <option value="2">Year 2</option>
-                            <option value="3">Year 3</option>
-                            <option value="4">Year 4</option>
-                        </select>
+                    <h2 class="animated-h3" style="font-size:1.6rem;font-weight:900;">WELCOME BACK</h2>
+                    <p class="auth-subtitle">Sign in to track your chai, view the health meter, and lead your branch.</p>
+                </div>
+
+                <!-- Quick Demo profiles -->
+                <div class="demo-accounts-box">
+                    <div class="demo-title">TRY A DEMO PROFILE:</div>
+                    <div class="demo-buttons-grid">
+                        <button type="button" class="demo-login-btn" data-email="aarav@example.com">
+                            <span>Aarav Sharma</span>
+                            <span class="demo-role-tag">CSA · Year 2</span>
+                        </button>
+                        <button type="button" class="demo-login-btn" data-email="priya@example.com">
+                            <span>Priya Patel</span>
+                            <span class="demo-role-tag">ECA · Year 3</span>
+                        </button>
+                        <button type="button" class="demo-login-btn" data-email="rohan@example.com">
+                            <span>Rohan Verma</span>
+                            <span class="demo-role-tag">ME · Year 1</span>
+                        </button>
+                        <button type="button" class="demo-login-btn" data-email="ananya@example.com">
+                            <span>Ananya Deshmukh</span>
+                            <span class="demo-role-tag">CSB · Year 4</span>
+                        </button>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label for="reg-password">Create Password</label>
-                    <input type="password" id="reg-password" class="form-control" placeholder="Choose a password" required>
+
+                <div class="auth-divider">
+                    <span>OR SIGN IN WITH EMAIL</span>
                 </div>
-                <button type="submit" class="btn btn-primary full-width">CREATE ACCOUNT</button>
-                <div class="form-footer-toggle">
-                    Already have an account? <a id="show-login-btn">Sign in</a>
+
+                <!-- Sign In Form with Email, Class, Year, and Password -->
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-email">Email Address</label>
+                        <input type="email" id="login-email" class="form-control" placeholder="your@email.com" required>
+                    </div>
+
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;">
+                        <div class="form-group">
+                            <label for="login-class">Class</label>
+                            <select id="login-class" class="form-control">
+                                <option value="CSA">CSA</option>
+                                <option value="CSB">CSB</option>
+                                <option value="CSC">CSC</option>
+                                <option value="ECA">ECA</option>
+                                <option value="ECB">ECB</option>
+                                <option value="EB">EB</option>
+                                <option value="ME">ME</option>
+                                <option value="CU">CU</option>
+                                <option value="EV">EV</option>
+                                <option value="EEE">EEE</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="login-year">Year</label>
+                            <select id="login-year" class="form-control">
+                                <option value="1">Year 1</option>
+                                <option value="2">Year 2</option>
+                                <option value="3">Year 3</option>
+                                <option value="4">Year 4</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" class="form-control" placeholder="••••••••" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary full-width" style="padding:0.9rem;font-size:0.95rem;">
+                        SIGN IN &amp; ENTER DASHBOARD &rarr;
+                    </button>
+
+                    <div style="text-align:center;margin-top:1.2rem;font-size:0.84rem;color:var(--text-secondary);">
+                        Don't have an account yet? 
+                        <span id="link-to-register" class="auth-switch-link">Create Account</span>
+                    </div>
+                </form>
+            </div>
+
+            <!-- PANE 2: CREATE ACCOUNT -->
+            <div id="pane-register" class="hidden">
+                <div class="auth-header">
+                    <div class="auth-icon-badge" style="background:rgba(236,72,153,0.1);border-color:rgba(236,72,153,0.3);color:var(--accent-pink);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <line x1="19" y1="8" x2="19" y2="14"></line>
+                            <line x1="22" y1="11" x2="16" y2="11"></line>
+                        </svg>
+                    </div>
+                    <h2 class="animated-h3" style="font-size:1.6rem;font-weight:900;">CREATE ACCOUNT</h2>
+                    <p class="auth-subtitle">Join your branch team and track your campus chai consumption.</p>
                 </div>
-            </form>
+
+                <form id="register-form">
+                    <div class="form-group">
+                        <label for="reg-name">Full Name</label>
+                        <input type="text" id="reg-name" class="form-control" placeholder="e.g. Rahul Menon" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-email">Email Address</label>
+                        <input type="email" id="reg-email" class="form-control" placeholder="rahul@college.edu" required>
+                    </div>
+
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;">
+                        <div class="form-group">
+                            <label for="reg-class">Class</label>
+                            <select id="reg-class" class="form-control" required>
+                                <option value="CSA">CSA</option>
+                                <option value="CSB">CSB</option>
+                                <option value="CSC">CSC</option>
+                                <option value="ECA">ECA</option>
+                                <option value="ECB">ECB</option>
+                                <option value="EB">EB</option>
+                                <option value="ME">ME</option>
+                                <option value="CU">CU</option>
+                                <option value="EV">EV</option>
+                                <option value="EEE">EEE</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-year">Year</label>
+                            <select id="reg-year" class="form-control" required>
+                                <option value="1">Year 1</option>
+                                <option value="2">Year 2</option>
+                                <option value="3">Year 3</option>
+                                <option value="4">Year 4</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-password">Password</label>
+                        <input type="password" id="reg-password" class="form-control" placeholder="Choose a password" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-password-confirm">Confirm Password</label>
+                        <input type="password" id="reg-password-confirm" class="form-control" placeholder="Confirm your password" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary full-width" style="padding:0.9rem;font-size:0.95rem;">
+                        CREATE ACCOUNT &amp; START TRACKING &rarr;
+                    </button>
+
+                    <div style="text-align:center;margin-top:1.2rem;font-size:0.84rem;color:var(--text-secondary);">
+                        Already have an account? 
+                        <span id="link-to-login" class="auth-switch-link">Sign In</span>
+                    </div>
+                </form>
+            </div>
         </div>
     </section>
 
-    <!-- ── MAIN DASHBOARD (shown after login) ── -->
+    <!-- ── MAIN DASHBOARD (shown at top immediately after login) ── -->
     <main id="dashboard-section" class="dashboard-container hidden">
+        <div id="dashboard-top"></div>
 
-        <!-- Live Tapri Radar Bar -->
-        <div class="tapri-radar-bar">
-            <div class="radar-live-badge"><span class="radar-dot"></span> LIVE TAPRI RADAR</div>
-            <div class="radar-ticker-content">
-                <span><strong>Gate 1 Tapri:</strong> Masala chai batch hot (68°C) · 24 cups today</span>
-                <span class="ticker-sep">&bull;</span>
-                <span><strong>Canteen B:</strong> Elaichi cutting available · CSA leading</span>
-                <span class="ticker-sep">&bull;</span>
-                <span><strong>Night Canteen:</strong> Open till midnight · First years catching up</span>
+        <!-- Dashboard Welcome Hero Banner -->
+        <div class="dashboard-welcome-banner">
+            <div class="welcome-text-col">
+                <div class="label-secondary" style="color:var(--accent-cyan);margin-bottom:0.3rem;">CAMPUS CHAI HUB // LIVE</div>
+                <h1 class="welcome-heading">Welcome back, <span id="dash-welcome-name">Aarav</span>! 👋</h1>
+                <p class="welcome-sub">All your campus chai stats are ready: scan cutting chai glasses with AI authentication, track your health &amp; caffeine limits, and climb the class leaderboard.</p>
+            </div>
+            <div class="welcome-actions">
+                <button id="btn-dash-scan" class="btn btn-primary" style="padding:0.85rem 1.8rem;font-size:0.92rem;box-shadow:0 0 25px rgba(6,182,212,0.4);">
+                    📸 SCAN MY CHAI GLASS
+                </button>
+                <button id="btn-dash-pass" class="btn btn-secondary" style="padding:0.85rem 1.5rem;font-size:0.92rem;">
+                    🪪 VIEW CHAI PASS
+                </button>
             </div>
         </div>
+
+        <div id="health-tracker-anchor"></div>
+        <div id="leaderboard-anchor"></div>
+        <div id="history-anchor"></div>
 
         <div class="grid-main">
 
@@ -570,7 +802,7 @@
                             <div id="profile-roll" class="p-val">CSA · Year 1</div>
                         </div>
                         <div class="p-item">
-                            <div class="p-label">GROUP</div>
+                            <div class="p-label">BRANCH</div>
                             <div id="profile-hostel" class="p-val">CSA</div>
                         </div>
                         <div class="p-item" style="grid-column:span 2;">
@@ -691,7 +923,7 @@
         </div>
     </main>
 
-    <!-- ── CAMERA / SCAN MODAL ── -->
+    <!-- ── CAMERA / SCAN MODAL (No types of tea - Just Scan & Sweetness) ── -->
     <div id="camera-modal" class="modal-overlay hidden">
         <div class="modal-content">
             <div class="modal-header">
@@ -724,27 +956,18 @@
 
             <!-- Status -->
             <div id="ai-scanner-status" style="margin-top:0.6rem;font-size:0.84rem;color:var(--text-muted);text-align:center;">
-                Point your camera at a real chai glass and hit verify.
+                Point your camera at a real cutting chai glass and hit verify.
             </div>
 
-            <!-- Type & sugar options -->
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;margin-top:0.8rem;">
+            <!-- Sweetness Selection -->
+            <div style="margin-top:0.8rem;">
                 <div class="form-group" style="margin-bottom:0;">
-                    <label for="chai-blend-select" style="font-size:0.72rem;">TYPE OF CHAI</label>
-                    <select id="chai-blend-select" class="form-control" style="padding:0.5rem;font-size:0.84rem;">
-                        <option value="classic">Kadak Cutting (100ml)</option>
-                        <option value="masala">Masala Chai</option>
-                        <option value="adrak">Adrak Chai</option>
-                        <option value="elaichi">Elaichi Chai</option>
-                    </select>
-                </div>
-                <div class="form-group" style="margin-bottom:0;">
-                    <label for="chai-sugar-select" style="font-size:0.72rem;">SUGAR LEVEL</label>
-                    <select id="chai-sugar-select" class="form-control" style="padding:0.5rem;font-size:0.84rem;">
-                        <option value="standard">Normal Sweet</option>
-                        <option value="light">Less Sugar</option>
-                        <option value="sugarfree">No Sugar</option>
-                        <option value="extra">Extra Sweet</option>
+                    <label for="chai-sugar-select" style="font-size:0.75rem;">SUGAR LEVEL</label>
+                    <select id="chai-sugar-select" class="form-control" style="padding:0.55rem;font-size:0.88rem;">
+                        <option value="standard">Normal Sweet (Standard)</option>
+                        <option value="light">Less Sugar (Mild)</option>
+                        <option value="sugarfree">Sugarfree (Black / Diet)</option>
+                        <option value="extra">Extra Sweet (Kadak)</option>
                     </select>
                 </div>
             </div>
@@ -831,7 +1054,7 @@
                     <div class="label-secondary" style="margin-bottom:0.6rem;color:#fff;">QUICK</div>
                     <div style="display:flex;flex-direction:column;gap:0.4rem;font-size:0.84rem;">
                         <a href="#hero"               style="color:var(--text-secondary);text-decoration:none;">Back to Top</a>
-                        <a href="#comics"             style="color:var(--text-secondary);text-decoration:none;">Chai Comics</a>
+                        <a href="#dashboard-anchor"   style="color:var(--text-secondary);text-decoration:none;">Dashboard</a>
                         <a href="#horizontal-ticker"  style="color:var(--text-secondary);text-decoration:none;">Real Magic</a>
                         <a href="#login-section"      style="color:var(--text-secondary);text-decoration:none;">Sign In</a>
                     </div>

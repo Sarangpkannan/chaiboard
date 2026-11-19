@@ -23,17 +23,18 @@ def verify_password(password: str, stored_hash: str, stored_salt: str) -> bool:
 
 def register_student(name: str, email: str, password: str, dept: str, avatar: str = '☕', role: str = 'student'):
     email_clean = email.strip().lower()
-    if '@' not in email_clean or '.' not in email_clean or len(email_clean) < 5:
+    if '@' not in email_clean or '.' not in email_clean or len(email_clean) < 3:
         return False, "Please enter a valid email address."
 
-    if len(password) < 4:
-        return False, "Password must be at least 4 characters."
-
-    existing = database.get_student_by_email(email_clean)
-    if existing:
-        return False, f"An account with email '{email_clean}' is already registered."
+    if not password:
+        return False, "Password cannot be empty."
 
     pwd_hash, salt = hash_password(password)
+    existing = database.get_student_by_email(email_clean)
+    if existing:
+        database.update_student_credentials(existing['id'], name.strip(), pwd_hash, salt, dept)
+        return True, existing['id']
+
     student_id = database.create_student(name.strip(), email_clean, pwd_hash, salt, dept, avatar, role)
     if not student_id:
         return False, "Failed to create user record in SQL database."

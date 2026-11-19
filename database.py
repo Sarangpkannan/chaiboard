@@ -122,6 +122,20 @@ def create_student(name, email, password_hash, salt, department, avatar='OP', ro
     finally:
         conn.close()
 
+def update_student_credentials(student_id, name, password_hash, salt, department):
+    conn = get_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            UPDATE students
+            SET name = ?, password_hash = ?, salt = ?, department = ?
+            WHERE id = ?
+        """, (name.strip(), password_hash, salt, department.strip(), student_id))
+        conn.commit()
+        return True
+    finally:
+        conn.close()
+
 def get_student_by_email(email):
     conn = get_connection()
     cursor = conn.cursor()

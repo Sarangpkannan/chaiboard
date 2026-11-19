@@ -45,11 +45,11 @@ class RootHandler(BaseHandler):
 
 class LoginViewHandler(BaseHandler):
     def get(self):
-        self.render(os.path.join(BASE_DIR, 'templates', 'login.html'))
+        self.redirect('/#auth-section')
 
 class RegisterViewHandler(BaseHandler):
     def get(self):
-        self.render(os.path.join(BASE_DIR, 'templates', 'register.html'))
+        self.redirect('/?tab=register#auth-section')
 
 class ChamberWindowHandler(BaseHandler):
     def get(self):
@@ -102,22 +102,27 @@ class RegisterApiHandler(BaseHandler):
             body = json.loads(self.request.body.decode('utf-8'))
             name = body.get('name', '').strip()
             email = body.get('email', '').strip()
-            department = body.get('department', '').strip()
+            department = body.get('department') or body.get('class_code') or 'CSA'
             password = body.get('password', '')
 
             if not name or not email or not password:
-                self.write_json({'error': 'All fields are required.'}, 400)
+                self.write_json({'error': 'Name, email, and password are required.'}, 400)
                 return
 
             avatars = ['☕', '🫖', '⚡', '🧬', '🚀', '🌟']
             avatar = random.choice(avatars)
 
-            ok, msg = auth.register_student(name, email, password, department, avatar, role='student')
+            ok, student_id = auth.register_student(name, email, password, department, avatar, role='student')
             if not ok:
-                self.write_json({'error': msg}, 400)
+                self.write_json({'error': str(student_id)}, 400)
                 return
 
-            self.write_json({'status': 'success', 'message': 'Account created successfully.'})
+            res, err = auth.authenticate_student(email, password)
+            if not err and res:
+                self.set_cookie('chaiboard_session', res['token'], expires_days=7, httponly=False)
+                self.write_json({'status': 'success', 'message': 'Account created successfully.', 'student': res['student'], 'token': res['token']})
+            else:
+                self.write_json({'status': 'success', 'message': 'Account created successfully.'})
         except Exception as e:
             self.write_json({'error': str(e)}, 500)
 
