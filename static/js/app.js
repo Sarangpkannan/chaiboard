@@ -297,26 +297,8 @@
                 });
             }
 
-            // Quick Scan triggers
-            if (this.navBtnScanQuick) this.navBtnScanQuick.addEventListener('click', () => this.openCameraFlow());
-            if (this.btnDashScan) this.btnDashScan.addEventListener('click', () => this.openCameraFlow());
+            // Dashboard Pass trigger
             if (this.btnDashPass) this.btnDashPass.addEventListener('click', () => this.openPassModal());
-
-            // Nav link Chai Scanner
-            const navScanLoggedOut = document.getElementById('nav-link-scan-loggedout');
-            if (navScanLoggedOut) {
-                navScanLoggedOut.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    this.openCameraFlow();
-                });
-            }
-            const navScanLoggedIn = document.getElementById('nav-link-scanner');
-            if (navScanLoggedIn) {
-                navScanLoggedIn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    this.openCameraFlow();
-                });
-            }
 
             // Demo Profiles
             document.querySelectorAll('.demo-login-btn').forEach(btn => {
@@ -350,10 +332,6 @@
                 this.btnSlosh.addEventListener('click', () => {
                     if (this.hero3D) this.hero3D.triggerSlosh();
                 });
-            }
-
-            if (this.btnLogChai) {
-                this.btnLogChai.addEventListener('click', () => this.openCameraFlow());
             }
 
             if (this.btnCloseCamera) {
@@ -422,9 +400,16 @@
             localStorage.setItem('chaiboard_students_v4', JSON.stringify(data));
         }
 
-        autoLoginDemo(email) {
+        async autoLoginDemo(email) {
             const student = this.students.find(s => s.email === email);
             if (student) {
+                try {
+                    await fetch('/api/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: student.email, password: student.password || 'password123' })
+                    });
+                } catch (e) {}
                 this.setCurrentStudent(student);
             }
         }

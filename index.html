@@ -177,14 +177,14 @@
 
         <nav id="nav-links-logged-out" class="nav-links-center">
             <a href="#hero" class="nav-link-item">HOME</a>
-            <a href="javascript:void(0)" class="nav-link-item" id="nav-link-scan-loggedout">CHAI SCANNER</a>
+            <a href="/chamber" class="nav-link-item" id="nav-link-scan-loggedout">CHAI SCANNER</a>
             <a href="#auth-section" class="nav-link-item" id="nav-link-signin">SIGN IN</a>
             <a href="#auth-section" class="nav-link-item" id="nav-link-create">CREATE ACCOUNT</a>
         </nav>
 
         <nav id="nav-links-logged-in" class="nav-links-center hidden">
             <a href="#dashboard-top" class="nav-link-item">OVERVIEW</a>
-            <a href="javascript:void(0)" class="nav-link-item" id="nav-link-scanner">CHAI SCANNER</a>
+            <a href="/chamber" class="nav-link-item" id="nav-link-scanner">CHAI SCANNER</a>
             <a href="#health-tracker-anchor" class="nav-link-item">HEALTH METER</a>
             <a href="#leaderboard-anchor" class="nav-link-item">LEADERBOARD</a>
             <a href="#history-anchor" class="nav-link-item">MY LOGS</a>
@@ -193,7 +193,7 @@
 
         <div style="display:flex;align-items:center;gap:0.8rem;">
             <button id="toggle-sound-btn" class="btn btn-ghost btn-sm" style="color:#fff;font-size:0.72rem;">SFX: ON</button>
-            <button id="nav-btn-scan-quick" class="nav-btn-scan hidden">📸 SCAN CHAI</button>
+            <a href="/chamber" id="nav-btn-scan-quick" class="nav-btn-scan hidden" style="text-decoration:none;">📸 SCAN CHAI</a>
             <div id="logged-student-pill" class="student-badge-pill" style="display:none;">
                 <span id="header-avatar" class="student-avatar-badge">CH</span>
                 <div class="student-meta">
@@ -225,11 +225,14 @@
                 Every cutting chai you drink earns points for your class. Log your cup with a camera scan, beat your rival branches, and never crash out during exams.
             </p>
             <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-                <button type="button" id="hero-btn-signin" class="btn btn-primary" style="padding: 0.9rem 2.2rem; font-size: 0.95rem;">
-                    SIGN IN &rarr;
+                <a href="/chamber" class="btn btn-primary" style="padding: 0.9rem 2.2rem; font-size: 0.95rem; text-decoration: none; box-shadow: 0 0 25px rgba(6,182,212,0.4);">
+                    📸 SCAN CHAI NOW &rarr;
+                </a>
+                <button type="button" id="hero-btn-signin" class="btn btn-secondary" style="padding: 0.9rem 2.2rem; font-size: 0.95rem;">
+                    SIGN IN
                 </button>
                 <button type="button" id="hero-btn-register" class="btn btn-secondary" style="padding: 0.9rem 2.2rem; font-size: 0.95rem;">
-                    CREATE ACCOUNT &rarr;
+                    CREATE ACCOUNT
                 </button>
             </div>
         </div>
@@ -745,9 +748,9 @@
                 <p class="welcome-sub">All your campus chai stats are ready: scan cutting chai glasses with AI authentication, track your health &amp; caffeine limits, and climb the class leaderboard.</p>
             </div>
             <div class="welcome-actions">
-                <button id="btn-dash-scan" class="btn btn-primary" style="padding:0.85rem 1.8rem;font-size:0.92rem;box-shadow:0 0 25px rgba(6,182,212,0.4);">
-                    📸 SCAN MY CHAI GLASS
-                </button>
+                <a href="/chamber" id="btn-dash-scan" class="btn btn-primary" style="padding:0.85rem 1.8rem;font-size:0.92rem;box-shadow:0 0 25px rgba(6,182,212,0.4);text-decoration:none;display:inline-flex;align-items:center;gap:0.4rem;">
+                    📸 SCAN MY CHAI GLASS &rarr;
+                </a>
                 <button id="btn-dash-pass" class="btn btn-secondary" style="padding:0.85rem 1.5rem;font-size:0.92rem;">
                     🪪 VIEW CHAI PASS
                 </button>
@@ -790,7 +793,7 @@
                         </div>
                     </div>
                     <div style="margin-top:1.2rem;">
-                        <button id="btn-log-chai" class="btn btn-primary full-width">SCAN MY CHAI GLASS</button>
+                        <a href="/chamber" id="btn-log-chai" class="btn btn-primary full-width" style="text-decoration:none;display:block;text-align:center;">📸 SCAN MY CHAI GLASS &rarr;</a>
                     </div>
                 </div>
 

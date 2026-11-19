@@ -4,9 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chaiboard | Intake Terminal & 3D Vessel Telemetry</title>
+    <script>
+        if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
+        window.scrollTo(0, 0);
+    </script>
     <link rel="stylesheet" href="/static/css/style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
+        html, body { margin: 0; padding: 0; scroll-behavior: auto !important; }
         .chamber-grid {
             display: grid;
             grid-template-columns: 1.05fr 1fr;
@@ -157,8 +162,11 @@
 
             <!-- Multi-Window Navigation Switcher -->
             <nav class="nav-windows-list">
+                <a href="/" class="window-nav-link" style="color:var(--accent-cyan);border-color:rgba(6,182,212,0.4);background:rgba(6,182,212,0.12);font-weight:800;">
+                    <span>&larr; Back to Dashboard</span>
+                </a>
                 <a href="/chamber" class="window-nav-link active">
-                    <span>Intake Terminal &amp; 3D Model</span>
+                    <span>Chai Scanner &amp; 3D</span>
                     <button class="window-pop-btn" data-url="/chamber" data-title="ChaiChamber" title="Open in separate window">&#8599;</button>
                 </a>
                 <a href="/metrics" class="window-nav-link">
@@ -553,6 +561,7 @@
         }
 
         window.addEventListener('DOMContentLoaded', async () => {
+            window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
             heroGlass = new Chai3DHero('chai-3d-container');
             await startCamera();
             await refreshMetrics();
