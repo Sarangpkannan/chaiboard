@@ -57,8 +57,9 @@ class ChaiboardCameraAuth {
             const startY = (videoElement.videoHeight - size) / 2;
             ctx.drawImage(videoElement, startX, startY, size, size, 0, 0, 320, 320);
         } else {
-            // Draw simulated test frame
-            this.drawSimulatedChaiPhoto(ctx, true, 0);
+            // Camera not active - black frame so fraud detection triggers properly
+            ctx.fillStyle = '#050608';
+            ctx.fillRect(0, 0, 320, 320);
         }
         return canvas;
     }
@@ -207,17 +208,14 @@ class ChaiboardCameraAuth {
                 const sat = max > 0 ? delta / max : 0;
                 const val = max / 255;
 
-                // Authentic Indian Cutting Chai (CTC Black Tea + Whole Milk) criteria:
-                // 1. Hue in warm amber/golden caramel range: 14° to 48°
-                // 2. Saturation: 0.18 to 0.88
-                // 3. Brightness: 0.18 to 0.90
-                // 4. Red over blue differential >= 24, green over blue >= 8
+                // Authentic Indian / Kerala Cutting Chai (CTC Black Tea + Whole Milk) criteria:
+                // 1. Hue in warm amber/golden caramel range: 13° to 44°
+                // 2. Saturation: 0.28 to 0.90 (rich caramel, rejecting pale skin tone)
+                // 3. Brightness: 0.22 to 0.88
+                // 4. Red over blue differential >= 25, green over blue >= 5
                 const isTeaColor = (
-                    hue >= 14 && hue <= 48 &&
-                    sat >= 0.18 && sat <= 0.88 &&
-                    val >= 0.18 && val <= 0.90 &&
-                    r > g && g > b &&
-                    (r - b) >= 24
+                    ((hue >= 13 && hue <= 44 && sat >= 0.28 && sat <= 0.90 && val >= 0.22 && val <= 0.88 && r > g + 8 && g > b + 5 && (r - b) >= 25)) ||
+                    ((hue >= 15 && hue <= 48 && sat >= 0.16 && sat <= 0.65 && val >= 0.60 && val <= 0.96 && r > g && g >= b && (r - b) >= 15))
                 );
 
                 if (isTeaColor) {
@@ -233,23 +231,23 @@ class ChaiboardCameraAuth {
         const teaRatio = teaPixels / totalSampled;
 
         // Rejection 1: Absence of milk tea color (cars, faces, dogs, documents, coffee mugs, non-tea drinks)
-        if (teaRatio < 0.08) {
+        if (teaRatio < 0.06) {
             return {
                 isTeaDetected: false,
                 isGlassDetected: false,
-                confidence: (teaRatio * 120.0).toFixed(1),
-                reason: "Fraud Detected: No authentic cutting chai milk tea liquid detected in image.",
+                confidence: "0.0",
+                reason: "Fraud Detected: No authentic chaya (milk tea) liquid detected in image.",
                 estimatedTemp: 22
             };
         }
 
         // Rejection 2: Uniform brown background (wooden desk/floor/wall)
-        if (teaRatio > 0.88) {
+        if (teaRatio > 0.72) {
             return {
                 isTeaDetected: false,
                 isGlassDetected: false,
-                confidence: "22.0",
-                reason: "Fraud Detected: Uniform non-vessel surface detected (wooden desk/floor). No cutting chai glass tumbler identified.",
+                confidence: "18.0",
+                reason: "Fraud Detected: Uniform non-vessel surface detected (wooden desk/floor). No chaya glass tumbler identified.",
                 estimatedTemp: 24
             };
         }
@@ -258,46 +256,46 @@ class ChaiboardCameraAuth {
         const boxW = maxX - minX;
         const boxH = maxY - minY;
 
-        if (boxW < 35 || boxH < 40) {
+        if (boxW < 35 || boxH < 45) {
             return {
                 isTeaDetected: false,
                 isGlassDetected: false,
-                confidence: "26.0",
-                reason: "Fraud Detected: Liquid signature too small or fragmented to constitute a cutting chai glass.",
+                confidence: "20.0",
+                reason: "Fraud Detected: Liquid signature too small or fragmented to constitute a chaya glass tumbler.",
                 estimatedTemp: 24
             };
         }
 
         const aspect = boxH / Math.max(1, boxW);
-        if (aspect < 0.55 || aspect > 3.2) {
+        if (aspect < 0.65 || aspect > 2.60) {
             return {
                 isTeaDetected: false,
                 isGlassDetected: false,
-                confidence: "28.0",
-                reason: `Fraud Detected: Container geometry aspect ratio (${aspect.toFixed(2)}) does not match a cutting chai tumbler.`,
+                confidence: "25.0",
+                reason: `Fraud Detected: Container geometry aspect ratio (${aspect.toFixed(2)}) does not match a cutting chai tumbler (mug/bowl/flat object).`,
                 estimatedTemp: 24
             };
         }
 
         const boxArea = (boxW / 2) * (boxH / 2);
         const density = teaPixels / Math.max(1, boxArea);
-        if (density < 0.35) {
+        if (density < 0.38) {
             return {
                 isTeaDetected: false,
                 isGlassDetected: false,
-                confidence: "32.0",
+                confidence: "30.0",
                 reason: "Fraud Detected: Liquid dispersion is irregular; lacking coherent cutting chai vessel boundaries.",
                 estimatedTemp: 24
             };
         }
 
         // Passed verification!
-        const confidence = Math.min(99.4, 76.0 + (teaRatio * 40.0) + (density * 14.0)).toFixed(1);
+        const confidence = Math.min(99.2, 72.0 + (teaRatio * 35.0) + (density * 12.0)).toFixed(1);
         return {
             isTeaDetected: true,
             isGlassDetected: true,
             confidence: confidence,
-            reason: "Authentic cutting chai glass verified: Genuine milk tea liquid profile and cutting glass tumbler geometry identified.",
+            reason: "Authentic chaya in glass tumbler verified: CTC milk tea caramel spectrum and cutting glass geometry confirmed.",
             estimatedTemp: 64 + Math.floor(Math.random() * 6)
         };
     }
