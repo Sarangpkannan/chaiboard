@@ -38,17 +38,21 @@ def compute_dhash_from_image(img: Image.Image):
 
 def analyze_chai_image_data(image_data_base64: str):
     """
-    Decodes base64 image and performs strict visual analysis:
-    1. Detects authentic cutting chai (CTC milk tea) color profile in HSV & RGB
-    2. Enforces container spatial coherence & aspect ratio (cutting glass tumbler)
-    3. Rejects uniform surfaces (e.g. wooden desks, brown walls)
-    4. Rejects empty vessels, non-tea beverages, and arbitrary objects (cars, faces, documents, mugs)
+    Decodes base64 image and performs strict visual Computer Vision authentication
+    for authentic Indian / Kerala cutting chai (Chaya) in a transparent glass tumbler:
+    1. Detects authentic CTC milk tea color profile (warm caramel/amber spectrum in HSV and RGB)
+    2. Detects top froth / foam layer (aerated chaya foam)
+    3. Rejects human portraits, selfies, faces, and skin tones using internal facial landmark / void analysis
+    4. Enforces upright glass tumbler geometry (aspect ratio 0.65 to 2.50, cylindrical/tapered profile)
+    5. Detects transparent glass boundaries & vertical optical edge gradients (left & right glass walls)
+    6. Rejects uniform surfaces (wooden tables, desks, walls, blankets, or floors)
+    7. Rejects coffee mugs, bowls, bottles, plates, black tea, clear water, and non-tea objects
     """
     if not image_data_base64:
         return {
             'is_tea_liquid': False,
             'confidence': 0.0,
-            'reason': "Fraud Detected: No image payload provided for authentication.",
+            'reason': "Fraud Detected: No camera image payload provided for authentication.",
             'phash_binary': '0' * 64,
             'phash_hex': '0x0000000000000000'
         }
@@ -62,14 +66,14 @@ def analyze_chai_image_data(image_data_base64: str):
         return {
             'is_tea_liquid': False,
             'confidence': 0.0,
-            'reason': f"Fraud Detected: Malformed image payload ({str(e)}).",
+            'reason': f"Fraud Detected: Malformed or unreadable image payload ({str(e)}).",
             'phash_binary': '0' * 64,
             'phash_hex': '0x0000000000000000'
         }
 
     phash_bin, phash_hex = compute_dhash_from_image(img)
 
-    # Standardize image size for analysis
+    # Standardize image size for Computer Vision analysis
     w, h = 320, 320
     im = img.resize((w, h), Image.Resampling.BILINEAR)
     arr = np.array(im, dtype=np.float32)
@@ -82,7 +86,7 @@ def analyze_chai_image_data(image_data_base64: str):
     min_c = np.minimum(np.minimum(r, g), b)
     delta = max_c - min_c
 
-    # Hue calculation (0 to 360)
+    # Hue calculation (0 to 360 degrees)
     h_arr = np.zeros_like(max_c)
     mask_delta = delta > 1e-4
     
@@ -99,47 +103,55 @@ def analyze_chai_image_data(image_data_base64: str):
     s_arr = np.zeros_like(max_c)
     s_arr[max_c > 0] = delta[max_c > 0] / max_c[max_c > 0]
     
-    # Value (0 to 1)
+    # Value / Luminance (0 to 1)
     v_arr = max_c / 255.0
 
-    # Authentic Indian Cutting Chai (CTC Black Tea + Whole Milk) signature:
-    # 1. Hue strictly in warm amber / golden caramel spectrum: 14° to 48°
-    # 2. Moderate saturation: 0.18 to 0.88
-    # 3. Moderate brightness: 0.18 to 0.90
-    # 4. R > G > B with red-over-blue differential >= 25, green-over-blue >= 8
-    tea_mask = (
-        (h_deg >= 14) & (h_deg <= 48) &
-        (s_arr >= 0.18) & (s_arr <= 0.88) &
-        (v_arr >= 0.18) & (v_arr <= 0.90) &
-        (r > g) & (g > b) &
-        ((r - b) >= 24)
+    # 1. Authentic Kerala / Indian Cutting Chai (CTC Milk Tea) signature:
+    # Liquid core: warm caramel-amber hue with rich milk-tea saturation
+    liquid_core = (
+        (h_deg >= 13) & (h_deg <= 44) &
+        (s_arr >= 0.28) & (s_arr <= 0.90) &
+        (v_arr >= 0.22) & (v_arr <= 0.88) &
+        (r > g + 8) & (g > b + 5) &
+        ((r - b) >= 25)
     )
 
+    # Froth/foam layer: aerated creamy foam at top of chaya glass
+    froth_layer = (
+        (h_deg >= 15) & (h_deg <= 48) &
+        (s_arr >= 0.16) & (s_arr <= 0.65) &
+        (v_arr >= 0.60) & (v_arr <= 0.96) &
+        (r > g) & (g >= b) &
+        ((r - b) >= 15)
+    )
+
+    tea_mask = liquid_core | froth_layer
     total_pixels = w * h
     tea_pixel_count = int(np.sum(tea_mask))
+    core_pixel_count = int(np.sum(liquid_core))
     tea_ratio = tea_pixel_count / total_pixels
 
-    # Rejection 1: Absence of milk tea color (cars, faces, dogs, documents, coffee mugs, non-tea drinks)
-    if tea_ratio < 0.08:
+    # Rejection 1: Absence of authentic chaya milk tea color
+    if tea_ratio < 0.06:
         return {
             'is_tea_liquid': False,
-            'confidence': round(float(tea_ratio * 120.0), 1),
-            'reason': "Fraud Detected: No authentic cutting chai milk tea liquid detected in image.",
+            'confidence': 0.0,
+            'reason': "Fraud Detected: No authentic chaya (milk tea) liquid detected in image.",
             'phash_binary': phash_bin,
             'phash_hex': phash_hex
         }
 
-    # Rejection 2: Uniform background (wooden table/desk or brown wall occupying entire frame)
-    if tea_ratio > 0.88:
+    # Rejection 2: Uniform non-vessel surface (wooden table/desk, floor, or wall covering entire frame)
+    if tea_ratio > 0.72:
         return {
             'is_tea_liquid': False,
-            'confidence': 24.0,
-            'reason': "Fraud Detected: Uniform non-vessel surface detected (wooden desk/floor). No cutting chai glass tumbler identified.",
+            'confidence': 18.0,
+            'reason': "Fraud Detected: Uniform non-vessel surface (wooden desk, table, or wall detected). No chaya glass tumbler identified.",
             'phash_binary': phash_bin,
             'phash_hex': phash_hex
         }
 
-    # Spatial coherence: Calculate bounding box of the tea liquid mass
+    # Spatial coherence & Bounding Box of liquid
     y_indices, x_indices = np.where(tea_mask)
     y_min, y_max = int(np.min(y_indices)), int(np.max(y_indices))
     x_min, x_max = int(np.min(x_indices)), int(np.max(x_indices))
@@ -147,43 +159,111 @@ def analyze_chai_image_data(image_data_base64: str):
     box_h = y_max - y_min
     box_w = x_max - x_min
 
-    if box_w < 35 or box_h < 40:
+    # Rejection 3: Too small or fragmented
+    if box_w < 35 or box_h < 45:
         return {
             'is_tea_liquid': False,
-            'confidence': 26.0,
-            'reason': "Fraud Detected: Liquid signature too small or fragmented to constitute a cutting chai glass.",
+            'confidence': 20.0,
+            'reason': "Fraud Detected: Detected liquid area too small or fragmented to be a chaya glass.",
             'phash_binary': phash_bin,
             'phash_hex': phash_hex
         }
 
     aspect_ratio = box_h / max(1, box_w)
-    # A cutting chai glass liquid column is typically upright (aspect ratio 0.55 to 3.2)
-    if aspect_ratio < 0.55 or aspect_ratio > 3.2:
+    # A traditional cutting chai glass liquid column is upright (aspect ratio 0.65 to 2.55)
+    if aspect_ratio < 0.65 or aspect_ratio > 2.60:
+        return {
+            'is_tea_liquid': False,
+            'confidence': 25.0,
+            'reason': f"Fraud Detected: Vessel aspect ratio ({aspect_ratio:.2f}) does not match cutting chai tumbler (mug/bowl/flat object).",
+            'phash_binary': phash_bin,
+            'phash_hex': phash_hex
+        }
+
+    # Density inside bounding box: ensures liquid forms a coherent body
+    box_area = box_w * box_h
+    density = tea_pixel_count / max(1, box_area)
+    if density < 0.38:
+        return {
+            'is_tea_liquid': False,
+            'confidence': 30.0,
+            'reason': "Fraud Detected: Irregular liquid dispersion; lacking coherent chaya vessel boundaries.",
+            'phash_binary': phash_bin,
+            'phash_hex': phash_hex
+        }
+
+    # Rejection 4: Taper Profile (cutting glass is cylindrical or slightly tapered: top >= bottom)
+    h_seg = box_h // 4
+    top_w = np.sum(tea_mask[y_min + h_seg, :])
+    bot_w = np.sum(tea_mask[y_max - h_seg, :])
+
+    if top_w == 0 or bot_w == 0:
         return {
             'is_tea_liquid': False,
             'confidence': 28.0,
-            'reason': f"Fraud Detected: Container geometry aspect ratio ({aspect_ratio:.2f}) does not match a cutting chai tumbler.",
+            'reason': "Fraud Detected: Irregular non-glass liquid distribution.",
             'phash_binary': phash_bin,
             'phash_hex': phash_hex
         }
 
-    # Density inside bounding box: ensures liquid forms a coherent body within the vessel
-    box_area = box_w * box_h
-    density = tea_pixel_count / max(1, box_area)
-    if density < 0.35:
+    taper = top_w / bot_w
+    if taper < 0.68 or taper > 1.65:
         return {
             'is_tea_liquid': False,
-            'confidence': 32.0,
-            'reason': "Fraud Detected: Liquid dispersion is irregular; lacking coherent cutting chai vessel boundaries.",
+            'confidence': 30.0,
+            'reason': f"Fraud Detected: Vessel geometry (taper: {taper:.2f}) does not match cutting glass tumbler.",
             'phash_binary': phash_bin,
             'phash_hex': phash_hex
         }
 
-    confidence = min(99.4, 76.0 + (tea_ratio * 40.0) + (density * 14.0))
+    # Rejection 5: Vertical Glass Wall Edge Check (Sobel X gradient)
+    gray = 0.299 * r + 0.587 * g + 0.114 * b
+    gx = np.abs(gray[1:-1, 2:] - gray[1:-1, :-2])
+    pad = 10
+    left_strip = gx[y_min:y_max, max(0, x_min-pad):min(w-2, x_min+pad)]
+    right_strip = gx[y_min:y_max, max(0, x_max-pad):min(w-2, x_max+pad)]
+
+    left_max = np.max(left_strip) if left_strip.size > 0 else 0
+    right_max = np.max(right_strip) if right_strip.size > 0 else 0
+
+    if left_max < 14 or right_max < 14:
+        return {
+            'is_tea_liquid': False,
+            'confidence': 35.0,
+            'reason': "Fraud Detected: Missing transparent glass tumbler vertical boundaries and optical reflections.",
+            'phash_binary': phash_bin,
+            'phash_hex': phash_hex
+        }
+
+    # Rejection 6: Human Face / Portrait Rejection (internal dark eye features in skin tone)
+    upper_h = int(box_h * 0.5)
+    upper_mask = tea_mask[y_min:y_min+upper_h, x_min:x_max]
+    upper_gray = gray[y_min:y_min+upper_h, x_min:x_max]
+    
+    internal_holes = 0
+    for r_idx in range(upper_mask.shape[0]):
+        row_tea = np.where(upper_mask[r_idx])[0]
+        if len(row_tea) >= 10:
+            first_t, last_t = row_tea[0], row_tea[-1]
+            span = upper_mask[r_idx, first_t:last_t+1]
+            span_dark = upper_gray[r_idx, first_t:last_t+1] < 60
+            holes = (~span) & span_dark
+            internal_holes += np.sum(holes)
+
+    if internal_holes > 0.03 * (box_w * upper_h):
+        return {
+            'is_tea_liquid': False,
+            'confidence': 18.0,
+            'reason': "Fraud Detected: Facial features (eyes/portrait) detected instead of chaya glass tumbler.",
+            'phash_binary': phash_bin,
+            'phash_hex': phash_hex
+        }
+
+    confidence = min(99.2, 72.0 + (tea_ratio * 35.0) + (min(left_max, right_max) * 0.12))
     return {
         'is_tea_liquid': True,
         'confidence': round(float(confidence), 1),
-        'reason': "Authentic cutting chai verified: Genuine milk tea liquid profile and cutting glass tumbler geometry identified.",
+        'reason': f"Authentic chaya in glass tumbler verified: CTC milk tea caramel spectrum and cutting glass geometry confirmed (Aspect Ratio: {aspect_ratio:.2f}).",
         'phash_binary': phash_bin,
         'phash_hex': phash_hex
     }
@@ -205,7 +285,9 @@ def verify_and_audit_upload(student_id: int, phash_binary: str, phash_hex: str, 
         phash_hex = analysis['phash_hex']
         cv_reason = analysis['reason']
     else:
-        cv_reason = None
+        is_tea_liquid = False
+        mobilenet_confidence = 0.0
+        cv_reason = "Fraud Detected: No image payload provided for chaya authentication."
 
     # Check 1: Simulate or detect non-tea upload
     if simulate_fraud_flag == 'non_tea' or not is_tea_liquid or mobilenet_confidence < 45.0:
