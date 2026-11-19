@@ -1859,3 +1859,150 @@ h1, h2, h3, h4, .cinematic-heading {
     letter-spacing: 0.15em;
     color: #FFFFFF;
 }
+
+/* ==========================================================================
+   MULTI-WINDOW PORTAL DOCK & CONTAINER STYLES
+   ========================================================================== */
+.window-dock {
+    background: rgba(10, 10, 15, 0.92);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+}
+
+.dock-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0.85rem 1.8rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.2rem;
+    flex-wrap: wrap;
+}
+
+.brand-section {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    text-decoration: none;
+    color: inherit;
+}
+
+.brand-logo-badge {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: var(--accent-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.brand-logo-badge svg {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+}
+
+.brand-name {
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    color: #fff;
+}
+
+.brand-sub {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+}
+
+.nav-windows-list {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.window-nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.45rem 0.85rem;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.78rem;
+    font-weight: 700;
+    transition: all 0.2s ease;
+}
+
+.window-nav-link:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.window-nav-link.active {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.6);
+    color: #fca5a5;
+}
+
+.window-pop-btn {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    font-size: 0.72rem;
+    opacity: 0.6;
+    padding: 0;
+}
+
+.user-dock-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.page-window-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 1.8rem 1.8rem 5rem 1.8rem;
+    position: relative;
+    z-index: 10;
+}
+
+.window-header-banner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 1.4rem;
+    flex-wrap: wrap;
+    gap: 1.2rem;
+}
+
+.window-title {
+    font-size: 1.75rem;
+    font-weight: 900;
+    color: #fff;
+    margin-bottom: 0.35rem;
+    letter-spacing: -0.02em;
+}
+
+.window-desc {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    max-width: 720px;
+    line-height: 1.5;
+}

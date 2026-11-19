@@ -396,6 +396,8 @@ def update_student_admin(student_id, name, email, department, role):
 def delete_student_admin(student_id):
     conn = get_connection()
     cursor = conn.cursor()
+    cursor.execute("DELETE FROM chai_logs WHERE student_id = ?", (student_id,))
+    cursor.execute("DELETE FROM sessions WHERE student_id = ?", (student_id,))
     cursor.execute("DELETE FROM students WHERE id = ?", (student_id,))
     conn.commit()
     conn.close()

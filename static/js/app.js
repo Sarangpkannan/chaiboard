@@ -197,9 +197,6 @@
             this.btnCloseCamera = document.getElementById('btn-close-camera');
             this.videoFeed = document.getElementById('camera-feed');
             this.capturePreview = document.getElementById('capture-preview');
-            this.spaFilePreview = document.getElementById('spa-file-preview');
-            this.spaFileInput = document.getElementById('spa-image-file');
-            this.btnSpaBrowse = document.getElementById('btn-spa-browse');
             this.btnSnapChai = document.getElementById('btn-snap-chai');
             this.aiScannerStatus = document.getElementById('ai-scanner-status');
             this.verificationResults = document.getElementById('verification-results');
@@ -305,6 +302,22 @@
             if (this.btnDashScan) this.btnDashScan.addEventListener('click', () => this.openCameraFlow());
             if (this.btnDashPass) this.btnDashPass.addEventListener('click', () => this.openPassModal());
 
+            // Nav link Chai Scanner
+            const navScanLoggedOut = document.getElementById('nav-link-scan-loggedout');
+            if (navScanLoggedOut) {
+                navScanLoggedOut.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.openCameraFlow();
+                });
+            }
+            const navScanLoggedIn = document.getElementById('nav-link-scanner');
+            if (navScanLoggedIn) {
+                navScanLoggedIn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.openCameraFlow();
+                });
+            }
+
             // Demo Profiles
             document.querySelectorAll('.demo-login-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
@@ -318,12 +331,8 @@
                 this.loginForm.addEventListener('submit', (e) => {
                     e.preventDefault();
                     const email    = document.getElementById('login-email').value.trim();
-                    const clsEl    = document.getElementById('login-class');
-                    const yearEl   = document.getElementById('login-year');
-                    const cls      = clsEl ? clsEl.value : 'CSA';
-                    const year     = yearEl ? yearEl.value : '1';
                     const password = document.getElementById('login-password').value.trim();
-                    this.handleLogin(email, cls, year, password);
+                    this.handleLogin(email, password);
                 });
             }
 
@@ -349,26 +358,6 @@
 
             if (this.btnCloseCamera) {
                 this.btnCloseCamera.addEventListener('click', () => this.closeCameraFlow());
-            }
-
-            if (this.btnSpaBrowse && this.spaFileInput) {
-                this.btnSpaBrowse.addEventListener('click', () => this.spaFileInput.click());
-                this.spaFileInput.addEventListener('change', (e) => {
-                    const file = e.target.files[0];
-                    if (!file) return;
-                    const reader = new FileReader();
-                    reader.onload = (ev) => {
-                        this.uploadedImageBase64 = ev.target.result;
-                        if (this.spaFilePreview) {
-                            this.spaFilePreview.src = this.uploadedImageBase64;
-                            this.spaFilePreview.classList.remove('hidden');
-                        }
-                        if (this.videoFeed) this.videoFeed.classList.add('hidden');
-                        if (this.capturePreview) this.capturePreview.classList.add('hidden');
-                        this.aiScannerStatus.textContent = 'Image file loaded. Ready for Computer Vision authentication.';
-                    };
-                    reader.readAsDataURL(file);
-                });
             }
 
             if (this.btnSnapChai) {
@@ -440,20 +429,33 @@
             }
         }
 
-        async handleLogin(email, cls, year, password) {
+        async handleLogin(email, password) {
             if (!email || !password) {
                 this.showToast('Please enter your email and password.');
                 return;
             }
 
             // Sync with backend session
+            let backendRole = null;
+            let backendName = null;
+            let backendDept = null;
             try {
-                fetch('/api/login', {
+                const apiRes = await fetch('/api/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
-                }).catch(() => {});
-            } catch (e) {}
+                });
+                if (apiRes.ok) {
+                    const data = await apiRes.json();
+                    if (data.student) {
+                        backendRole = data.student.role;
+                        backendName = data.student.name;
+                        backendDept = data.student.department;
+                    }
+                }
+            } catch (e) {
+                console.warn('Backend login sync error:', e);
+            }
 
             let student = this.students.find(s => s.email.toLowerCase() === email.toLowerCase());
             if (student) {
@@ -461,32 +463,34 @@
                     this.showToast('Wrong password. Please try again.');
                     return;
                 }
-                if (cls) student.studentClass = cls;
-                if (year) student.year = year;
+                if (backendRole) student.role = backendRole;
+                if (backendName) student.name = backendName;
+                if (backendDept && !student.studentClass) student.studentClass = backendDept;
                 this.saveStudents(this.students);
             } else {
-                const namePart = email.split('@')[0].replace(/[._]/g, ' ');
+                const namePart = backendName || email.split('@')[0].replace(/[._]/g, ' ');
                 const formattedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
                 const initials = formattedName.substring(0, 2).toUpperCase() || 'CH';
                 student = {
                     email: email.toLowerCase(),
                     name: formattedName,
                     password: password,
-                    studentClass: cls || 'CSA',
-                    year: year || '1',
+                    role: backendRole || (email.toLowerCase() === 'admin@chaiboard.com' ? 'admin' : 'student'),
+                    studentClass: backendDept || 'CSA',
+                    year: '1',
                     avatar: initials,
                     cupsToday: 0,
                     weeklyCups: 0,
                     allTimeCups: 0,
                     streak: 1,
-                    title: 'Chai Enthusiast',
+                    title: (backendRole === 'admin' || email.toLowerCase() === 'admin@chaiboard.com') ? 'System Administrator' : 'Chai Enthusiast',
                     logs: []
                 };
                 this.students.push(student);
                 this.saveStudents(this.students);
             }
             this.setCurrentStudent(student);
-            this.showToast(`Welcome ${student.name}! Signed into ${student.studentClass} Year ${student.year}`);
+            this.showToast(`Welcome back, ${student.name}!`);
         }
 
         async handleRegister() {
@@ -577,6 +581,19 @@
             if (this.btnChaiPass) this.btnChaiPass.style.display = 'inline-flex';
             if (this.logoutBtn) this.logoutBtn.style.display = 'inline-flex';
 
+            // Show admin buttons if user is admin
+            const isAdmin = student.role === 'admin' || (student.email && student.email.toLowerCase() === 'admin@chaiboard.com');
+            const navAdmin = document.getElementById('nav-admin-link');
+            if (navAdmin) {
+                if (isAdmin) navAdmin.classList.remove('hidden');
+                else navAdmin.classList.add('hidden');
+            }
+            const bannerAdmin = document.getElementById('btn-dash-admin');
+            if (bannerAdmin) {
+                if (isAdmin) bannerAdmin.classList.remove('hidden');
+                else bannerAdmin.classList.add('hidden');
+            }
+
             if (this.dashWelcomeName) {
                 this.dashWelcomeName.textContent = student.name.split(' ')[0] || student.name;
             }
@@ -603,6 +620,11 @@
             if (this.dashboardSection) this.dashboardSection.classList.add('hidden');
             if (this.landingWrapper) this.landingWrapper.classList.remove('hidden');
             if (this.authSection) this.authSection.classList.remove('hidden');
+
+            const navAdmin = document.getElementById('nav-admin-link');
+            if (navAdmin) navAdmin.classList.add('hidden');
+            const bannerAdmin = document.getElementById('btn-dash-admin');
+            if (bannerAdmin) bannerAdmin.classList.add('hidden');
 
             if (this.navLinksLoggedIn) this.navLinksLoggedIn.classList.add('hidden');
             if (this.navLinksLoggedOut) this.navLinksLoggedOut.classList.remove('hidden');
@@ -901,63 +923,75 @@
             container.appendChild(wrapper);
         }
 
-        // Camera / Image Authentication Flow
+        // Camera Authentication Flow
         async openCameraFlow() {
-            this.cameraModal.classList.remove('hidden');
-            this.verificationResults.innerHTML = '';
-            this.aiScannerStatus.textContent = 'Initializing Camera & Computer Vision Engine...';
-            this.btnSnapChai.disabled = false;
-            this.uploadedImageBase64 = null;
-            if (this.spaFilePreview) this.spaFilePreview.classList.add('hidden');
+            if (!this.currentStudent) {
+                this.showToast('Please sign in first to access the Chai Scanner.');
+                this.scrollToAuth('login');
+                return;
+            }
 
-            const started = await this.cameraAuth.startCamera(this.videoFeed);
-            if (started) {
-                this.videoFeed.classList.remove('hidden');
-                this.capturePreview.classList.add('hidden');
-                this.aiScannerStatus.textContent = 'Optical camera active. Position cutting chai glass inside reticle or select an image file.';
-            } else {
-                this.videoFeed.classList.add('hidden');
-                this.capturePreview.classList.remove('hidden');
-                const ctx = this.capturePreview.getContext('2d');
-                this.cameraAuth.drawSimulatedChaiPhoto(ctx, true, 0);
-                this.aiScannerStatus.textContent = 'Simulation viewfinder active (or select image file above).';
+            if (!this.cameraModal) {
+                this.cameraModal = document.getElementById('camera-modal');
+            }
+            if (this.cameraModal) {
+                this.cameraModal.classList.remove('hidden');
+                this.cameraModal.style.display = 'flex';
+                this.cameraModal.style.zIndex = '10000';
+            }
+
+            if (this.verificationResults) this.verificationResults.innerHTML = '';
+            if (this.aiScannerStatus) this.aiScannerStatus.textContent = 'Initializing Camera...';
+            if (this.btnSnapChai) this.btnSnapChai.disabled = false;
+            this.uploadedImageBase64 = null;
+
+            if (this.cameraAuth) {
+                const started = await this.cameraAuth.startCamera(this.videoFeed);
+                if (started) {
+                    if (this.videoFeed) this.videoFeed.classList.remove('hidden');
+                    if (this.capturePreview) this.capturePreview.classList.add('hidden');
+                    if (this.aiScannerStatus) this.aiScannerStatus.textContent = 'Camera active. Position cutting chai glass inside reticle and click verify.';
+                } else {
+                    if (this.videoFeed) this.videoFeed.classList.add('hidden');
+                    if (this.capturePreview) {
+                        this.capturePreview.classList.remove('hidden');
+                        const ctx = this.capturePreview.getContext('2d');
+                        this.cameraAuth.drawSimulatedChaiPhoto(ctx, true, 0);
+                    }
+                    if (this.aiScannerStatus) this.aiScannerStatus.textContent = 'Simulation viewfinder active. Click verify to test scan.';
+                }
             }
         }
 
         closeCameraFlow() {
-            this.cameraAuth.stopCamera();
-            this.cameraModal.classList.add('hidden');
+            if (this.cameraAuth) this.cameraAuth.stopCamera();
+            if (this.cameraModal) {
+                this.cameraModal.classList.add('hidden');
+                this.cameraModal.style.display = 'none';
+            }
         }
 
         runVerificationFlow(mode = 'normal') {
-            this.btnSnapChai.disabled = true;
-            this.aiScannerStatus.textContent = 'Checking your chai glass...';
+            if (this.btnSnapChai) this.btnSnapChai.disabled = true;
+            if (this.aiScannerStatus) this.aiScannerStatus.textContent = 'Checking your chai glass with AI...';
             if (window.chaiAudio && typeof window.chaiAudio.playPour === 'function') {
                 window.chaiAudio.playPour();
             }
 
-            let frameCanvas = null;
-
-            if (this.uploadedImageBase64 && !this.spaFilePreview.classList.contains('hidden')) {
-                frameCanvas = document.createElement('canvas');
-                frameCanvas.width = 320;
-                frameCanvas.height = 320;
+            const frameCanvas = this.cameraAuth ? this.cameraAuth.captureFrame(this.videoFeed) : document.createElement('canvas');
+            if (mode === 'non_tea' && this.cameraAuth) {
                 const ctx = frameCanvas.getContext('2d');
-                ctx.drawImage(this.spaFilePreview, 0, 0, 320, 320);
-            } else {
-                frameCanvas = this.cameraAuth.captureFrame(this.videoFeed);
-                if (mode === 'non_tea') {
-                    const ctx = frameCanvas.getContext('2d');
-                    this.cameraAuth.drawSimulatedChaiPhoto(ctx, false);
-                }
+                this.cameraAuth.drawSimulatedChaiPhoto(ctx, false);
             }
 
-            const historyHashes = (this.currentStudent.logs || []).map(l => l.pHashBinary || '');
+            const historyHashes = (this.currentStudent && this.currentStudent.logs ? this.currentStudent.logs : []).map(l => l.pHashBinary || '');
 
             setTimeout(() => {
-                const result = this.cameraAuth.verifyChaiCapture(frameCanvas, historyHashes, mode);
-                this.displayVerificationResult(result);
-                this.btnSnapChai.disabled = false;
+                if (this.cameraAuth) {
+                    const result = this.cameraAuth.verifyChaiCapture(frameCanvas, historyHashes, mode);
+                    this.displayVerificationResult(result);
+                }
+                if (this.btnSnapChai) this.btnSnapChai.disabled = false;
             }, 600);
         }
 

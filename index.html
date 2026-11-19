@@ -177,15 +177,18 @@
 
         <nav id="nav-links-logged-out" class="nav-links-center">
             <a href="#hero" class="nav-link-item">HOME</a>
+            <a href="javascript:void(0)" class="nav-link-item" id="nav-link-scan-loggedout">CHAI SCANNER</a>
             <a href="#auth-section" class="nav-link-item" id="nav-link-signin">SIGN IN</a>
             <a href="#auth-section" class="nav-link-item" id="nav-link-create">CREATE ACCOUNT</a>
         </nav>
 
         <nav id="nav-links-logged-in" class="nav-links-center hidden">
             <a href="#dashboard-top" class="nav-link-item">OVERVIEW</a>
+            <a href="javascript:void(0)" class="nav-link-item" id="nav-link-scanner">CHAI SCANNER</a>
             <a href="#health-tracker-anchor" class="nav-link-item">HEALTH METER</a>
             <a href="#leaderboard-anchor" class="nav-link-item">LEADERBOARD</a>
             <a href="#history-anchor" class="nav-link-item">MY LOGS</a>
+            <a href="/admin" id="nav-admin-link" class="nav-link-item hidden" style="color:#fca5a5;font-weight:800;border:1px solid rgba(239,68,68,0.4);border-radius:6px;padding:0.2rem 0.55rem;background:rgba(239,68,68,0.12);">🛡️ ADMIN</a>
         </nav>
 
         <div style="display:flex;align-items:center;gap:0.8rem;">
@@ -631,38 +634,11 @@
                     <span>OR SIGN IN WITH EMAIL</span>
                 </div>
 
-                <!-- Sign In Form with Email, Class, Year, and Password -->
+                <!-- Sign In Form with Email and Password ONLY (Class & Year asked during Create Account) -->
                 <form id="login-form">
                     <div class="form-group">
                         <label for="login-email">Email Address</label>
                         <input type="email" id="login-email" class="form-control" placeholder="your@email.com" required>
-                    </div>
-
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;">
-                        <div class="form-group">
-                            <label for="login-class">Class</label>
-                            <select id="login-class" class="form-control">
-                                <option value="CSA">CSA</option>
-                                <option value="CSB">CSB</option>
-                                <option value="CSC">CSC</option>
-                                <option value="ECA">ECA</option>
-                                <option value="ECB">ECB</option>
-                                <option value="EB">EB</option>
-                                <option value="ME">ME</option>
-                                <option value="CU">CU</option>
-                                <option value="EV">EV</option>
-                                <option value="EEE">EEE</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="login-year">Year</label>
-                            <select id="login-year" class="form-control">
-                                <option value="1">Year 1</option>
-                                <option value="2">Year 2</option>
-                                <option value="3">Year 3</option>
-                                <option value="4">Year 4</option>
-                            </select>
-                        </div>
                     </div>
 
                     <div class="form-group">
@@ -775,6 +751,9 @@
                 <button id="btn-dash-pass" class="btn btn-secondary" style="padding:0.85rem 1.5rem;font-size:0.92rem;">
                     🪪 VIEW CHAI PASS
                 </button>
+                <a href="/admin" id="btn-dash-admin" class="btn hidden" style="padding:0.85rem 1.5rem;font-size:0.92rem;background:rgba(239,68,68,0.18);border:1px solid #ef4444;color:#fca5a5;text-decoration:none;display:inline-flex;align-items:center;gap:0.4rem;font-weight:800;">
+                    🛡️ ADMIN PORTAL
+                </a>
             </div>
         </div>
 
@@ -938,20 +917,12 @@
             <div style="position:relative;width:100%;height:260px;background:#06080d;border-radius:14px;overflow:hidden;border:2px solid rgba(6,182,212,0.4);">
                 <video id="camera-feed" playsinline autoplay muted style="width:100%;height:100%;object-fit:cover;"></video>
                 <canvas id="capture-preview" class="hidden" width="320" height="320" style="width:100%;height:100%;object-fit:cover;"></canvas>
-                <img id="spa-file-preview" class="hidden" alt="Preview" style="width:100%;height:100%;object-fit:cover;" />
                 <div class="scanner-hud">
                     <div class="reticle-box">
                         <div class="reticle-label">POINT AT CHAI GLASS</div>
                         <div class="scan-laser-line"></div>
                     </div>
                 </div>
-            </div>
-
-            <!-- File upload -->
-            <div style="margin-top:0.8rem;display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.03);border:1px dashed rgba(255,255,255,0.18);border-radius:12px;padding:0.6rem 0.9rem;">
-                <span style="font-size:0.8rem;color:var(--text-secondary);">Or upload a photo from your phone:</span>
-                <input type="file" id="spa-image-file" accept="image/*" style="display:none;" />
-                <button type="button" id="btn-spa-browse" class="btn btn-secondary btn-sm">CHOOSE PHOTO</button>
             </div>
 
             <!-- Status -->
