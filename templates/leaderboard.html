@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chaiboard | Campus Leaderboards &amp; Rivalries</title>
+    <title>Chaiboard | Departmental &amp; Cohort Consumption Analytics</title>
     <link rel="stylesheet" href="/static/css/style.css">
     <style>
         .leaderboard-subnav {
@@ -16,126 +16,136 @@
         }
         .tab-btn-group {
             display: flex;
-            background: rgba(0, 0, 0, 0.4);
-            padding: 0.3rem;
+            background: rgba(255, 255, 255, 0.05);
             border-radius: var(--radius-md);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 0.3rem;
+            border: 1px solid var(--border-color);
         }
         .tab-btn {
             background: transparent;
             border: none;
-            color: var(--text-secondary);
+            color: var(--text-muted);
             font-size: 0.84rem;
-            font-weight: 600;
-            padding: 0.5rem 1.1rem;
+            font-weight: 700;
+            padding: 0.55rem 1.25rem;
             border-radius: var(--radius-sm);
             cursor: pointer;
             transition: all 0.2s ease;
         }
         .tab-btn.active {
             background: var(--chai-amber);
-            color: #120e0b;
-            font-weight: 800;
-            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35);
+            color: #08090d;
+            box-shadow: 0 2px 10px rgba(245, 158, 11, 0.35);
         }
         .tier-select {
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: var(--bg-card);
+            border: 1px solid var(--border-highlight);
             color: #fff;
-            padding: 0.5rem 1rem;
+            padding: 0.6rem 1.2rem;
             border-radius: var(--radius-md);
             font-size: 0.85rem;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
         }
-        .student-rank-row {
+        .lb-row {
+            display: grid;
+            grid-template-columns: 50px 48px 1fr 140px;
+            align-items: center;
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.2s ease;
+        }
+        .lb-row:hover {
+            background: rgba(245, 158, 11, 0.06);
+        }
+        .lb-rank {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--text-muted);
+        }
+        .lb-rank-top {
+            color: var(--chai-amber);
+        }
+        .lb-avatar-col {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--chai-cream);
             display: flex;
             align-items: center;
-            gap: 1rem;
-            background: rgba(0, 0, 0, 0.25);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: var(--radius-md);
-            padding: 0.85rem 1.2rem;
-            margin-bottom: 0.6rem;
-            transition: transform 0.15s ease, border-color 0.15s ease;
-        }
-        .student-rank-row:hover {
-            border-color: var(--chai-amber);
-            transform: translateX(4px);
-        }
-        .rank-medal {
-            font-size: 1.25rem;
+            justify-content: center;
             font-weight: 800;
-            min-width: 36px;
-            text-align: center;
-        }
-        .hostel-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1.2rem;
-        }
-        @media (max-width: 768px) {
-            .hostel-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        .hostel-card-box {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: var(--radius-md);
-            padding: 1.2rem;
+            font-size: 0.8rem;
+            border: 1px solid var(--chai-amber);
         }
         .dept-row-item {
             background: rgba(0, 0, 0, 0.25);
             border: 1px solid rgba(255, 255, 255, 0.06);
             border-radius: var(--radius-md);
-            padding: 1rem 1.2rem;
-            margin-bottom: 0.8rem;
+            padding: 1.1rem 1.4rem;
+            margin-bottom: 0.85rem;
+            transition: all 0.2s ease;
+        }
+        .dept-row-item:hover {
+            border-color: var(--border-highlight);
+            background: rgba(245, 158, 11, 0.04);
         }
     </style>
 </head>
 <body>
 
-    <!-- Global Window Dock -->
+    <!-- Global Multi-Window Navigation Dock -->
     <header class="window-dock">
         <div class="dock-container">
             <a href="/chamber" class="brand-section">
-                <span class="brand-icon">🫖</span>
+                <div class="brand-logo-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 8h1a4 4 0 1 1 0 8h-1"></path>
+                        <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"></path>
+                        <line x1="6" y1="2" x2="6" y2="4"></line>
+                        <line x1="10" y1="2" x2="10" y2="4"></line>
+                        <line x1="14" y1="2" x2="14" y2="4"></line>
+                    </svg>
+                </div>
                 <div>
                     <div class="brand-name">CHAIBOARD</div>
-                    <div class="brand-sub">Campus Tea Leaderboard &amp; Health Engine</div>
+                    <div class="brand-sub">Industrial Beverage Intelligence Platform</div>
                 </div>
             </a>
 
-            <!-- Multi-Window Navigation Switcher -->
+            <!-- Navigation Links -->
             <nav class="nav-windows-list">
                 <a href="/chamber" class="window-nav-link">
-                    <span>🫖 3D Chamber &amp; Logger</span>
-                    <button class="window-pop-btn" data-url="/chamber" data-title="ChaiChamber" title="Open in separate window">↗</button>
+                    <span>Intake Terminal &amp; 3D Model</span>
+                    <button class="window-pop-btn" data-url="/chamber" data-title="ChaiChamber" title="Open in separate window">&#8599;</button>
                 </a>
                 <a href="/metrics" class="window-nav-link">
-                    <span>📊 Health Engine</span>
-                    <button class="window-pop-btn" data-url="/metrics" data-title="ChaiMetrics" title="Open in separate window">↗</button>
+                    <span>Nutritional Telemetry</span>
+                    <button class="window-pop-btn" data-url="/metrics" data-title="ChaiMetrics" title="Open in separate window">&#8599;</button>
                 </a>
                 <a href="/leaderboard" class="window-nav-link active">
-                    <span>🏆 Leaderboards</span>
-                    <button class="window-pop-btn" data-url="/leaderboard" data-title="ChaiLeaderboard" title="Open in separate window">↗</button>
+                    <span>Consumption Analytics</span>
+                    <button class="window-pop-btn" data-url="/leaderboard" data-title="ChaiLeaderboard" title="Open in separate window">&#8599;</button>
                 </a>
                 <a href="/profile" class="window-nav-link">
-                    <span>🪪 Chai Pass &amp; Logs</span>
-                    <button class="window-pop-btn" data-url="/profile" data-title="ChaiProfile" title="Open in separate window">↗</button>
+                    <span>Credential &amp; Intake Logs</span>
+                    <button class="window-pop-btn" data-url="/profile" data-title="ChaiProfile" title="Open in separate window">&#8599;</button>
                 </a>
                 <a href="/audit" class="window-nav-link">
-                    <span>🛡️ Security Vault</span>
-                    <button class="window-pop-btn" data-url="/audit" data-title="ChaiAudit" title="Open in separate window">↗</button>
+                    <span>Audit &amp; Fraud Ledger</span>
+                    <button class="window-pop-btn" data-url="/audit" data-title="ChaiAudit" title="Open in separate window">&#8599;</button>
                 </a>
             </nav>
 
             <div class="user-dock-actions">
-                <button id="dock-sound-btn" class="btn btn-ghost btn-sm">🔊 Sound ON</button>
+                <button id="dock-sound-btn" class="btn btn-ghost btn-sm">Audio FX: Active</button>
                 <div class="student-badge-pill">
-                    <span id="dock-student-avatar" style="font-size: 1.2rem;">☕</span>
+                    <span id="dock-student-avatar" class="student-avatar-badge">ID</span>
                     <div class="student-meta">
-                        <span id="dock-student-name" class="student-name-text">Loading...</span>
-                        <span id="dock-student-sub" class="student-sub-text">Student Session</span>
+                        <span id="dock-student-name" class="student-name-text">Loading Session...</span>
+                        <span id="dock-student-sub" class="student-sub-text">Active Operator</span>
                     </div>
                 </div>
                 <a id="dock-logout-btn" href="#" class="btn btn-ghost btn-sm">Sign Out</a>
@@ -147,9 +157,9 @@
     <main class="page-window-container">
         <div class="window-header-banner">
             <div>
-                <h1 class="window-title"><span>🏆</span> Campus Tea Leaderboards &amp; Rivalries</h1>
+                <h1 class="window-title animated-h3">Departmental &amp; Cohort Consumption Analytics</h1>
                 <p class="window-desc">
-                    Real-time SQL aggregations ranking students, hostel block rivalries, and department standings.
+                    Real-time SQL aggregations ranking active operational personnel and academic departments based on verified beverage dispensation metrics.
                 </p>
             </div>
         </div>
@@ -157,17 +167,17 @@
         <div class="leaderboard-subnav">
             <div class="tab-btn-group">
                 <button id="tab-students" class="tab-btn active" onclick="switchTab('students')">
-                    👨‍🎓 Individual Students
+                    Individual Personnel Standings
                 </button>
                 <button id="tab-departments" class="tab-btn" onclick="switchTab('departments')">
-                    ⚔️ Department Rivalries
+                    Departmental Aggregate Analytics
                 </button>
             </div>
 
             <select id="tier-select" class="tier-select" onchange="loadLeaderboard()">
-                <option value="daily">Daily Leaderboard (Today)</option>
-                <option value="weekly">Weekly Tier (Last 7 Days)</option>
-                <option value="alltime">All-Time Hall of Fame</option>
+                <option value="daily">Daily Cycle (Today)</option>
+                <option value="weekly">Weekly Cycle (7 Days)</option>
+                <option value="alltime">Cumulative All-Time Ledger</option>
             </select>
         </div>
 
@@ -175,25 +185,24 @@
         <div class="card" style="padding: 1.5rem;">
             <div id="leaderboard-container">
                 <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
-                    Loading SQL Leaderboard data...
+                    Retrieving SQL Leaderboard telemetry data...
                 </div>
             </div>
         </div>
     </main>
 
+    <!-- Scripts -->
     <script src="/static/js/audio.js"></script>
+    <script src="/static/js/tubes-background.js"></script>
     <script src="/static/js/common.js"></script>
+
     <script>
         let currentTab = 'students';
 
         function switchTab(tab) {
             currentTab = tab;
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(`tab-${tab}`).classList.add('active');
-
-            const tierSel = document.getElementById('tier-select');
-            tierSel.style.display = (tab === 'students') ? 'block' : 'none';
-
+            document.getElementById('tab-students').classList.toggle('active', tab === 'students');
+            document.getElementById('tab-departments').classList.toggle('active', tab === 'departments');
             loadLeaderboard();
         }
 
@@ -203,78 +212,105 @@
 
             try {
                 const res = await fetch(`/api/leaderboard?type=${currentTab}&tier=${tier}`);
+                if (!res.ok) return;
+
                 const data = await res.json();
+                const items = data.leaderboard;
 
                 if (currentTab === 'students') {
-                    renderStudents(data.leaderboard, container);
+                    renderStudentsLeaderboard(items, container);
                 } else {
-                    renderDepartments(data.leaderboard, container);
+                    renderDepartmentsLeaderboard(items, container);
                 }
             } catch (err) {
-                container.innerHTML = `<div style="color: #fca5a5; padding: 2rem;">Error loading leaderboard.</div>`;
+                container.innerHTML = '<div style="color: #f87171; text-align: center; padding: 2rem;">Error retrieving analytics data.</div>';
             }
         }
 
-        function renderStudents(list, container) {
-            if (!list || list.length === 0) {
-                container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 2rem;">No cutting chai logged yet for this period.</div>`;
+        function renderStudentsLeaderboard(items, container) {
+            if (!items || items.length === 0) {
+                container.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 2rem;">No verified intake logs recorded for this timeframe.</div>';
                 return;
             }
 
-            container.innerHTML = '';
-            list.forEach((s, idx) => {
+            let html = `
+                <div style="display: flex; flex-direction: column;">
+                    <div style="display: grid; grid-template-columns: 50px 48px 1fr 140px; padding: 0.6rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); font-size: 0.72rem; text-transform: uppercase;">
+                        <span>Rank</span>
+                        <span>Badge</span>
+                        <span>Personnel &amp; Assigned Unit</span>
+                        <span style="text-align: right;">Intake Units</span>
+                    </div>
+            `;
+
+            items.forEach((item, idx) => {
                 const rank = idx + 1;
-                let medal = rank;
-                if (rank === 1) medal = '🥇';
-                else if (rank === 2) medal = '🥈';
-                else if (rank === 3) medal = '🥉';
+                const isTop = rank <= 3;
+                const initials = (item.name || 'ID').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
 
-                const row = document.createElement('div');
-                row.className = 'student-rank-row';
-                row.innerHTML = `
-                    <div class="rank-medal">${medal}</div>
-                    <div style="font-size: 1.6rem;">${s.avatar || '☕'}</div>
-                    <div style="flex: 1;">
-                        <div style="font-weight: 700; font-size: 1rem; color: #fff;">${s.name}</div>
-                        <div style="font-size: 0.74rem; color: var(--text-muted);">${s.email} • ${s.department}</div>
-                    </div>
-                    <div style="text-align: right;">
-                        <span style="font-size: 1.5rem; font-weight: 800; color: var(--chai-cream);">${s.cups_count}</span>
-                        <span style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; display: block;">cups</span>
-                    </div>
-                `;
-                container.appendChild(row);
-            });
-        }
-
-        function renderDepartments(list, container) {
-            container.innerHTML = '';
-            const maxCups = Math.max(...list.map(d => d.cups_today), 1);
-
-            list.forEach((d, idx) => {
-                const pct = (d.cups_today / maxCups) * 100;
-                const row = document.createElement('div');
-                row.className = 'dept-row-item';
-                row.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                        <div style="font-weight: 700; font-size: 0.95rem;">
-                            <span style="color: var(--chai-amber); margin-right: 0.5rem;">#${idx + 1}</span>
-                            ${d.department}
+                html += `
+                    <div class="lb-row">
+                        <div class="lb-rank ${isTop ? 'lb-rank-top' : ''}">#${rank}</div>
+                        <div>
+                            <div class="lb-avatar-col">${initials}</div>
                         </div>
-                        <div style="font-size: 0.85rem; color: var(--text-secondary);">
-                            <strong style="color: #fff; font-size: 1.1rem;">${d.cups_today}</strong> cups today (${d.student_count} students)
+                        <div>
+                            <div style="font-weight: 700; color: #fff; font-size: 0.9rem;">${item.name}</div>
+                            <div style="font-size: 0.72rem; color: var(--text-muted);">${item.department} &bull; ${item.email}</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <span style="font-size: 1.25rem; font-weight: 800; color: var(--chai-amber);">${item.cups}</span>
+                            <span style="font-size: 0.72rem; color: var(--text-muted); display: block;">verified units</span>
                         </div>
                     </div>
-                    <div style="height: 8px; background: rgba(255,255,255,0.08); border-radius: var(--radius-full); overflow: hidden;">
-                        <div style="height: 100%; width: ${pct}%; background: linear-gradient(90deg, #9a3412, #f59e0b);"></div>
-                    </div>
                 `;
-                container.appendChild(row);
             });
+
+            html += '</div>';
+            container.innerHTML = html;
         }
 
-        window.addEventListener('DOMContentLoaded', loadLeaderboard);
+        function renderDepartmentsLeaderboard(items, container) {
+            if (!items || items.length === 0) {
+                container.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 2rem;">No departmental telemetry records available.</div>';
+                return;
+            }
+
+            let html = '<div style="display: flex; flex-direction: column;">';
+            const maxCups = Math.max(...items.map(d => d.total_cups || 0), 1);
+
+            items.forEach((dept, idx) => {
+                const pct = Math.min(100, Math.max(8, (dept.total_cups / maxCups) * 100));
+
+                html += `
+                    <div class="dept-row-item">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
+                            <div style="display: flex; align-items: center; gap: 0.8rem;">
+                                <span style="font-weight: 800; color: var(--chai-amber); font-size: 1rem;">#${idx + 1}</span>
+                                <div>
+                                    <h4 style="font-size: 0.95rem; font-weight: 700; color: #fff;">${dept.department}</h4>
+                                    <span style="font-size: 0.72rem; color: var(--text-muted);">${dept.active_students || 0} active registered operators</span>
+                                </div>
+                            </div>
+                            <div style="text-align: right;">
+                                <span style="font-size: 1.35rem; font-weight: 800; color: var(--chai-cream);">${dept.total_cups}</span>
+                                <span style="font-size: 0.72rem; color: var(--text-muted); display: block;">total units</span>
+                            </div>
+                        </div>
+                        <div style="width: 100%; height: 7px; background: rgba(255,255,255,0.08); border-radius: var(--radius-full); overflow: hidden;">
+                            <div style="width: ${pct}%; height: 100%; background: linear-gradient(90deg, var(--chai-deep), var(--chai-amber)); border-radius: var(--radius-full);"></div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadLeaderboard();
+        });
     </script>
 </body>
 </html>
-

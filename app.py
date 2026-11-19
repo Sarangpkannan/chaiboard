@@ -38,10 +38,10 @@ class BaseHandler(tornado.web.RequestHandler):
 
 class RootHandler(BaseHandler):
     def get(self):
-        if self.current_user:
-            self.redirect('/chamber')
-        else:
-            self.redirect('/login')
+        index_path = os.path.join(BASE_DIR, 'index.html')
+        with open(index_path, 'r', encoding='utf-8') as f:
+            self.set_header("Content-Type", "text/html; charset=utf-8")
+            self.write(f.read())
 
 class LoginViewHandler(BaseHandler):
     def get(self):
@@ -177,6 +177,24 @@ class MetricsApiHandler(BaseHandler):
             'history': history
         })
 
+class VerifyChaiApiHandler(BaseHandler):
+    def post(self):
+        user = self.current_user
+        if not user:
+            self.write_json({'error': 'Unauthorized'}, 401)
+            return
+
+        try:
+            body = json.loads(self.request.body.decode('utf-8'))
+            image_data = body.get('image_data', '')
+            analysis = anti_cheat.analyze_chai_image_data(image_data)
+            self.write_json({
+                'status': 'verified' if analysis['is_tea_liquid'] else 'fraud',
+                'analysis': analysis
+            })
+        except Exception as e:
+            self.write_json({'error': str(e)}, 500)
+
 class LogChaiApiHandler(BaseHandler):
     def post(self):
         user = self.current_user
@@ -193,6 +211,7 @@ class LogChaiApiHandler(BaseHandler):
             mobilenet_confidence = float(body.get('mobilenet_confidence', 95.0))
             is_tea_liquid = bool(body.get('is_tea_liquid', True))
             simulate_fraud = body.get('simulate_fraud_flag')
+            image_data = body.get('image_data')
 
             # 1. Anti-Cheat and Fraud Verification
             verification = anti_cheat.verify_and_audit_upload(
@@ -201,7 +220,8 @@ class LogChaiApiHandler(BaseHandler):
                 phash_hex,
                 mobilenet_confidence,
                 is_tea_liquid,
-                simulate_fraud
+                simulate_fraud,
+                image_data=image_data
             )
 
             if not verification['passed']:
@@ -212,14 +232,20 @@ class LogChaiApiHandler(BaseHandler):
                 }, 400)
                 return
 
+            # Update phash if derived from image
+            if verification.get('phash'):
+                phash_hex = verification['phash']
+            if verification.get('phash_binary'):
+                phash_binary = verification['phash_binary']
+
             # 2. Nutrition and Blend Computation
             blend_names = {
-                'classic': 'Standard Tapri Cutting',
-                'masala': 'Kadak Masala Chai',
-                'adrak': 'Adrak Strong Chai',
-                'elaichi': 'Shahi Elaichi Special'
+                'classic': 'Standard Cutting Tea (100ml)',
+                'masala': 'Spiced Masala Infusion (+5 kcal)',
+                'adrak': 'Ginger Extract Blend (+3 kcal)',
+                'elaichi': 'Cardamom Infusion (+5 kcal)'
             }
-            blend_name = blend_names.get(blend_val, 'Standard Tapri Cutting')
+            blend_name = blend_names.get(blend_val, 'Standard Cutting Tea (100ml)')
 
             calories = health_engine.BASELINE_CALORIES
             sugar = health_engine.BASELINE_SUGAR
@@ -413,7 +439,7 @@ def seed_sample_students_if_empty():
     # 1. Ensure Default Admin Account always exists
     admin = database.get_student_by_email("admin@chaiboard.com")
     if not admin:
-        auth.register_student("Administrator", "admin@chaiboard.com", "adminpassword123", "Central Administration", "👑", role='admin')
+        auth.register_student("Administrator", "admin@chaiboard.com", "adminpassword123", "Central Administration", "AD", role='admin')
         print("[Chaiboard SQL] Default Admin Account (admin@chaiboard.com) created.")
 
     conn = database.get_connection()
@@ -425,11 +451,11 @@ def seed_sample_students_if_empty():
     if count == 0:
         print("[Chaiboard SQL] Initializing fresh database with seeded students...")
         samples = [
-            ("Aarav Sharma", "aarav@example.com", "password123", "Computer Science", "☕"),
-            ("Priya Patel", "priya@example.com", "password123", "Mechanical Engineering", "⚡"),
-            ("Rohan Verma", "rohan@example.com", "password123", "Electronics & Comm", "📻"),
-            ("Ananya Deshmukh", "ananya@example.com", "password123", "Biotechnology", "🧬"),
-            ("Vikram Singh", "vikram@example.com", "password123", "Civil Engineering", "🏗️"),
+            ("Aarav Sharma", "aarav@example.com", "password123", "Computer Science", "AS"),
+            ("Priya Patel", "priya@example.com", "password123", "Mechanical Engineering", "PP"),
+            ("Rohan Verma", "rohan@example.com", "password123", "Electronics & Comm", "RV"),
+            ("Ananya Deshmukh", "ananya@example.com", "password123", "Biotechnology", "AD"),
+            ("Vikram Singh", "vikram@example.com", "password123", "Civil Engineering", "VS"),
         ]
 
         for name, email, pwd, dept, av in samples:
@@ -470,6 +496,7 @@ def make_app():
         (r"/api/logout", LogoutApiHandler),
         (r"/api/me", MeApiHandler),
         (r"/api/metrics", MetricsApiHandler),
+        (r"/api/verify-chai", VerifyChaiApiHandler),
         (r"/api/log-chai", LogChaiApiHandler),
         (r"/api/leaderboard", LeaderboardApiHandler),
         (r"/api/audit-logs", AuditLogsApiHandler),
@@ -482,6 +509,9 @@ def make_app():
 
         # Static assets
         (r"/static/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(BASE_DIR, "static")}),
+        (r"/css/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(BASE_DIR, "css")}),
+        (r"/js/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(BASE_DIR, "js")}),
+        (r"/index.html", tornado.web.StaticFileHandler, {"path": BASE_DIR, "default_filename": "index.html"}),
     ], cookie_secret="chaiboard_super_secret_enterprise_campus_key_2026", debug=False)
 
 if __name__ == "__main__":
@@ -490,7 +520,7 @@ if __name__ == "__main__":
     app = make_app()
     app.listen(PORT)
     print(f"============================================================")
-    print(f"🫖 CHAIBOARD PYTHON & SQL MULTI-WINDOW BACKEND SERVER ACTIVE")
+    print(f"[CHAIBOARD] INDUSTRIAL PYTHON & SQL MULTI-WINDOW BACKEND SERVER ACTIVE")
     print(f"   Listening on: http://localhost:{PORT}")
     print(f"   Admin Portal: http://localhost:{PORT}/admin")
     print(f"   Database: SQLite3 relational database (chaiboard.db)")

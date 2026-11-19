@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chaiboard | Anti-Cheat &amp; Forensic Security Vault</title>
+    <title>Chaiboard | Security Audit &amp; Fraud Prevention Ledger</title>
     <link rel="stylesheet" href="/static/css/style.css">
     <style>
         .audit-table {
@@ -20,14 +20,15 @@
             color: var(--text-muted);
             text-transform: uppercase;
             font-size: 0.72rem;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.6px;
         }
         .tag-status {
             font-size: 0.72rem;
             font-weight: 700;
-            padding: 0.2rem 0.55rem;
+            padding: 0.22rem 0.6rem;
             border-radius: var(--radius-sm);
             display: inline-block;
+            letter-spacing: 0.4px;
         }
         .tag-verified {
             background: rgba(16, 185, 129, 0.15);
@@ -35,12 +36,12 @@
             border: 1px solid rgba(16, 185, 129, 0.35);
         }
         .tag-duplicate {
-            background: rgba(239, 68, 68, 0.2);
+            background: rgba(239, 68, 68, 0.18);
             color: #fca5a5;
             border: 1px solid rgba(239, 68, 68, 0.4);
         }
         .tag-nontea {
-            background: rgba(245, 158, 11, 0.2);
+            background: rgba(245, 158, 11, 0.18);
             color: #fde68a;
             border: 1px solid rgba(245, 158, 11, 0.4);
         }
@@ -48,48 +49,56 @@
 </head>
 <body>
 
-    <!-- Global Window Dock -->
+    <!-- Global Multi-Window Navigation Dock -->
     <header class="window-dock">
         <div class="dock-container">
             <a href="/chamber" class="brand-section">
-                <span class="brand-icon">🫖</span>
+                <div class="brand-logo-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 8h1a4 4 0 1 1 0 8h-1"></path>
+                        <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"></path>
+                        <line x1="6" y1="2" x2="6" y2="4"></line>
+                        <line x1="10" y1="2" x2="10" y2="4"></line>
+                        <line x1="14" y1="2" x2="14" y2="4"></line>
+                    </svg>
+                </div>
                 <div>
                     <div class="brand-name">CHAIBOARD</div>
-                    <div class="brand-sub">Campus Tea Leaderboard &amp; Health Engine</div>
+                    <div class="brand-sub">Industrial Beverage Intelligence Platform</div>
                 </div>
             </a>
 
-            <!-- Multi-Window Navigation Switcher -->
+            <!-- Navigation Links -->
             <nav class="nav-windows-list">
                 <a href="/chamber" class="window-nav-link">
-                    <span>🫖 3D Chamber &amp; Logger</span>
-                    <button class="window-pop-btn" data-url="/chamber" data-title="ChaiChamber" title="Open in separate window">↗</button>
+                    <span>Intake Terminal &amp; 3D Model</span>
+                    <button class="window-pop-btn" data-url="/chamber" data-title="ChaiChamber" title="Open in separate window">&#8599;</button>
                 </a>
                 <a href="/metrics" class="window-nav-link">
-                    <span>📊 Health Engine</span>
-                    <button class="window-pop-btn" data-url="/metrics" data-title="ChaiMetrics" title="Open in separate window">↗</button>
+                    <span>Nutritional Telemetry</span>
+                    <button class="window-pop-btn" data-url="/metrics" data-title="ChaiMetrics" title="Open in separate window">&#8599;</button>
                 </a>
                 <a href="/leaderboard" class="window-nav-link">
-                    <span>🏆 Leaderboards</span>
-                    <button class="window-pop-btn" data-url="/leaderboard" data-title="ChaiLeaderboard" title="Open in separate window">↗</button>
+                    <span>Consumption Analytics</span>
+                    <button class="window-pop-btn" data-url="/leaderboard" data-title="ChaiLeaderboard" title="Open in separate window">&#8599;</button>
                 </a>
                 <a href="/profile" class="window-nav-link">
-                    <span>🪪 Chai Pass &amp; Logs</span>
-                    <button class="window-pop-btn" data-url="/profile" data-title="ChaiProfile" title="Open in separate window">↗</button>
+                    <span>Credential &amp; Intake Logs</span>
+                    <button class="window-pop-btn" data-url="/profile" data-title="ChaiProfile" title="Open in separate window">&#8599;</button>
                 </a>
                 <a href="/audit" class="window-nav-link active">
-                    <span>🛡️ Security Vault</span>
-                    <button class="window-pop-btn" data-url="/audit" data-title="ChaiAudit" title="Open in separate window">↗</button>
+                    <span>Audit &amp; Fraud Ledger</span>
+                    <button class="window-pop-btn" data-url="/audit" data-title="ChaiAudit" title="Open in separate window">&#8599;</button>
                 </a>
             </nav>
 
             <div class="user-dock-actions">
-                <button id="dock-sound-btn" class="btn btn-ghost btn-sm">🔊 Sound ON</button>
+                <button id="dock-sound-btn" class="btn btn-ghost btn-sm">Audio FX: Active</button>
                 <div class="student-badge-pill">
-                    <span id="dock-student-avatar" style="font-size: 1.2rem;">☕</span>
+                    <span id="dock-student-avatar" class="student-avatar-badge">ID</span>
                     <div class="student-meta">
-                        <span id="dock-student-name" class="student-name-text">Loading...</span>
-                        <span id="dock-student-sub" class="student-sub-text">Student Session</span>
+                        <span id="dock-student-name" class="student-name-text">Loading Session...</span>
+                        <span id="dock-student-sub" class="student-sub-text">Active Operator</span>
                     </div>
                 </div>
                 <a id="dock-logout-btn" href="#" class="btn btn-ghost btn-sm">Sign Out</a>
@@ -101,58 +110,55 @@
     <main class="page-window-container">
         <div class="window-header-banner">
             <div>
-                <h1 class="window-title"><span>🛡️</span> Anti-Cheat &amp; Forensic Security Vault</h1>
+                <h1 class="window-title animated-h3">Security Audit Trail &amp; Fraud Prevention Ledger</h1>
                 <p class="window-desc">
-                    Audit trail of all 64-bit perceptual image hashes, MobileNet computer vision checks, and duplicate rejection events.
+                    Comprehensive forensic log of all 64-bit perceptual image hashes, Computer Vision cutting glass classifications, and duplicate replay rejection events.
                 </p>
             </div>
             <button onclick="loadAuditLogs()" class="btn btn-secondary">
-                🔄 Refresh Security Trail
+                Refresh Audit Ledger
             </button>
         </div>
 
-        <!-- PRD Section 3 Rule Card -->
-        <div class="card" style="margin-bottom: 1.5rem; background: rgba(0, 0, 0, 0.3);">
-            <div style="font-size: 0.82rem; font-weight: 700; color: var(--chai-cream); text-transform: uppercase; margin-bottom: 0.4rem;">
-                📌 Concept Specification Anti-Cheat Rules (PRD Section 3)
+        <!-- Compliance Architecture Specification Card -->
+        <div class="card" style="margin-bottom: 1.5rem; background: rgba(0, 0, 0, 0.35);">
+            <div style="font-size: 0.8rem; font-weight: 700; color: var(--chai-cream); text-transform: uppercase; margin-bottom: 0.6rem; letter-spacing: 0.5px;">
+                Intake Verification &amp; Fraud Detection Standard
             </div>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; font-size: 0.8rem; color: var(--text-secondary);">
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; font-size: 0.8rem; color: var(--text-secondary);">
                 <div>
-                    <strong style="color: #fff;">1. Live Camera Only:</strong>
-                    Native gallery picking is prohibited to ensure real-time campus photo authentication.
+                    <strong style="color: #fff; display: block; margin-bottom: 0.2rem;">1. Visual Glass Classification</strong>
+                    Verifies presence of authentic cutting chai glass with milk tea amber caramel spectrum. Rejects non-chai items, empty cups, and flat surfaces as fraud.
                 </div>
                 <div>
-                    <strong style="color: #fff;">2. Object Classification:</strong>
-                    MobileNet validates presence of cutting chai glass containing genuine amber brown liquid.
+                    <strong style="color: #fff; display: block; margin-bottom: 0.2rem;">2. 64-Bit dHash Fingerprinting</strong>
+                    Computes adjacent gradient perceptual hash. Detects gallery re-uploads and image tampering across variable resolutions.
                 </div>
                 <div>
-                    <strong style="color: #fff;">3. 64-bit pHash Hamming &lt; 5:</strong>
-                    Any upload having Hamming distance &lt; 5 compared to uploads within 12 hours is rejected.
+                    <strong style="color: #fff; display: block; margin-bottom: 0.2rem;">3. Sliding 12h Duplicate Rejection</strong>
+                    Rejects duplicate uploads if bit-level Hamming distance &lt; 5 within a 12-hour sliding window. Violations are flagged to SQL audit log.
                 </div>
             </div>
         </div>
 
-        <!-- Audit Table -->
+        <!-- Audit Table Card -->
         <div class="card">
-            <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 1rem;">
-                Live SQL Security Audit Trail (`fraud_audit_logs`)
-            </h3>
-
             <div style="overflow-x: auto;">
                 <table class="audit-table">
                     <thead>
                         <tr>
-                            <th>Status</th>
-                            <th>Student</th>
+                            <th>Log ID</th>
+                            <th>Operator ID</th>
                             <th>pHash (64-bit)</th>
-                            <th>Hamming Dist</th>
-                            <th>Reason / Forensic Log</th>
-                            <th>Attempted At</th>
+                            <th>Status Verdict</th>
+                            <th>Hamming Distance</th>
+                            <th>Diagnostic Reason</th>
+                            <th>Timestamp</th>
                         </tr>
                     </thead>
                     <tbody id="audit-table-body">
                         <tr>
-                            <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading audit records from SQL...</td>
+                            <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading forensic audit ledger...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -160,46 +166,52 @@
         </div>
     </main>
 
+    <!-- Scripts -->
     <script src="/static/js/audio.js"></script>
+    <script src="/static/js/tubes-background.js"></script>
     <script src="/static/js/common.js"></script>
     <script>
         async function loadAuditLogs() {
-            const tbody = document.getElementById('audit-table-body');
             try {
                 const res = await fetch('/api/audit-logs');
-                const data = await res.json();
-                const logs = data.audit_logs;
+                if (!res.ok) return;
 
+                const data = await res.json();
+                const tbody = document.getElementById('audit-table-body');
                 tbody.innerHTML = '';
-                if (!logs || logs.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">No audit records found yet. Try verifying a chai or testing the duplicate check in the 3D Chamber!</td></tr>`;
+
+                if (!data.audit_logs || data.audit_logs.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">No security events or audit logs recorded yet.</td></tr>`;
                     return;
                 }
 
-                logs.forEach(l => {
+                data.audit_logs.forEach(log => {
+                    const tr = document.createElement('tr');
+
                     let tagClass = 'tag-verified';
-                    let tagText = 'PASSED';
-                    if (l.status === 'REJECTED_DUPLICATE') {
-                        tagClass = 'tag-duplicate';
-                        tagText = 'REJECTED: DUPLICATE';
-                    } else if (l.status === 'REJECTED_NON_TEA') {
+                    let tagText = 'VERIFIED_AUTHENTIC';
+
+                    if (log.status === 'REJECTED_NON_TEA') {
                         tagClass = 'tag-nontea';
-                        tagText = 'REJECTED: NOT CHAI';
+                        tagText = 'REJECTED_NON_TEA';
+                    } else if (log.status === 'REJECTED_DUPLICATE') {
+                        tagClass = 'tag-duplicate';
+                        tagText = 'REJECTED_DUPLICATE';
                     }
 
-                    const tr = document.createElement('tr');
                     tr.innerHTML = `
+                        <td style="font-weight: 700; color: #fff;">#${log.id}</td>
+                        <td style="color: var(--chai-cream);">OP-${log.student_id}</td>
+                        <td><code style="background: rgba(255,255,255,0.08); padding: 0.15rem 0.45rem; border-radius: 4px; font-size: 0.75rem; font-family: var(--font-mono);">${log.phash_hex}</code></td>
                         <td><span class="tag-status ${tagClass}">${tagText}</span></td>
-                        <td><strong>${l.student_name || 'Anonymous'}</strong><br><span style="font-size: 0.72rem; color: var(--text-muted);">${l.student_email || ''}</span></td>
-                        <td><code style="background: rgba(255,255,255,0.1); padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.76rem;">${l.phash_hex}</code></td>
-                        <td><strong style="color: ${l.hamming_distance !== null && l.hamming_distance < 5 ? '#fca5a5' : '#6ee7b7'};">${l.hamming_distance !== null ? l.hamming_distance : 'N/A'}</strong></td>
-                        <td style="font-size: 0.8rem; color: var(--text-secondary); max-width: 320px;">${l.reason}</td>
-                        <td style="font-size: 0.76rem; color: var(--text-muted);">${l.attempted_at}</td>
+                        <td style="font-family: var(--font-mono); font-weight: 700;">${log.hamming_distance !== null ? log.hamming_distance : 'N/A'}</td>
+                        <td style="font-size: 0.8rem; color: var(--text-secondary); max-width: 320px;">${log.reason}</td>
+                        <td style="color: var(--text-muted); font-size: 0.78rem;">${log.logged_at}</td>
                     `;
                     tbody.appendChild(tr);
                 });
             } catch (err) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #fca5a5; padding: 2rem;">Error retrieving audit logs from SQL.</td></tr>`;
+                console.error(err);
             }
         }
 
@@ -207,4 +219,3 @@
     </script>
 </body>
 </html>
-

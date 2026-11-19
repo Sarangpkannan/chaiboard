@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chaiboard | Student &amp; Admin Sign In</title>
+    <title>Chaiboard | Institutional Access &amp; Authentication Portal</title>
     <link rel="stylesheet" href="/static/css/style.css">
     <style>
         .auth-container {
@@ -11,67 +11,89 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 2rem 1rem;
+            padding: 2rem 1.5rem;
+            position: relative;
+            z-index: 10;
         }
         .auth-box {
             background: var(--bg-card);
-            backdrop-filter: blur(20px);
+            backdrop-filter: blur(24px);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-lg);
             width: 100%;
             max-width: 480px;
-            padding: 2.4rem;
+            padding: 2.6rem;
             box-shadow: var(--shadow-card), var(--shadow-glow);
         }
         .auth-brand {
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 2.2rem;
         }
-        .auth-icon {
-            font-size: 3.2rem;
-            margin-bottom: 0.5rem;
-            display: inline-block;
-            filter: drop-shadow(0 4px 10px rgba(245, 158, 11, 0.4));
+        .auth-icon-badge {
+            width: 52px;
+            height: 52px;
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, var(--chai-amber), var(--neon-cyan));
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.8rem;
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.45);
+        }
+        .auth-icon-badge svg {
+            width: 28px;
+            height: 28px;
+            stroke: #08090d;
         }
     </style>
 </head>
 <body>
 
     <div class="auth-container">
-        <div class="auth-box">
+        <div class="auth-box tilt-card-3d">
             <div class="auth-brand">
-                <span class="auth-icon">🫖</span>
-                <h1 style="font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px;">CHAIBOARD</h1>
-                <div style="font-size: 0.78rem; color: var(--chai-amber); text-transform: uppercase; font-weight: 700; letter-spacing: 0.8px;">
-                    Campus Tea Leaderboard &amp; Health Engine
+                <div class="auth-icon-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 8h1a4 4 0 1 1 0 8h-1"></path>
+                        <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"></path>
+                        <line x1="6" y1="2" x2="6" y2="4"></line>
+                        <line x1="10" y1="2" x2="10" y2="4"></line>
+                        <line x1="14" y1="2" x2="14" y2="4"></line>
+                    </svg>
+                </div>
+                <h1 class="brand-title animated-h3" style="font-size: 1.85rem; font-weight: 800; letter-spacing: -0.03em; display: block;">CHAIBOARD</h1>
+                <div style="font-size: 0.72rem; color: var(--neon-cyan); text-transform: uppercase; font-weight: 700; letter-spacing: 0.8px; margin-top: 0.2rem;">
+                    Industrial Beverage Intelligence Platform
                 </div>
                 <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.6rem;">
-                    Sign in with your email address to access your cutting chai tracker and leaderboards.
+                    Sign in with your verified institutional email address to access intake telemetry and the 3D model.
                 </p>
             </div>
 
             <form id="login-form">
                 <div class="form-group">
-                    <label for="email">Email Address</label>
-                    <input type="email" id="email" class="form-control" placeholder="e.g. user@gmail.com" required autocomplete="email">
+                    <label for="email">Institutional Email Address</label>
+                    <input type="email" id="email" class="form-control" placeholder="e.g. user@example.com" required autocomplete="email">
                 </div>
 
                 <div class="form-group">
-                    <label for="password">Password</label>
+                    <label for="password">Authentication Key / Password</label>
                     <input type="password" id="password" class="form-control" placeholder="Enter your password" required autocomplete="current-password">
                 </div>
 
                 <button type="submit" id="btn-submit" class="btn btn-primary full-width" style="margin-top: 1rem;">
-                    🔐 Secure Sign In
+                    Authorize &amp; Sign In
                 </button>
             </form>
 
-            <div style="margin-top: 1.5rem; text-align: center; font-size: 0.85rem; color: var(--text-muted);">
-                Don't have an account? <a href="/register" style="color: var(--chai-amber); text-decoration: underline; font-weight: 600;">Register New Account</a>
+            <div style="margin-top: 1.5rem; text-align: center; font-size: 0.84rem; color: var(--text-muted);">
+                Require account credentials? <a href="/register" style="color: var(--chai-amber); text-decoration: underline; font-weight: 600;">Register Account</a>
             </div>
         </div>
     </div>
 
+    <!-- Background Engine -->
+    <script src="/static/js/tubes-background.js"></script>
     <script>
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -80,7 +102,7 @@
             const btn = document.getElementById('btn-submit');
 
             btn.disabled = true;
-            btn.textContent = 'Verifying credentials...';
+            btn.textContent = 'Verifying Credentials...';
 
             try {
                 const res = await fetch('/api/login', {
@@ -91,20 +113,15 @@
 
                 const data = await res.json();
                 if (res.ok) {
-                    if (data.student && data.student.role === 'admin') {
-                        window.location.href = '/admin';
-                    } else {
-                        window.location.href = '/chamber';
-                    }
+                    window.location.href = '/chamber';
                 } else {
-                    alert(data.error || 'Invalid email or password');
-                    btn.disabled = false;
-                    btn.textContent = '🔐 Secure Sign In';
+                    alert('Authentication failed: ' + (data.error || 'Invalid credentials.'));
                 }
             } catch (err) {
-                alert('Connection error with server');
+                alert('Connection error occurred.');
+            } finally {
                 btn.disabled = false;
-                btn.textContent = '🔐 Secure Sign In';
+                btn.textContent = 'Authorize & Sign In';
             }
         });
     </script>

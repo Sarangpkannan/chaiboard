@@ -1,103 +1,103 @@
-// Chaiboard - Main Campus Tea Engine & Student Management
+// Chaiboard - Industrial Beverage Intelligence Platform & Client Engine
 (function() {
-    // Initial Student Dataset
+    // Initial demo student profiles (email-based, with class)
     const DEFAULT_STUDENTS = [
         {
-            rollNo: 'CS23B104',
+            email: 'aarav@example.com',
             name: 'Aarav Sharma',
-            pin: '1234',
-            hostel: 'Hostel Everest (Block A)',
-            dept: 'Computer Science',
-            avatar: '☕👨‍💻',
+            password: 'chai1234',
+            studentClass: 'CSA',
+            year: '2',
+            avatar: 'AS',
             cupsToday: 4,
             weeklyCups: 26,
             allTimeCups: 342,
             streak: 18,
-            title: 'Night Shift Code Brewer',
+            title: 'Chai Lord',
             logs: [
-                { time: '08:45 AM', temp: 66, hash: '0xFA391823B1E40812' },
-                { time: '11:30 AM', temp: 64, hash: '0xA71295D314C05671' },
-                { time: '02:15 PM', temp: 68, hash: '0xB89422F5128032AA' },
-                { time: '05:40 PM', temp: 63, hash: '0x99238FF01A2548BC' }
+                { time: '08:45 AM', temp: 66, hash: '0xFA391823B1E40812', blend: 'Kadak Cutting Chai', sugar: 7.5 },
+                { time: '11:30 AM', temp: 64, hash: '0xA71295D314C05671', blend: 'Masala Chai', sugar: 7.5 },
+                { time: '02:15 PM', temp: 68, hash: '0xB89422F5128032AA', blend: 'Adrak Chai', sugar: 3.5 },
+                { time: '05:40 PM', temp: 63, hash: '0x99238FF01A2548BC', blend: 'Elaichi Chai', sugar: 7.5 }
             ]
         },
         {
-            rollNo: 'ME22B019',
+            email: 'priya@example.com',
             name: 'Priya Patel',
-            pin: '1234',
-            hostel: 'Hostel Nilgiri (Block B)',
-            dept: 'Mechanical Engineering',
-            avatar: '⚡👩‍🔧',
+            password: 'chai1234',
+            studentClass: 'ECA',
+            year: '3',
+            avatar: 'PP',
             cupsToday: 5,
             weeklyCups: 29,
             allTimeCups: 410,
             streak: 24,
-            title: 'Workshop Steam Engine',
+            title: 'Tea Royalty',
             logs: [
-                { time: '09:10 AM', temp: 67, hash: '0x342918820B1D4011' },
-                { time: '12:05 PM', temp: 65, hash: '0x431294C314C05999' },
-                { time: '03:30 PM', temp: 69, hash: '0x589422A512803111' },
-                { time: '06:15 PM', temp: 62, hash: '0x79238AA01A254222' },
-                { time: '08:00 PM', temp: 64, hash: '0x88238EE01A254333' }
+                { time: '09:10 AM', temp: 67, hash: '0x342918820B1D4011', blend: 'Kadak Cutting Chai', sugar: 7.5 },
+                { time: '12:05 PM', temp: 65, hash: '0x431294C314C05999', blend: 'Adrak Chai', sugar: 7.5 },
+                { time: '03:30 PM', temp: 69, hash: '0x589422A512803111', blend: 'Masala Chai', sugar: 12.0 },
+                { time: '06:15 PM', temp: 62, hash: '0x79238AA01A254222', blend: 'Kadak Cutting Chai', sugar: 3.5 },
+                { time: '08:00 PM', temp: 64, hash: '0x88238EE01A254333', blend: 'Elaichi Chai', sugar: 0.0 }
             ]
         },
         {
-            rollNo: 'EC24B088',
+            email: 'rohan@example.com',
             name: 'Rohan Verma',
-            pin: '1234',
-            hostel: 'Hostel Aravali (Block C)',
-            dept: 'Electronics & Comm',
-            avatar: '📻👨‍🎓',
+            password: 'chai1234',
+            studentClass: 'ME',
+            year: '1',
+            avatar: 'RV',
             cupsToday: 3,
             weeklyCups: 19,
             allTimeCups: 185,
             streak: 9,
-            title: 'Silicon Chai Sipper',
+            title: 'Chai Enthusiast',
             logs: [
-                { time: '10:00 AM', temp: 65, hash: '0x1A2B3C4D5E6F7081' },
-                { time: '01:45 PM', temp: 63, hash: '0x2B3C4D5E6F708192' },
-                { time: '05:10 PM', temp: 67, hash: '0x3C4D5E6F708192A3' }
+                { time: '10:00 AM', temp: 65, hash: '0x1A2B3C4D5E6F7081', blend: 'Kadak Cutting Chai', sugar: 7.5 },
+                { time: '01:45 PM', temp: 63, hash: '0x2B3C4D5E6F708192', blend: 'Adrak Chai', sugar: 7.5 },
+                { time: '05:10 PM', temp: 67, hash: '0x3C4D5E6F708192A3', blend: 'Masala Chai', sugar: 7.5 }
             ]
         },
         {
-            rollNo: 'BT23B045',
+            email: 'ananya@example.com',
             name: 'Ananya Deshmukh',
-            pin: '1234',
-            hostel: 'Hostel Ganga (Girls Block)',
-            dept: 'Biotechnology',
-            avatar: '🧬👩‍🔬',
+            password: 'chai1234',
+            studentClass: 'CSB',
+            year: '4',
+            avatar: 'AD',
             cupsToday: 2,
             weeklyCups: 14,
             allTimeCups: 156,
             streak: 7,
-            title: 'Cellular Caffeine Analyst',
+            title: 'Chai Sipper',
             logs: [
-                { time: '11:15 AM', temp: 64, hash: '0x4D5E6F708192A3B4' },
-                { time: '04:20 PM', temp: 68, hash: '0x5E6F708192A3B4C5' }
+                { time: '11:15 AM', temp: 64, hash: '0x4D5E6F708192A3B4', blend: 'Kadak Cutting Chai', sugar: 0.0 },
+                { time: '04:20 PM', temp: 68, hash: '0x5E6F708192A3B4C5', blend: 'Elaichi Chai', sugar: 3.5 }
             ]
         },
         {
-            rollNo: 'CE22B012',
+            email: 'vikram@example.com',
             name: 'Vikram Singh',
-            pin: '1234',
-            hostel: 'Hostel Everest (Block A)',
-            dept: 'Civil Engineering',
-            avatar: '🏗️👷‍♂️',
+            password: 'chai1234',
+            studentClass: 'EEE',
+            year: '2',
+            avatar: 'VS',
             cupsToday: 4,
             weeklyCups: 24,
             allTimeCups: 290,
             streak: 15,
-            title: 'Concrete Chai Pillar',
+            title: 'Kadak Fan',
             logs: [
-                { time: '08:30 AM', temp: 65, hash: '0x6F708192A3B4C5D6' },
-                { time: '12:40 PM', temp: 67, hash: '0x708192A3B4C5D6E7' },
-                { time: '03:55 PM', temp: 63, hash: '0x8192A3B4C5D6E7F8' },
-                { time: '07:20 PM', temp: 66, hash: '0x92A3B4C5D6E7F809' }
+                { time: '08:30 AM', temp: 65, hash: '0x6F708192A3B4C5D6', blend: 'Kadak Cutting Chai', sugar: 7.5 },
+                { time: '12:40 PM', temp: 67, hash: '0x708192A3B4C5D6E7', blend: 'Masala Chai', sugar: 7.5 },
+                { time: '03:55 PM', temp: 63, hash: '0x8192A3B4C5D6E7F8', blend: 'Adrak Chai', sugar: 7.5 },
+                { time: '07:20 PM', temp: 66, hash: '0x92A3B4C5D6E7F809', blend: 'Elaichi Chai', sugar: 12.0 }
             ]
         }
     ];
 
-    // Health Engine Baseline per cup (PRD Section 4)
+    // Health Engine Baseline per cup
     const BASELINE = {
         calories: 45, // kcal
         sugar: 7.5,   // grams
@@ -105,19 +105,22 @@
         volume: 100   // ml
     };
 
-    // Humorous Thresholds from PRD Section 4
+    // Industrial Thresholds
     const THRESHOLDS = {
         calories: {
             limit: 250,
-            quote: '“Running a marathon in your mind only” 🏃‍♂️💭'
+            title: 'CALORIE CEILING BREACHED // CHILL OUT',
+            quote: 'Bro you are drinking dessert at this point. Time to lock in some water.'
         },
         sugar: {
             limit: 30,
-            quote: '“Pancreas requests a temporary ceasefire” 🏳️🍬'
+            title: 'SUGAR OVERCLOCK DETECTED // DON\'T CRASH OUT',
+            quote: 'Insulin levels about to go crazy. Switch to sugarfree or you will fall asleep in mechanics class.'
         },
         caffeine: {
             limit: 150,
-            quote: '“Heart rate keeping tempo with a bass drum” 🥁⚡'
+            title: 'CAFFEINE OVERCLOCK // MAXIMUM JITTERS',
+            quote: 'You are vibrating on 300Hz frequency. Heart rate doing dubstep. Drink water real quick.'
         }
     };
 
@@ -129,364 +132,316 @@
             this.cameraAuth = new ChaiboardCameraAuth();
             this.activeLeaderboardTab = 'students';
             this.activeLeaderboardTier = 'daily';
-            this.init();
+            this.uploadedImageBase64 = null;
+
+            this.initDOM();
+            this.bindEvents();
+            this.autoLoginDemo('aarav@example.com');
         }
 
-        loadStudents() {
-            const saved = localStorage.getItem('chaiboard_students_v2');
-            if (saved) {
-                try {
-                    return JSON.parse(saved);
-                } catch (e) {
-                    console.error('Failed to parse saved students', e);
-                }
-            }
-            this.saveStudents(DEFAULT_STUDENTS);
-            return DEFAULT_STUDENTS;
-        }
-
-        saveStudents(data) {
-            localStorage.setItem('chaiboard_students_v2', JSON.stringify(data));
-        }
-
-        init() {
-            this.bindDOM();
-            this.checkSession();
-        }
-
-        bindDOM() {
-            // Auth / Login elements
+        initDOM() {
             this.loginSection = document.getElementById('login-section');
             this.dashboardSection = document.getElementById('dashboard-section');
             this.loginForm = document.getElementById('login-form');
             this.registerForm = document.getElementById('register-form');
-            this.demoButtons = document.querySelectorAll('.demo-login-btn');
             this.showRegisterBtn = document.getElementById('show-register-btn');
             this.showLoginBtn = document.getElementById('show-login-btn');
             this.logoutBtn = document.getElementById('logout-btn');
-
-            // Quick student switch trigger
             this.switchStudentBtn = document.getElementById('switch-student-btn');
 
-            // Sound Toggle
-            this.toggleSoundBtn = document.getElementById('toggle-sound-btn');
-            if (this.toggleSoundBtn) {
-                this.toggleSoundBtn.addEventListener('click', () => {
-                    if (window.chaiAudio) {
-                        window.chaiAudio.soundEnabled = !window.chaiAudio.soundEnabled;
-                        this.toggleSoundBtn.textContent = window.chaiAudio.soundEnabled ? '🔊 Sound ON' : '🔇 Sound OFF';
-                    }
-                });
-            }
-
-            // Digital Chai Pass Modal
-            this.chaiPassModal = document.getElementById('chai-pass-modal');
-            this.btnChaiPass = document.getElementById('btn-chai-pass');
-            this.btnClosePass = document.getElementById('btn-close-pass');
-            this.btnPrintPass = document.getElementById('btn-print-pass');
-
-            if (this.btnChaiPass) {
-                this.btnChaiPass.addEventListener('click', () => this.showChaiPassModal());
-            }
-            if (this.btnClosePass) {
-                this.btnClosePass.addEventListener('click', () => this.chaiPassModal.classList.add('hidden'));
-            }
-            if (this.btnPrintPass) {
-                this.btnPrintPass.addEventListener('click', () => window.print());
-            }
-
-            // 3D Glass & Action Buttons
-            this.heroContainer = 'chai-3d-container';
-            this.sloshBtn = document.getElementById('btn-slosh');
-            this.openCameraBtn = document.getElementById('btn-log-chai');
-
-            // Camera Modal
+            this.btnLogChai = document.getElementById('btn-log-chai');
+            this.btnSlosh = document.getElementById('btn-slosh');
             this.cameraModal = document.getElementById('camera-modal');
-            this.closeCameraBtn = document.getElementById('btn-close-camera');
+            this.btnCloseCamera = document.getElementById('btn-close-camera');
             this.videoFeed = document.getElementById('camera-feed');
             this.capturePreview = document.getElementById('capture-preview');
+            this.spaFilePreview = document.getElementById('spa-file-preview');
+            this.spaFileInput = document.getElementById('spa-image-file');
+            this.btnSpaBrowse = document.getElementById('btn-spa-browse');
             this.btnSnapChai = document.getElementById('btn-snap-chai');
-            this.btnTestDuplicate = document.getElementById('btn-test-duplicate');
-            this.btnTestNonTea = document.getElementById('btn-test-nontea');
             this.aiScannerStatus = document.getElementById('ai-scanner-status');
             this.verificationResults = document.getElementById('verification-results');
 
-            // Leaderboard Tabs
-            this.lbTabs = document.querySelectorAll('.lb-tab');
-            this.lbTierSelect = document.getElementById('lb-tier-select');
+            this.btnChaiPass = document.getElementById('btn-chai-pass');
+            this.chaiPassModal = document.getElementById('chai-pass-modal');
+            this.btnClosePass = document.getElementById('btn-close-pass');
+            this.btnPrintPass = document.getElementById('btn-print-pass');
 
-            // Attach Event Listeners
-            if (this.loginForm) {
-                this.loginForm.addEventListener('submit', (e) => this.handleLogin(e));
-            }
-            if (this.registerForm) {
-                this.registerForm.addEventListener('submit', (e) => this.handleRegister(e));
-            }
-            if (this.showRegisterBtn) {
-                this.showRegisterBtn.addEventListener('click', () => {
-                    this.loginForm.classList.add('hidden');
-                    this.registerForm.classList.remove('hidden');
-                });
-            }
-            if (this.showLoginBtn) {
-                this.showLoginBtn.addEventListener('click', () => {
-                    this.registerForm.classList.add('hidden');
-                    this.loginForm.classList.remove('hidden');
-                });
-            }
+            this.toggleSoundBtn = document.getElementById('toggle-sound-btn');
+        }
 
-            this.demoButtons.forEach(btn => {
+        bindEvents() {
+            this.showRegisterBtn.addEventListener('click', () => {
+                this.loginForm.classList.add('hidden');
+                this.registerForm.classList.remove('hidden');
+            });
+
+            this.showLoginBtn.addEventListener('click', () => {
+                this.registerForm.classList.add('hidden');
+                this.loginForm.classList.remove('hidden');
+            });
+
+            document.querySelectorAll('.demo-login-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    const roll = btn.getAttribute('data-roll');
-                    this.loginAs(roll);
+                    const email = btn.getAttribute('data-email');
+                    this.autoLoginDemo(email);
                 });
             });
 
-            if (this.logoutBtn) {
-                this.logoutBtn.addEventListener('click', () => this.handleLogout());
-            }
-            if (this.switchStudentBtn) {
-                this.switchStudentBtn.addEventListener('click', () => this.handleLogout());
-            }
+            this.loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email    = document.getElementById('login-email').value.trim();
+                const password = document.getElementById('login-password').value.trim();
+                this.handleLogin(email, password);
+            });
 
-            if (this.sloshBtn) {
-                this.sloshBtn.addEventListener('click', () => {
+            this.registerForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.handleRegister();
+            });
+
+            this.logoutBtn.addEventListener('click', () => this.handleLogout());
+            this.switchStudentBtn.addEventListener('click', () => this.handleLogout());
+
+            if (this.btnSlosh) {
+                this.btnSlosh.addEventListener('click', () => {
                     if (this.hero3D) this.hero3D.triggerSlosh();
                 });
             }
 
-            if (this.openCameraBtn) {
-                this.openCameraBtn.addEventListener('click', () => this.openCameraFlow());
+            if (this.btnLogChai) {
+                this.btnLogChai.addEventListener('click', () => this.openCameraFlow());
             }
 
-            if (this.closeCameraBtn) {
-                this.closeCameraBtn.addEventListener('click', () => this.closeCameraFlow());
+            if (this.btnCloseCamera) {
+                this.btnCloseCamera.addEventListener('click', () => this.closeCameraFlow());
+            }
+
+            if (this.btnSpaBrowse && this.spaFileInput) {
+                this.btnSpaBrowse.addEventListener('click', () => this.spaFileInput.click());
+                this.spaFileInput.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        this.uploadedImageBase64 = ev.target.result;
+                        if (this.spaFilePreview) {
+                            this.spaFilePreview.src = this.uploadedImageBase64;
+                            this.spaFilePreview.classList.remove('hidden');
+                        }
+                        if (this.videoFeed) this.videoFeed.classList.add('hidden');
+                        if (this.capturePreview) this.capturePreview.classList.add('hidden');
+                        this.aiScannerStatus.textContent = 'Image file loaded. Ready for Computer Vision authentication.';
+                    };
+                    reader.readAsDataURL(file);
+                });
             }
 
             if (this.btnSnapChai) {
                 this.btnSnapChai.addEventListener('click', () => this.runVerificationFlow('normal'));
             }
 
-            if (this.btnTestDuplicate) {
-                this.btnTestDuplicate.addEventListener('click', () => this.runVerificationFlow('duplicate'));
+            const btnDup = document.getElementById('btn-test-duplicate');
+            if (btnDup) {
+                btnDup.addEventListener('click', () => this.runVerificationFlow('duplicate'));
             }
 
-            if (this.btnTestNonTea) {
-                this.btnTestNonTea.addEventListener('click', () => this.runVerificationFlow('non_tea'));
+            const btnNonTea = document.getElementById('btn-test-nontea');
+            if (btnNonTea) {
+                btnNonTea.addEventListener('click', () => this.runVerificationFlow('non_tea'));
             }
 
-            this.lbTabs.forEach(tab => {
+            if (this.btnChaiPass) {
+                this.btnChaiPass.addEventListener('click', () => this.openPassModal());
+            }
+            if (this.btnClosePass) {
+                this.btnClosePass.addEventListener('click', () => this.closePassModal());
+            }
+            if (this.btnPrintPass) {
+                this.btnPrintPass.addEventListener('click', () => window.print());
+            }
+
+            if (this.toggleSoundBtn) {
+                this.toggleSoundBtn.addEventListener('click', () => {
+                    if (!window.chaiAudio) return;
+                    window.chaiAudio.soundEnabled = !window.chaiAudio.soundEnabled;
+                    this.toggleSoundBtn.textContent = window.chaiAudio.soundEnabled ? 'Audio FX: Active' : 'Audio FX: Muted';
+                });
+            }
+
+            document.querySelectorAll('.lb-tab').forEach(tab => {
                 tab.addEventListener('click', () => {
-                    this.lbTabs.forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.lb-tab').forEach(t => t.classList.remove('active'));
                     tab.classList.add('active');
                     this.activeLeaderboardTab = tab.getAttribute('data-target');
                     this.renderLeaderboard();
                 });
             });
 
-            if (this.lbTierSelect) {
-                this.lbTierSelect.addEventListener('change', (e) => {
+            const lbTier = document.getElementById('lb-tier-select');
+            if (lbTier) {
+                lbTier.addEventListener('change', (e) => {
                     this.activeLeaderboardTier = e.target.value;
                     this.renderLeaderboard();
                 });
             }
         }
 
-        checkSession() {
-            const activeRoll = localStorage.getItem('chaiboard_active_roll');
-            if (activeRoll) {
-                const found = this.students.find(s => s.rollNo.toUpperCase() === activeRoll.toUpperCase());
-                if (found) {
-                    this.loginAs(found.rollNo);
-                    return;
-                }
+        loadStudents() {
+            const saved = localStorage.getItem('chaiboard_students_v4');
+            if (saved) {
+                try { return JSON.parse(saved); } catch (e) {}
             }
-            this.showLoginView();
+            return DEFAULT_STUDENTS;
         }
 
-        showLoginView() {
-            this.loginSection.classList.remove('hidden');
-            this.dashboardSection.classList.add('hidden');
+        saveStudents(data) {
+            localStorage.setItem('chaiboard_students_v4', JSON.stringify(data));
         }
 
-        showDashboardView() {
+        autoLoginDemo(email) {
+            const student = this.students.find(s => s.email === email);
+            if (student) {
+                this.setCurrentStudent(student);
+            }
+        }
+
+        handleLogin(email, password) {
+            const student = this.students.find(s => s.email.toLowerCase() === email.toLowerCase());
+            if (!student) {
+                this.showToast('No account found with that email. Please sign up first.');
+                return;
+            }
+            if (student.password !== password) {
+                this.showToast('Wrong password. Please try again.');
+                return;
+            }
+            this.setCurrentStudent(student);
+        }
+
+        handleRegister() {
+            const name     = document.getElementById('reg-name').value.trim();
+            const email    = document.getElementById('reg-email').value.trim().toLowerCase();
+            const cls      = document.getElementById('reg-class').value;
+            const year     = document.getElementById('reg-year').value;
+            const password = document.getElementById('reg-password').value.trim();
+
+            if (!name || !email || !cls || !year || !password) {
+                this.showToast('Please fill in all fields.');
+                return;
+            }
+
+            if (this.students.some(s => s.email === email)) {
+                this.showToast('An account with this email already exists.');
+                return;
+            }
+
+            const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'CH';
+            const newStudent = {
+                email,
+                name,
+                password,
+                studentClass: cls,
+                year,
+                avatar: initials,
+                cupsToday: 0,
+                weeklyCups: 0,
+                allTimeCups: 0,
+                streak: 1,
+                title: 'Chai Enthusiast',
+                logs: []
+            };
+
+            this.students.push(newStudent);
+            this.saveStudents(this.students);
+            this.setCurrentStudent(newStudent);
+        }
+
+        setCurrentStudent(student) {
+            this.currentStudent = student;
             this.loginSection.classList.add('hidden');
             this.dashboardSection.classList.remove('hidden');
 
-            // Render all dashboard sections
+            this.renderHeaderPill();
             this.renderStudentProfile();
             this.renderMetrics();
             this.renderHistory();
             this.renderLeaderboard();
 
-            // Initialize or update 3D Hero
             if (!this.hero3D) {
                 this.hero3D = new Chai3DHero('chai-3d-container');
             }
             this.hero3D.setCupCount(this.currentStudent.cupsToday);
         }
 
-        handleLogin(e) {
-            e.preventDefault();
-            const roll = document.getElementById('login-roll').value.trim().toUpperCase();
-            const pin = document.getElementById('login-pin').value.trim();
-
-            const student = this.students.find(s => s.rollNo.toUpperCase() === roll);
-            if (!student) {
-                alert(`Roll number "${roll}" not found! Try one of the demo buttons or register below.`);
-                return;
-            }
-            if (student.pin && student.pin !== pin) {
-                alert('Invalid Student PIN / Password! (Default PIN is 1234)');
-                return;
-            }
-
-            this.loginAs(student.rollNo);
-        }
-
-        handleRegister(e) {
-            e.preventDefault();
-            const roll = document.getElementById('reg-roll').value.trim().toUpperCase();
-            const name = document.getElementById('reg-name').value.trim();
-            const hostel = document.getElementById('reg-hostel').value;
-            const dept = document.getElementById('reg-dept').value;
-            const pin = document.getElementById('reg-pin').value.trim() || '1234';
-
-            if (!roll || !name) {
-                alert('Please enter Roll Number and Name');
-                return;
-            }
-
-            if (this.students.some(s => s.rollNo.toUpperCase() === roll)) {
-                alert('Roll Number already registered! Please sign in.');
-                return;
-            }
-
-            const avatars = ['☕👨‍💻', '⚡👩‍🔧', '☕👨‍🎓', '🫖👩‍🎓', '🚀🧑‍💻', '☕👩‍🔬'];
-            const randomAvatar = avatars[Math.floor(Math.random() * avatars.length)];
-
-            const newStudent = {
-                rollNo: roll,
-                name: name,
-                pin: pin,
-                hostel: hostel,
-                dept: dept,
-                avatar: randomAvatar,
-                cupsToday: 0,
-                weeklyCups: 0,
-                allTimeCups: 0,
-                streak: 1,
-                title: 'Fresh Campus Sipper',
-                logs: []
-            };
-
-            this.students.push(newStudent);
-            this.saveStudents(this.students);
-            alert(`Welcome to Chaiboard, ${name}! Your student tea account has been created.`);
-            this.loginAs(roll);
-        }
-
-        loginAs(rollNo) {
-            const student = this.students.find(s => s.rollNo.toUpperCase() === rollNo.toUpperCase());
-            if (!student) return;
-
-            this.currentStudent = student;
-            localStorage.setItem('chaiboard_active_roll', student.rollNo);
-            this.showDashboardView();
-
-            if (window.chaiAudio) window.chaiAudio.playScanSuccess();
-        }
-
         handleLogout() {
-            localStorage.removeItem('chaiboard_active_roll');
             this.currentStudent = null;
-            this.showLoginView();
+            this.dashboardSection.classList.add('hidden');
+            this.loginSection.classList.remove('hidden');
+            this.loginForm.reset();
+        }
+
+        renderHeaderPill() {
+            if (!this.currentStudent) return;
+            document.getElementById('header-student-name').textContent = this.currentStudent.name;
+            document.getElementById('header-student-meta').textContent = `${this.currentStudent.studentClass} Year ${this.currentStudent.year}`;
+            document.getElementById('header-avatar').textContent = this.currentStudent.avatar || 'CH';
         }
 
         renderStudentProfile() {
             if (!this.currentStudent) return;
-            const s = this.currentStudent;
-
-            document.getElementById('header-student-name').textContent = s.name;
-            document.getElementById('header-student-meta').textContent = `${s.rollNo} • ${s.dept}`;
-            document.getElementById('header-avatar').textContent = s.avatar || '☕';
-
-            document.getElementById('profile-name').textContent = s.name;
-            document.getElementById('profile-roll').textContent = s.rollNo;
-            document.getElementById('profile-hostel').textContent = s.hostel;
-            document.getElementById('profile-dept').textContent = s.dept;
-            document.getElementById('profile-streak').textContent = `${s.streak} Days 🔥`;
-            document.getElementById('profile-title').textContent = s.title;
-
-            document.getElementById('hero-cups-count').textContent = s.cupsToday;
-            document.getElementById('hero-volume-count').textContent = `${s.cupsToday * BASELINE.volume} ml`;
-        }
-
-        showChaiPassModal() {
-            if (!this.currentStudent) return;
-            const s = this.currentStudent;
-
-            document.getElementById('pass-name').textContent = s.name;
-            document.getElementById('pass-roll').textContent = s.rollNo;
-            document.getElementById('pass-hostel-dept').textContent = `${s.hostel} • ${s.dept}`;
-            document.getElementById('pass-avatar').textContent = s.avatar || '☕';
-            document.getElementById('pass-cups-today').textContent = `${s.cupsToday} Cups`;
-            document.getElementById('pass-streak').textContent = `${s.streak} Days 🔥`;
-            document.getElementById('pass-all-time').textContent = `${s.allTimeCups} Cups`;
-
-            const latestLog = (s.logs && s.logs.length > 0) ? s.logs[s.logs.length - 1] : null;
-            const hash = latestLog ? latestLog.hash : '0xFA391823B1E40812';
-            document.getElementById('pass-fingerprint').textContent = `AUTH_HASH: ${hash}`;
-
-            this.chaiPassModal.classList.remove('hidden');
+            document.getElementById('profile-name').textContent = this.currentStudent.name;
+            document.getElementById('profile-title').textContent = this.currentStudent.title || 'Chai Enthusiast';
+            document.getElementById('profile-roll').textContent = `${this.currentStudent.studentClass} · Year ${this.currentStudent.year}`;
+            document.getElementById('profile-hostel').textContent = this.currentStudent.studentClass;
+            document.getElementById('profile-dept').textContent = `Year ${this.currentStudent.year}`;
+            document.getElementById('profile-streak').textContent = `${this.currentStudent.streak || 1} day streak`;
+            document.getElementById('hero-cups-count').textContent = this.currentStudent.cupsToday;
+            document.getElementById('hero-volume-count').textContent = `${this.currentStudent.cupsToday * 100} ml`;
         }
 
         renderMetrics() {
             if (!this.currentStudent) return;
             const cups = this.currentStudent.cupsToday;
-            const logs = this.currentStudent.logs || [];
 
-            // Sum up custom logged nutrition or baseline
-            let cals = 0;
+            let calories = 0;
             let sugar = 0;
             let caffeine = 0;
 
-            if (logs.length > 0) {
-                logs.forEach(l => {
-                    cals += (l.calories !== undefined ? l.calories : BASELINE.calories);
+            if (this.currentStudent.logs && this.currentStudent.logs.length > 0) {
+                this.currentStudent.logs.forEach(l => {
+                    calories += (l.calories !== undefined ? l.calories : BASELINE.calories);
                     sugar += (l.sugar !== undefined ? l.sugar : BASELINE.sugar);
                     caffeine += (l.caffeine !== undefined ? l.caffeine : BASELINE.caffeine);
                 });
             } else {
-                cals = cups * BASELINE.calories;
+                calories = cups * BASELINE.calories;
                 sugar = cups * BASELINE.sugar;
                 caffeine = cups * BASELINE.caffeine;
             }
 
-            document.getElementById('metric-calories').textContent = `${Math.round(cals)} kcal`;
+            document.getElementById('metric-calories').textContent = `${calories.toFixed(0)} kcal`;
             document.getElementById('metric-sugar').textContent = `${sugar.toFixed(1)} g`;
-            document.getElementById('metric-caffeine').textContent = `${Math.round(caffeine)} mg`;
+            document.getElementById('metric-caffeine').textContent = `${caffeine.toFixed(0)} mg`;
 
-            // Progress bars
+            const calPct = Math.min(100, (calories / THRESHOLDS.calories.limit) * 100);
+            const sugPct = Math.min(100, (sugar / THRESHOLDS.sugar.limit) * 100);
+            const caffPct = Math.min(100, (caffeine / THRESHOLDS.caffeine.limit) * 100);
+
             const calBar = document.getElementById('bar-calories');
             const sugarBar = document.getElementById('bar-sugar');
             const caffBar = document.getElementById('bar-caffeine');
 
-            const calPct = Math.min(100, (cals / THRESHOLDS.calories.limit) * 100);
-            const sugarPct = Math.min(100, (sugar / THRESHOLDS.sugar.limit) * 100);
-            const caffPct = Math.min(100, (caffeine / THRESHOLDS.caffeine.limit) * 100);
-
             calBar.style.width = `${calPct}%`;
-            sugarBar.style.width = `${sugarPct}%`;
+            sugarBar.style.width = `${sugPct}%`;
             caffBar.style.width = `${caffPct}%`;
 
-            // Humorous Warnings based on PRD Section 4
             const warnCal = document.getElementById('warn-calories');
             const warnSugar = document.getElementById('warn-sugar');
             const warnCaff = document.getElementById('warn-caffeine');
 
-            if (cals > THRESHOLDS.calories.limit) {
-                warnCal.innerHTML = `<span class="badge warning-badge">⚠️ LIMIT EXCEEDED</span><div class="quote-text">${THRESHOLDS.calories.quote}</div>`;
+            if (calories > THRESHOLDS.calories.limit) {
+                warnCal.innerHTML = `<span class="badge warning-badge" style="color:#f87171;">[ALERT] CALORIE LIMIT EXCEEDED</span><div class="quote-text">${THRESHOLDS.calories.quote}</div>`;
                 warnCal.classList.remove('hidden');
                 calBar.classList.add('bar-danger');
             } else {
@@ -495,7 +450,7 @@
             }
 
             if (sugar > THRESHOLDS.sugar.limit) {
-                warnSugar.innerHTML = `<span class="badge warning-badge">⚠️ PANCREAS ALERT</span><div class="quote-text">${THRESHOLDS.sugar.quote}</div>`;
+                warnSugar.innerHTML = `<span class="badge warning-badge" style="color:#f87171;">[ALERT] GLYCEMIC LOAD CEILING</span><div class="quote-text">${THRESHOLDS.sugar.quote}</div>`;
                 warnSugar.classList.remove('hidden');
                 sugarBar.classList.add('bar-danger');
             } else {
@@ -504,7 +459,7 @@
             }
 
             if (caffeine > THRESHOLDS.caffeine.limit) {
-                warnCaff.innerHTML = `<span class="badge warning-badge">⚠️ OVERCLOCK ALERT</span><div class="quote-text">${THRESHOLDS.caffeine.quote}</div>`;
+                warnCaff.innerHTML = `<span class="badge warning-badge" style="color:#f87171;">[ALERT] CAFFEINE SATURATION</span><div class="quote-text">${THRESHOLDS.caffeine.quote}</div>`;
                 warnCaff.classList.remove('hidden');
                 caffBar.classList.add('bar-danger');
             } else {
@@ -512,28 +467,28 @@
                 caffBar.classList.remove('bar-danger');
             }
 
-            // Tongue temperature evaluation
+            // Dispense temperature evaluation
             const tempBadge = document.getElementById('tongue-temp-badge');
             const tempQuote = document.getElementById('tongue-temp-quote');
             if (cups === 0) {
-                tempBadge.textContent = 'Room Temp (No Chai Yet)';
+                tempBadge.textContent = 'STANDBY // READY FOR SIP';
                 tempBadge.className = 'status-pill gray';
-                tempQuote.textContent = 'Tap "Log Chai" with AI camera to start.';
+                tempQuote.textContent = 'Scan your cutting chai glass to start logging telemetry.';
             } else {
                 const latestLog = this.currentStudent.logs[this.currentStudent.logs.length - 1];
                 const temp = latestLog ? latestLog.temp : 65;
                 if (temp > 67) {
-                    tempBadge.textContent = `${temp}°C • Sizzling Hot`;
+                    tempBadge.textContent = `${temp}°C • TONGUE BURN RISK // WAIT A SEC`;
                     tempBadge.className = 'status-pill red';
-                    tempQuote.textContent = 'Tongue Danger: Blow on it or sip from saucer edge! ♨️';
+                    tempQuote.textContent = 'Bro this chai is lava hot (>67°C). Blow on it before you crash out.';
                 } else if (temp >= 55) {
-                    tempBadge.textContent = `${temp}°C • Optimal Tapri Heat`;
+                    tempBadge.textContent = `${temp}°C • CHAI SIPPING SWEET SPOT`;
                     tempBadge.className = 'status-pill green';
-                    tempQuote.textContent = 'Peak cutting chai experience. Sips hit just right.';
+                    tempQuote.textContent = 'Crisp 65°C perfection. Sip with maximum rizz.';
                 } else {
-                    tempBadge.textContent = `${temp}°C • Warm Chai`;
+                    tempBadge.textContent = `${temp}°C • COLD TEA DETECTED // L + RATIO`;
                     tempBadge.className = 'status-pill orange';
-                    tempQuote.textContent = 'Bhai dubara garam karva le tapri wale se!';
+                    tempQuote.textContent = 'Your chai is getting lukewarm. Drink it fast before it turns into iced tea.';
                 }
             }
         }
@@ -545,25 +500,24 @@
 
             const logs = this.currentStudent.logs || [];
             if (logs.length === 0) {
-                listEl.innerHTML = '<div class="empty-state">No chai logged today yet. Visit the tapri and snap your first cutting!</div>';
+                listEl.innerHTML = '<div class="empty-state">No intake units logged today yet. Authenticate an image to begin.</div>';
                 return;
             }
 
-            // Render in reverse chronological order
             [...logs].reverse().forEach((log, idx) => {
                 const cupNumber = logs.length - idx;
                 const item = document.createElement('div');
                 item.className = 'history-item';
                 item.innerHTML = `
                     <div class="history-left">
-                        <div class="cup-icon">🫖 #${cupNumber}</div>
+                        <div class="cup-icon" style="font-size: 0.82rem; font-weight: 800; color: var(--chai-amber);">UNIT #${cupNumber}</div>
                         <div>
-                            <div class="history-title">${log.blend || 'Cutting Chai Verified'} ${log.sugar !== undefined ? `(${log.sugar}g sugar)` : ''}</div>
-                            <div class="history-meta">${log.time} • Est. ${log.temp || 64}°C • pHash: <code>${log.hash.substring(0, 10)}...</code></div>
+                            <div class="history-title" style="color: #fff; font-weight: 700;">${log.blend || 'Cutting Tea Verified'} ${log.sugar !== undefined ? `(${log.sugar}g sugar)` : ''}</div>
+                            <div class="history-meta" style="color: var(--text-muted); font-size: 0.74rem;">${log.time} &bull; Temp: ${log.temp || 64}&deg;C &bull; pHash: <code>${log.hash.substring(0, 10)}...</code></div>
                         </div>
                     </div>
                     <div class="history-right">
-                        <span class="badge verified-badge">✓ AI Validated</span>
+                        <span class="badge verified-badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.35);">VERIFIED AUTHENTIC</span>
                     </div>
                 `;
                 listEl.appendChild(item);
@@ -584,7 +538,6 @@
         }
 
         renderStudentsLeaderboard(container) {
-            // Sort students based on chosen tier
             const tier = this.activeLeaderboardTier;
             const sorted = [...this.students].sort((a, b) => {
                 if (tier === 'daily') return b.cupsToday - a.cupsToday;
@@ -597,26 +550,21 @@
 
             sorted.forEach((stu, idx) => {
                 const rank = idx + 1;
-                const isCurrent = this.currentStudent && stu.rollNo === this.currentStudent.rollNo;
-                let rankBadge = rank;
-                if (rank === 1) rankBadge = '🥇';
-                else if (rank === 2) rankBadge = '🥈';
-                else if (rank === 3) rankBadge = '🥉';
-
+                const isCurrent = this.currentStudent && stu.email === this.currentStudent.email;
                 const cupCount = tier === 'daily' ? stu.cupsToday : (tier === 'weekly' ? stu.weeklyCups : stu.allTimeCups);
 
                 const row = document.createElement('div');
                 row.className = `lb-row ${isCurrent ? 'current-student-row' : ''}`;
                 row.innerHTML = `
-                    <div class="lb-rank">${rankBadge}</div>
-                    <div class="lb-avatar">${stu.avatar || '☕'}</div>
+                    <div class="lb-rank" style="font-weight: 800; color: ${rank <= 3 ? 'var(--chai-amber)' : 'var(--text-muted)'};">#${rank}</div>
+                    <div class="lb-avatar" style="width: 28px; height: 28px; border-radius: 50%; background: rgba(245, 158, 11, 0.2); color: var(--chai-cream); display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 800; border: 1px solid var(--chai-amber);">${stu.avatar || 'OP'}</div>
                     <div class="lb-details">
-                        <div class="lb-name">${stu.name} ${isCurrent ? '<span class="you-pill">YOU</span>' : ''}</div>
-                        <div class="lb-sub">${stu.rollNo} • ${stu.hostel.split('(')[0].trim()} • ${stu.dept}</div>
+                        <div class="lb-name" style="color: #fff; font-weight: 700;">${stu.name} ${isCurrent ? '<span class="you-pill">YOU</span>' : ''}</div>
+                        <div class="lb-sub" style="font-size: 0.72rem; color: var(--text-muted);">${stu.studentClass || stu.dept || ''} &bull; Year ${stu.year || ''}</div>
                     </div>
-                    <div class="lb-score">
-                        <span class="score-num">${cupCount}</span>
-                        <span class="score-label">cups</span>
+                    <div class="lb-score" style="text-align: right;">
+                        <span class="score-num" style="font-size: 1.2rem; font-weight: 800; color: var(--chai-amber);">${cupCount}</span>
+                        <span class="score-label" style="font-size: 0.7rem; color: var(--text-muted); display: block;">units</span>
                     </div>
                 `;
                 table.appendChild(row);
@@ -626,19 +574,19 @@
         }
 
         renderHostelLeaderboard(container) {
-            // Aggregate by Hostel
-            const hostelMap = {};
+            // Group by class
+            const classMap = {};
             this.students.forEach(s => {
-                const h = s.hostel;
-                if (!hostelMap[h]) {
-                    hostelMap[h] = { name: h, totalCupsToday: 0, totalWeekly: 0, studentCount: 0 };
+                const cls = s.studentClass || s.dept || 'Unknown';
+                if (!classMap[cls]) {
+                    classMap[cls] = { name: cls, totalCupsToday: 0, totalWeekly: 0, studentCount: 0 };
                 }
-                hostelMap[h].totalCupsToday += s.cupsToday;
-                hostelMap[h].totalWeekly += s.weeklyCups;
-                hostelMap[h].studentCount++;
+                classMap[cls].totalCupsToday += s.cupsToday;
+                classMap[cls].totalWeekly    += s.weeklyCups;
+                classMap[cls].studentCount++;
             });
 
-            const hostels = Object.values(hostelMap).sort((a, b) => b.totalCupsToday - a.totalCupsToday);
+            const hostels = Object.values(classMap).sort((a, b) => b.totalCupsToday - a.totalCupsToday);
 
             const grid = document.createElement('div');
             grid.className = 'rivalry-grid';
@@ -648,24 +596,24 @@
                 const card = document.createElement('div');
                 card.className = 'rivalry-card';
                 card.innerHTML = `
-                    <div class="rivalry-rank">${rank === 1 ? '🏆 Campus Chai Champions' : `#${rank} Contender`}</div>
-                    <h3 class="rivalry-title">${h.name}</h3>
+                    <div class="rivalry-rank" style="color: var(--chai-amber); font-weight: 800; font-size: 0.78rem;">#${rank} STANDING</div>
+                    <h3 class="rivalry-title" style="color: #fff; font-weight: 700; margin: 0.2rem 0 0.6rem 0;">${h.name}</h3>
                     <div class="rivalry-stats">
                         <div class="r-stat">
-                            <span class="r-stat-num">${h.totalCupsToday}</span>
-                            <span class="r-stat-lbl">Cups Today</span>
+                            <span class="r-stat-num" style="color: var(--chai-cream); font-weight: 800;">${h.totalCupsToday}</span>
+                            <span class="r-stat-lbl">Today</span>
                         </div>
                         <div class="r-stat">
-                            <span class="r-stat-num">${(h.totalCupsToday / Math.max(1, h.studentCount)).toFixed(1)}</span>
-                            <span class="r-stat-lbl">Avg / Student</span>
+                            <span class="r-stat-num" style="color: var(--text-secondary);">${(h.totalCupsToday / Math.max(1, h.studentCount)).toFixed(1)}</span>
+                            <span class="r-stat-lbl">Avg/Operator</span>
                         </div>
                         <div class="r-stat">
-                            <span class="r-stat-num">${h.totalWeekly}</span>
-                            <span class="r-stat-lbl">Weekly Total</span>
+                            <span class="r-stat-num" style="color: var(--chai-amber);">${h.totalWeekly}</span>
+                            <span class="r-stat-lbl">Weekly</span>
                         </div>
                     </div>
-                    <div class="rivalry-bar-wrapper">
-                        <div class="rivalry-progress" style="width: ${Math.min(100, h.totalCupsToday * 10)}%"></div>
+                    <div class="rivalry-bar-wrapper" style="margin-top: 0.8rem; height: 6px; background: rgba(255,255,255,0.08); border-radius: var(--radius-full); overflow: hidden;">
+                        <div class="rivalry-progress" style="width: ${Math.min(100, h.totalCupsToday * 10)}%; height: 100%; background: linear-gradient(90deg, var(--chai-deep), var(--chai-amber));"></div>
                     </div>
                 `;
                 grid.appendChild(card);
@@ -675,10 +623,10 @@
         }
 
         renderDeptLeaderboard(container) {
-            // Aggregate by Department
+            // Group by class for new email-based students OR by dept for legacy
             const deptMap = {};
             this.students.forEach(s => {
-                const d = s.dept;
+                const d = s.studentClass || s.dept || 'Unknown';
                 if (!deptMap[d]) {
                     deptMap[d] = { name: d, totalCupsToday: 0, studentCount: 0 };
                 }
@@ -698,13 +646,12 @@
                 const item = document.createElement('div');
                 item.className = 'dept-rivalry-item';
                 item.innerHTML = `
-                    <div class="dept-info">
-                        <span class="dept-rank">#${idx + 1}</span>
-                        <span class="dept-name">${d.name}</span>
-                        <span class="dept-count"><strong>${d.totalCupsToday}</strong> cups today</span>
+                    <div class="dept-info" style="display: flex; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <span class="dept-name" style="color: #fff; font-weight: 700;">#${idx + 1} ${d.name}</span>
+                        <span class="dept-count" style="color: var(--chai-amber); font-weight: 800;">${d.totalCupsToday} units today</span>
                     </div>
-                    <div class="dept-meter">
-                        <div class="dept-fill" style="width: ${pct}%"></div>
+                    <div class="dept-meter" style="height: 6px; background: rgba(255,255,255,0.08); border-radius: var(--radius-full); overflow: hidden;">
+                        <div class="dept-fill" style="width: ${pct}%; height: 100%; background: linear-gradient(90deg, var(--chai-deep), var(--chai-amber));"></div>
                     </div>
                 `;
                 wrapper.appendChild(item);
@@ -713,25 +660,26 @@
             container.appendChild(wrapper);
         }
 
-        // Camera Verification Flow
+        // Camera / Image Authentication Flow
         async openCameraFlow() {
             this.cameraModal.classList.remove('hidden');
             this.verificationResults.innerHTML = '';
-            this.aiScannerStatus.textContent = 'Initializing Camera & MobileNet classifier...';
+            this.aiScannerStatus.textContent = 'Initializing Camera & Computer Vision Engine...';
             this.btnSnapChai.disabled = false;
+            this.uploadedImageBase64 = null;
+            if (this.spaFilePreview) this.spaFilePreview.classList.add('hidden');
 
             const started = await this.cameraAuth.startCamera(this.videoFeed);
             if (started) {
                 this.videoFeed.classList.remove('hidden');
                 this.capturePreview.classList.add('hidden');
-                this.aiScannerStatus.textContent = 'Live camera stream active. Position cutting chai glass inside reticle.';
+                this.aiScannerStatus.textContent = 'Optical camera active. Position cutting chai glass inside reticle or select an image file.';
             } else {
-                // Fallback to simulated live camera viewfinder
                 this.videoFeed.classList.add('hidden');
                 this.capturePreview.classList.remove('hidden');
                 const ctx = this.capturePreview.getContext('2d');
                 this.cameraAuth.drawSimulatedChaiPhoto(ctx, true, 0);
-                this.aiScannerStatus.textContent = 'Simulated Tapri Camera active (Camera permission not granted or no webcam).';
+                this.aiScannerStatus.textContent = 'Simulation viewfinder active (or select image file above).';
             }
         }
 
@@ -742,26 +690,34 @@
 
         runVerificationFlow(mode = 'normal') {
             this.btnSnapChai.disabled = true;
-            this.aiScannerStatus.textContent = 'Running MobileNet Object Detection & Computing 64-bit pHash...';
-            if (window.chaiAudio) window.chaiAudio.playPour();
-
-            // Capture frame from video or fallback canvas
-            const frameCanvas = this.cameraAuth.captureFrame(this.videoFeed);
-
-            // If non_tea mode, draw notebook
-            if (mode === 'non_tea') {
-                const ctx = frameCanvas.getContext('2d');
-                this.cameraAuth.drawSimulatedChaiPhoto(ctx, false);
+            this.aiScannerStatus.textContent = 'Executing Computer Vision & 64-bit dHash Verification...';
+            if (window.chaiAudio && typeof window.chaiAudio.playPour === 'function') {
+                window.chaiAudio.playPour();
             }
 
-            // User upload hashes from history
+            let frameCanvas = null;
+
+            if (this.uploadedImageBase64 && !this.spaFilePreview.classList.contains('hidden')) {
+                frameCanvas = document.createElement('canvas');
+                frameCanvas.width = 320;
+                frameCanvas.height = 320;
+                const ctx = frameCanvas.getContext('2d');
+                ctx.drawImage(this.spaFilePreview, 0, 0, 320, 320);
+            } else {
+                frameCanvas = this.cameraAuth.captureFrame(this.videoFeed);
+                if (mode === 'non_tea') {
+                    const ctx = frameCanvas.getContext('2d');
+                    this.cameraAuth.drawSimulatedChaiPhoto(ctx, false);
+                }
+            }
+
             const historyHashes = (this.currentStudent.logs || []).map(l => l.pHashBinary || '');
 
             setTimeout(() => {
                 const result = this.cameraAuth.verifyChaiCapture(frameCanvas, historyHashes, mode);
                 this.displayVerificationResult(result);
                 this.btnSnapChai.disabled = false;
-            }, 800);
+            }, 600);
         }
 
         displayVerificationResult(res) {
@@ -772,25 +728,24 @@
             card.className = `verification-card ${res.passed ? 'verify-success' : 'verify-failed'}`;
 
             if (res.passed) {
-                if (window.chaiAudio) window.chaiAudio.playScanSuccess();
+                if (window.chaiAudio && typeof window.chaiAudio.playScanSuccess === 'function') {
+                    window.chaiAudio.playScanSuccess();
+                }
                 card.innerHTML = `
-                    <div class="verify-header">
-                        <span class="verify-icon">✅</span>
-                        <div>
-                            <h4>Chai Authenticated!</h4>
-                            <p>${res.reason}</p>
-                        </div>
+                    <div class="verify-header" style="color: #34d399; font-weight: 800; font-size: 1.05rem; margin-bottom: 0.5rem;">
+                        [VERIFIED AUTHENTIC // NO CAP] Cutting Chai Confirmed
                     </div>
-                    <div class="verify-specs">
-                        <div><strong>Object Model:</strong> MobileNet v2 (Tea Glass)</div>
+                    <p style="font-size: 0.82rem; color: #a7f3d0; margin-bottom: 0.8rem;">${res.reason}</p>
+                    <div class="verify-specs" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; font-size: 0.78rem; background: rgba(0,0,0,0.35); padding: 0.7rem; border-radius: 8px;">
+                        <div><strong>Vessel:</strong> 16-Facet Tumbler</div>
                         <div><strong>Confidence:</strong> ${res.confidence}</div>
-                        <div><strong>Amber Brown Liquid:</strong> ${res.brownLiquidConfidence}</div>
-                        <div><strong>Tongue Temp:</strong> ~${res.estimatedTemp}°C</div>
-                        <div><strong>pHash (64-bit):</strong> <code>${res.pHash}</code></div>
-                        <div><strong>Hamming Distance:</strong> ${res.minHamming} (&ge; 5 threshold verified)</div>
+                        <div><strong>Liquid:</strong> Kadak Milk Tea</div>
+                        <div><strong>Serving Temp:</strong> ~${res.estimatedTemp}&deg;C</div>
+                        <div><strong>pHash (64-bit):</strong> <code style="font-family: monospace;">${res.pHash}</code></div>
+                        <div><strong>Duplicate Check:</strong> Passed (&ge; 5)</div>
                     </div>
                     <button id="btn-confirm-log" class="btn btn-primary full-width" style="margin-top: 1rem;">
-                        ☕ Confirm & Add to Leaderboard
+                        LOCK IN THIS CHAI (+150 AURA)
                     </button>
                 `;
                 container.appendChild(card);
@@ -799,22 +754,20 @@
                     this.commitChaiLog(res);
                 });
             } else {
-                if (window.chaiAudio) window.chaiAudio.playWarning();
+                if (window.chaiAudio && typeof window.chaiAudio.playWarning === 'function') {
+                    window.chaiAudio.playWarning();
+                }
                 card.innerHTML = `
-                    <div class="verify-header">
-                        <span class="verify-icon">🚫</span>
-                        <div>
-                            <h4>Verification Failed</h4>
-                            <p>${res.reason}</p>
-                        </div>
+                    <div class="verify-header" style="color: #f87171; font-weight: 800; font-size: 1.05rem; margin-bottom: 0.5rem;">
+                        [CAUGHT IN 4K // FRAUD DETECTED] Fake Tea Rejected
                     </div>
-                    <div class="verify-specs">
-                        <div><strong>Failed Stage:</strong> ${res.stepFailed}</div>
-                        <div><strong>Confidence / Distance:</strong> ${res.minHamming !== null ? `Hamming Dist = ${res.minHamming} (< 5 rejected)` : res.confidence}</div>
-                        <div><strong>pHash Computed:</strong> <code>${res.pHash}</code></div>
+                    <p style="font-size: 0.84rem; color: #fca5a5; font-weight: 600; margin-bottom: 0.6rem;">${res.reason}</p>
+                    <div class="verify-specs" style="font-size: 0.78rem; background: rgba(0,0,0,0.35); padding: 0.7rem; border-radius: 8px;">
+                        <div><strong>Diagnostic Stage:</strong> ${res.stepFailed || 'COMPUTER_VISION_REJECTION'}</div>
+                        <div><strong>Calculated pHash:</strong> <code style="font-family: monospace;">${res.pHash}</code></div>
                     </div>
-                    <div class="fraud-notice">
-                        🛡️ Anti-Cheat Policy: Live camera verification required. Gallery re-uploads or duplicate tea snapshots within 12 hours are rejected.
+                    <div class="fraud-notice" style="margin-top: 0.8rem; font-size: 0.76rem; color: #fca5a5; line-height: 1.45;">
+                        Compliance Rule: Real ones drink genuine Kadak chai in a cutting glass tumbler. Empty glasses, coffee, brown tables, and recycled photos get zero aura points and instant fraud rejection.
                     </div>
                 `;
                 container.appendChild(card);
@@ -824,19 +777,18 @@
         commitChaiLog(res) {
             const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             
-            // Get selected customizations
             const blendSelect = document.getElementById('chai-blend-select');
             const sugarSelect = document.getElementById('chai-sugar-select');
 
             let addedCalories = BASELINE.calories;
             let addedSugar = BASELINE.sugar;
-            let blendName = 'Standard Cutting';
+            let blendName = 'Standard Cutting Tea (100ml)';
 
             if (blendSelect) {
                 const bVal = blendSelect.value;
-                if (bVal === 'masala') { addedCalories += 5; blendName = 'Kadak Masala Chai'; }
-                else if (bVal === 'adrak') { addedCalories += 3; blendName = 'Adrak Strong Chai'; }
-                else if (bVal === 'elaichi') { addedCalories += 5; blendName = 'Shahi Elaichi Chai'; }
+                if (bVal === 'masala') { addedCalories += 5; blendName = 'Spiced Masala Infusion (+5 kcal)'; }
+                else if (bVal === 'adrak') { addedCalories += 3; blendName = 'Ginger Extract Blend (+3 kcal)'; }
+                else if (bVal === 'elaichi') { addedCalories += 5; blendName = 'Cardamom Infusion (+5 kcal)'; }
             }
 
             if (sugarSelect) {
@@ -865,25 +817,40 @@
             this.saveStudents(this.students);
             this.closeCameraFlow();
 
-            // Refresh UI
             this.renderStudentProfile();
             this.renderMetrics();
             this.renderHistory();
             this.renderLeaderboard();
 
-            // Trigger 3D Hero reaction
             if (this.hero3D) {
                 this.hero3D.setCupCount(this.currentStudent.cupsToday);
             }
 
-            // Sound
-            if (window.chaiAudio) {
+            if (window.chaiAudio && typeof window.chaiAudio.playPour === 'function') {
                 window.chaiAudio.playPour();
                 setTimeout(() => window.chaiAudio.playClink(), 300);
             }
 
-            // Toast
-            this.showToast(`☕ Cup #${this.currentStudent.cupsToday} logged! Leaderboard updated.`);
+            this.showToast(`Chai #${this.currentStudent.cupsToday} locked in! +150 Aura points gained // No cap.`);
+        }
+
+        openPassModal() {
+            if (!this.currentStudent) return;
+            document.getElementById('pass-name').textContent = this.currentStudent.name;
+            document.getElementById('pass-roll').textContent = this.currentStudent.email || (this.currentStudent.studentClass + ' · Year ' + this.currentStudent.year);
+            document.getElementById('pass-hostel-dept').textContent = `${this.currentStudent.studentClass || ''} · Year ${this.currentStudent.year || ''}`;
+            document.getElementById('pass-cups-today').textContent = `${this.currentStudent.cupsToday} Cups`;
+            document.getElementById('pass-streak').textContent = `${this.currentStudent.streak || 1} Days`;
+            document.getElementById('pass-all-time').textContent = `${this.currentStudent.allTimeCups} Cups`;
+
+            const latestLog = this.currentStudent.logs && this.currentStudent.logs.length > 0 ? this.currentStudent.logs[this.currentStudent.logs.length - 1] : null;
+            document.getElementById('pass-fingerprint').textContent = `AUTH_ID: ${latestLog ? latestLog.hash : '0xFA391823B1E40812'}`;
+
+            this.chaiPassModal.classList.remove('hidden');
+        }
+
+        closePassModal() {
+            this.chaiPassModal.classList.add('hidden');
         }
 
         showToast(msg) {
@@ -891,9 +858,7 @@
             toast.className = 'toast-alert';
             toast.textContent = msg;
             document.body.appendChild(toast);
-            setTimeout(() => {
-                toast.classList.add('show');
-            }, 20);
+            setTimeout(() => toast.classList.add('show'), 20);
             setTimeout(() => {
                 toast.classList.remove('show');
                 setTimeout(() => toast.remove(), 400);
@@ -901,9 +866,7 @@
         }
     }
 
-    // Launch application when DOM ready
     window.addEventListener('DOMContentLoaded', () => {
         window.chaiboardApp = new ChaiboardApp();
     });
 })();
-

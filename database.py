@@ -107,7 +107,7 @@ def init_db():
     conn.close()
 
 # --- Student Queries ---
-def create_student(name, email, password_hash, salt, department, avatar='☕', role='student'):
+def create_student(name, email, password_hash, salt, department, avatar='OP', role='student'):
     conn = get_connection()
     cursor = conn.cursor()
     try:

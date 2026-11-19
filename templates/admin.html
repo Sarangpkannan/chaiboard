@@ -18,17 +18,19 @@
             }
         }
         .admin-stat-box {
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
             border-radius: var(--radius-md);
-            padding: 1.2rem;
+            padding: 1.4rem;
+            backdrop-filter: blur(20px);
         }
         .admin-stat-val {
             font-size: 2.2rem;
             font-weight: 800;
             color: var(--chai-cream);
             line-height: 1.1;
-            margin-top: 0.2rem;
+            margin-top: 0.25rem;
+            letter-spacing: -0.02em;
         }
         .admin-table {
             width: 100%;
@@ -44,16 +46,17 @@
             color: var(--text-muted);
             text-transform: uppercase;
             font-size: 0.72rem;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.6px;
         }
         .role-pill {
             font-size: 0.72rem;
             font-weight: 800;
-            padding: 0.2rem 0.5rem;
+            padding: 0.2rem 0.55rem;
             border-radius: var(--radius-sm);
+            letter-spacing: 0.4px;
         }
         .role-admin {
-            background: rgba(239, 68, 68, 0.2);
+            background: rgba(239, 68, 68, 0.18);
             color: #fca5a5;
             border: 1px solid rgba(239, 68, 68, 0.4);
         }
@@ -66,12 +69,12 @@
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.85);
-            backdrop-filter: blur(8px);
+            backdrop-filter: blur(10px);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 2000;
-            padding: 1rem;
+            padding: 1.5rem;
         }
         .admin-modal-box {
             background: var(--bg-surface);
@@ -79,59 +82,67 @@
             border-radius: var(--radius-lg);
             width: 100%;
             max-width: 480px;
-            padding: 1.8rem;
+            padding: 2rem;
             box-shadow: var(--shadow-card);
         }
     </style>
 </head>
 <body>
 
-    <!-- Global Window Dock -->
+    <!-- Global Multi-Window Navigation Dock -->
     <header class="window-dock">
         <div class="dock-container">
             <a href="/chamber" class="brand-section">
-                <span class="brand-icon">🫖</span>
+                <div class="brand-logo-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 8h1a4 4 0 1 1 0 8h-1"></path>
+                        <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"></path>
+                        <line x1="6" y1="2" x2="6" y2="4"></line>
+                        <line x1="10" y1="2" x2="10" y2="4"></line>
+                        <line x1="14" y1="2" x2="14" y2="4"></line>
+                    </svg>
+                </div>
                 <div>
                     <div class="brand-name">CHAIBOARD</div>
-                    <div class="brand-sub">Campus Tea Leaderboard &amp; Health Engine</div>
+                    <div class="brand-sub">Industrial Beverage Intelligence Platform</div>
                 </div>
             </a>
 
-            <!-- Multi-Window Navigation Switcher -->
+            <!-- Navigation Links -->
             <nav class="nav-windows-list">
                 <a href="/chamber" class="window-nav-link">
-                    <span>🫖 3D Chamber &amp; Logger</span>
-                    <button class="window-pop-btn" data-url="/chamber" data-title="ChaiChamber" title="Open in separate window">↗</button>
+                    <span>Intake Terminal &amp; 3D Model</span>
+                    <button class="window-pop-btn" data-url="/chamber" data-title="ChaiChamber" title="Open in separate window">&#8599;</button>
                 </a>
                 <a href="/metrics" class="window-nav-link">
-                    <span>📊 Health Engine</span>
-                    <button class="window-pop-btn" data-url="/metrics" data-title="ChaiMetrics" title="Open in separate window">↗</button>
+                    <span>Nutritional Telemetry</span>
+                    <button class="window-pop-btn" data-url="/metrics" data-title="ChaiMetrics" title="Open in separate window">&#8599;</button>
                 </a>
                 <a href="/leaderboard" class="window-nav-link">
-                    <span>🏆 Leaderboards</span>
-                    <button class="window-pop-btn" data-url="/leaderboard" data-title="ChaiLeaderboard" title="Open in separate window">↗</button>
+                    <span>Consumption Analytics</span>
+                    <button class="window-pop-btn" data-url="/leaderboard" data-title="ChaiLeaderboard" title="Open in separate window">&#8599;</button>
                 </a>
                 <a href="/profile" class="window-nav-link">
-                    <span>🪪 Chai Pass &amp; Logs</span>
-                    <button class="window-pop-btn" data-url="/profile" data-title="ChaiProfile" title="Open in separate window">↗</button>
+                    <span>Credential &amp; Intake Logs</span>
+                    <button class="window-pop-btn" data-url="/profile" data-title="ChaiProfile" title="Open in separate window">&#8599;</button>
                 </a>
                 <a href="/audit" class="window-nav-link">
-                    <span>🛡️ Security Vault</span>
-                    <button class="window-pop-btn" data-url="/audit" data-title="ChaiAudit" title="Open in separate window">↗</button>
+                    <span>Audit &amp; Fraud Ledger</span>
+                    <button class="window-pop-btn" data-url="/audit" data-title="ChaiAudit" title="Open in separate window">&#8599;</button>
                 </a>
                 <a href="/admin" class="window-nav-link active" style="border: 1px solid var(--accent-red);">
-                    <span>👑 Admin Portal</span>
-                    <button class="window-pop-btn" data-url="/admin" data-title="ChaiAdmin" title="Open in separate window">↗</button>
+                    <span>Master Administration</span>
+                    <button class="window-pop-btn" data-url="/admin" data-title="ChaiAdmin" title="Open in separate window">&#8599;</button>
                 </a>
             </nav>
 
             <div class="user-dock-actions">
-                <button id="dock-sound-btn" class="btn btn-ghost btn-sm">🔊 Sound ON</button>
+                <button id="dock-sound-btn" class="btn btn-ghost btn-sm">Audio FX: Active</button>
                 <div class="student-badge-pill" style="border-color: #ef4444;">
-                    <span id="dock-student-avatar" style="font-size: 1.2rem;">👑</span>
+                    <span id="dock-student-avatar" class="student-avatar-badge" style="background: rgba(239, 68, 68, 0.25); border-color: #ef4444;">AD</span>
                     <div class="student-meta">
                         <span id="dock-student-name" class="student-name-text">Administrator</span>
-                        <span id="dock-student-sub" class="student-sub-text">Full Control Role</span>
+                        <span id="dock-student-sub" class="student-sub-text">System Oversight</span>
                     </div>
                 </div>
                 <a id="dock-logout-btn" href="#" class="btn btn-ghost btn-sm">Sign Out</a>
@@ -143,17 +154,17 @@
     <main class="page-window-container">
         <div class="window-header-banner">
             <div>
-                <h1 class="window-title"><span>👑</span> Master Administration &amp; Settings Portal</h1>
+                <h1 class="window-title animated-h3">Master Administration &amp; Parameter Settings Portal</h1>
                 <p class="window-desc">
-                    Manage users, reset credentials, configure Health Engine thresholds, and monitor SQL database integrity.
+                    Manage operator credentials, configure nutritional intake thresholds, configure fraud detection parameters, and monitor SQL database integrity.
                 </p>
             </div>
             <div style="display: flex; gap: 0.8rem;">
                 <button onclick="openCreateUserModal()" class="btn btn-primary">
-                    ➕ Add New User
+                    Create User Record
                 </button>
                 <button onclick="loadAdminData()" class="btn btn-secondary">
-                    🔄 Refresh Data
+                    Refresh Telemetry
                 </button>
             </div>
         </div>
@@ -161,19 +172,19 @@
         <!-- System Stats Grid -->
         <div class="admin-stat-grid">
             <div class="admin-stat-box">
-                <span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Total Users</span>
+                <span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Registered Operators</span>
                 <div id="stat-users" class="admin-stat-val">0</div>
             </div>
             <div class="admin-stat-box">
-                <span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Cuttings Logged</span>
+                <span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Dispensed Units</span>
                 <div id="stat-cuttings" class="admin-stat-val">0</div>
             </div>
             <div class="admin-stat-box">
-                <span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Fraud Rejections</span>
+                <span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Fraud Interceptions</span>
                 <div id="stat-frauds" class="admin-stat-val" style="color: #fca5a5;">0</div>
             </div>
             <div class="admin-stat-box">
-                <span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Database Size</span>
+                <span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Database Allocation</span>
                 <div id="stat-dbsize" class="admin-stat-val" style="color: var(--chai-amber);">0 KB</div>
             </div>
         </div>
@@ -181,18 +192,18 @@
         <!-- Tab Controls -->
         <div style="display: flex; gap: 0.6rem; margin-bottom: 1.5rem;">
             <button id="admin-tab-users-btn" class="btn btn-secondary active" onclick="switchAdminTab('users')">
-                👥 User Management
+                Personnel &amp; User Management
             </button>
             <button id="admin-tab-settings-btn" class="btn btn-secondary" onclick="switchAdminTab('settings')">
-                ⚙️ Global Health &amp; Anti-Cheat Settings
+                Global Compliance &amp; Security Thresholds
             </button>
         </div>
 
         <!-- 1. USER MANAGEMENT SECTION -->
         <div id="admin-section-users" class="card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem;">
-                <h3 style="font-size: 1.15rem; font-weight: 700;">Registered User Accounts (SQLite `students` table)</h3>
-                <span style="font-size: 0.78rem; color: var(--text-muted);">Real-time database records</span>
+                <h3 class="animated-h3" style="font-size: 1.15rem; font-weight: 800; color: #fff;">Registered Accounts (SQL students table)</h3>
+                <span class="badge" style="background: rgba(255,255,255,0.06); color: var(--text-secondary);">Real-Time DB Ledger</span>
             </div>
 
             <div style="overflow-x: auto;">
@@ -200,19 +211,19 @@
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Avatar</th>
-                            <th>Name</th>
+                            <th>Initials</th>
+                            <th>Full Name</th>
                             <th>Email Address</th>
-                            <th>Department</th>
+                            <th>Assigned Unit</th>
                             <th>Role</th>
-                            <th>Total Cuttings</th>
-                            <th>Registered</th>
-                            <th>Actions</th>
+                            <th>Logged Units</th>
+                            <th>Registration Date</th>
+                            <th>Operations</th>
                         </tr>
                     </thead>
                     <tbody id="users-table-body">
                         <tr>
-                            <td colspan="9" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading users...</td>
+                            <td colspan="9" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading registered users...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -221,43 +232,43 @@
 
         <!-- 2. GLOBAL SETTINGS SECTION -->
         <div id="admin-section-settings" class="card hidden">
-            <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.5rem;">Global Engine &amp; Security Configuration</h3>
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.5rem;">
-                Values saved here directly update the SQL `app_settings` table and apply to all students.
+            <h3 class="animated-h3" style="font-size: 1.15rem; font-weight: 800; margin-bottom: 0.5rem; color: #fff;">Global Engine &amp; Security Configuration</h3>
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+                Values saved here directly update the SQL app_settings table and apply to all system instances.
             </p>
 
             <form id="settings-form" style="max-width: 600px;">
                 <div class="form-group">
-                    <label for="cfg-calories">Humorous Calorie Warning Threshold (kcal)</label>
+                    <label for="cfg-calories">Daily Calorie Intake Threshold (kcal)</label>
                     <input type="number" step="0.1" id="cfg-calories" class="form-control" value="250.0" required>
-                    <small style="color: var(--text-muted); font-size: 0.72rem;">Default: 250 kcal ("Running a marathon in your mind only")</small>
+                    <small style="color: var(--text-muted); font-size: 0.72rem;">Baseline recommendation: 250.0 kcal</small>
                 </div>
 
                 <div class="form-group">
-                    <label for="cfg-sugar">Humorous Sugar Warning Threshold (grams)</label>
+                    <label for="cfg-sugar">Daily Sugar Intake Ceiling (grams)</label>
                     <input type="number" step="0.1" id="cfg-sugar" class="form-control" value="30.0" required>
-                    <small style="color: var(--text-muted); font-size: 0.72rem;">Default: 30.0 grams ("Pancreas requests a temporary ceasefire")</small>
+                    <small style="color: var(--text-muted); font-size: 0.72rem;">Baseline recommendation: 30.0 grams</small>
                 </div>
 
                 <div class="form-group">
-                    <label for="cfg-caffeine">Humorous Caffeine Warning Threshold (mg)</label>
+                    <label for="cfg-caffeine">Daily Caffeine Limit (mg)</label>
                     <input type="number" step="0.1" id="cfg-caffeine" class="form-control" value="150.0" required>
-                    <small style="color: var(--text-muted); font-size: 0.72rem;">Default: 150.0 mg ("Heart rate keeping tempo with a bass drum")</small>
+                    <small style="color: var(--text-muted); font-size: 0.72rem;">Baseline recommendation: 150.0 mg</small>
                 </div>
 
                 <div class="form-group">
-                    <label for="cfg-hamming">Anti-Cheat Minimum Hamming Distance (dHash / pHash)</label>
+                    <label for="cfg-hamming">Anti-Cheat Minimum Hamming Distance (64-bit dHash)</label>
                     <input type="number" id="cfg-hamming" class="form-control" value="5" required>
                     <small style="color: var(--text-muted); font-size: 0.72rem;">Default: 5 (Any duplicate within 12h having distance &lt; 5 is rejected)</small>
                 </div>
 
                 <div class="form-group">
-                    <label for="cfg-tapri">Tapri Stall Display Name</label>
-                    <input type="text" id="cfg-tapri" class="form-control" value="Central Campus Tapri">
+                    <label for="cfg-tapri">Primary Dispense Terminal Name</label>
+                    <input type="text" id="cfg-tapri" class="form-control" value="Central Campus Intake Station">
                 </div>
 
                 <button type="submit" id="btn-save-settings" class="btn btn-primary" style="margin-top: 1rem;">
-                    💾 Save Global Settings to SQL
+                    Commit Global Parameters to Database
                 </button>
             </form>
         </div>
@@ -266,7 +277,7 @@
     <!-- Modal: Edit User -->
     <div id="modal-edit-user" class="admin-modal-overlay hidden">
         <div class="admin-modal-box">
-            <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem;">✏️ Edit User Details</h3>
+            <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem; color: #fff;">Modify Personnel Details</h3>
             <form id="form-edit-user">
                 <input type="hidden" id="edit-user-id">
 
@@ -292,15 +303,15 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="edit-role">Role</label>
+                    <label for="edit-role">Assigned Role</label>
                     <select id="edit-role" class="form-control">
-                        <option value="student">Student</option>
+                        <option value="student">Student / Operator</option>
                         <option value="admin">Administrator</option>
                     </select>
                 </div>
 
                 <div style="display: flex; gap: 0.8rem; margin-top: 1.2rem;">
-                    <button type="submit" class="btn btn-primary full-width">Save Changes</button>
+                    <button type="submit" class="btn btn-primary full-width">Save Modifications</button>
                     <button type="button" onclick="closeModals()" class="btn btn-secondary full-width">Cancel</button>
                 </div>
             </form>
@@ -310,18 +321,18 @@
     <!-- Modal: Reset Password -->
     <div id="modal-reset-pwd" class="admin-modal-overlay hidden">
         <div class="admin-modal-box">
-            <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem;">🔑 Reset User Password</h3>
+            <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem; color: #fff;">Reset Operator Password</h3>
             <form id="form-reset-pwd">
                 <input type="hidden" id="reset-user-id">
                 <p id="reset-user-desc" style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1rem;"></p>
 
                 <div class="form-group">
-                    <label for="reset-new-password">New Password</label>
-                    <input type="password" id="reset-new-password" class="form-control" placeholder="Enter new password (min 4 chars)" required>
+                    <label for="reset-new-password">New Security Password</label>
+                    <input type="password" id="reset-new-password" class="form-control" placeholder="Enter new password (minimum 4 characters)" required>
                 </div>
 
                 <div style="display: flex; gap: 0.8rem; margin-top: 1.2rem;">
-                    <button type="submit" class="btn btn-primary full-width">Reset Password</button>
+                    <button type="submit" class="btn btn-primary full-width">Apply Password</button>
                     <button type="button" onclick="closeModals()" class="btn btn-secondary full-width">Cancel</button>
                 </div>
             </form>
@@ -331,7 +342,7 @@
     <!-- Modal: Create User -->
     <div id="modal-create-user" class="admin-modal-overlay hidden">
         <div class="admin-modal-box">
-            <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem;">➕ Create New User</h3>
+            <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem; color: #fff;">Register New Operator</h3>
             <form id="form-create-user">
                 <div class="form-group">
                     <label for="create-name">Full Name</label>
@@ -355,99 +366,107 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="create-role">Role</label>
+                    <label for="create-password">Initial Password</label>
+                    <input type="password" id="create-password" class="form-control" placeholder="Set user password" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="create-role">Assigned Role</label>
                     <select id="create-role" class="form-control">
-                        <option value="student">Student</option>
+                        <option value="student">Student / Operator</option>
                         <option value="admin">Administrator</option>
                     </select>
                 </div>
 
-                <div class="form-group">
-                    <label for="create-pwd">Password</label>
-                    <input type="password" id="create-pwd" class="form-control" placeholder="Min 4 characters" required>
-                </div>
-
                 <div style="display: flex; gap: 0.8rem; margin-top: 1.2rem;">
-                    <button type="submit" class="btn btn-primary full-width">Create User</button>
+                    <button type="submit" class="btn btn-primary full-width">Register Account</button>
                     <button type="button" onclick="closeModals()" class="btn btn-secondary full-width">Cancel</button>
                 </div>
             </form>
         </div>
     </div>
 
+    <!-- Scripts -->
     <script src="/static/js/audio.js"></script>
+    <script src="/static/js/tubes-background.js"></script>
     <script src="/static/js/common.js"></script>
     <script>
-        let allUsers = [];
+        let adminUsers = [];
+        let adminSettings = {};
 
         function switchAdminTab(tab) {
-            document.getElementById('admin-section-users').classList.toggle('hidden', tab !== 'users');
-            document.getElementById('admin-section-settings').classList.toggle('hidden', tab !== 'settings');
-            document.getElementById('admin-tab-users-btn').classList.toggle('active', tab === 'users');
-            document.getElementById('admin-tab-settings-btn').classList.toggle('active', tab === 'settings');
-        }
+            const usersSection = document.getElementById('admin-section-users');
+            const settingsSection = document.getElementById('admin-section-settings');
+            const usersBtn = document.getElementById('admin-tab-users-btn');
+            const settingsBtn = document.getElementById('admin-tab-settings-btn');
 
-        function closeModals() {
-            document.querySelectorAll('.admin-modal-overlay').forEach(m => m.classList.add('hidden'));
+            if (tab === 'users') {
+                usersSection.classList.remove('hidden');
+                settingsSection.classList.add('hidden');
+                usersBtn.classList.add('active');
+                settingsBtn.classList.remove('active');
+            } else {
+                usersSection.classList.add('hidden');
+                settingsSection.classList.remove('hidden');
+                usersBtn.classList.remove('active');
+                settingsBtn.classList.add('active');
+            }
         }
 
         async function loadAdminData() {
             try {
                 const res = await fetch('/api/admin/overview');
-                if (res.status === 403) {
-                    alert('Access Denied: Administrator role required.');
-                    window.location.href = '/chamber';
+                if (res.status === 403 || res.status === 401) {
+                    alert('Forbidden: Administrative access required.');
+                    window.location.href = '/login';
                     return;
                 }
                 const data = await res.json();
-                allUsers = data.users;
+                adminUsers = data.users || [];
+                adminSettings = data.settings || {};
 
-                // Render stats
                 document.getElementById('stat-users').textContent = data.stats.total_users;
-                document.getElementById('stat-cuttings').textContent = data.stats.total_cuttings;
-                document.getElementById('stat-frauds').textContent = data.stats.rejected_frauds;
-                document.getElementById('stat-dbsize').textContent = `${data.stats.db_size_kb} KB`;
+                document.getElementById('stat-cuttings').textContent = data.stats.total_cuttings_logged;
+                document.getElementById('stat-frauds').textContent = data.stats.total_fraud_rejections;
+                document.getElementById('stat-dbsize').textContent = data.stats.db_size_kb + ' KB';
 
-                // Render settings
-                if (data.settings) {
-                    if (data.settings.threshold_calories) document.getElementById('cfg-calories').value = data.settings.threshold_calories;
-                    if (data.settings.threshold_sugar) document.getElementById('cfg-sugar').value = data.settings.threshold_sugar;
-                    if (data.settings.threshold_caffeine) document.getElementById('cfg-caffeine').value = data.settings.threshold_caffeine;
-                    if (data.settings.anti_cheat_hamming_min) document.getElementById('cfg-hamming').value = data.settings.anti_cheat_hamming_min;
-                    if (data.settings.tapri_name) document.getElementById('cfg-tapri').value = data.settings.tapri_name;
-                }
-
-                renderUsersTable(allUsers);
+                renderUsersTable();
+                populateSettingsForm();
             } catch (err) {
                 console.error(err);
             }
         }
 
-        function renderUsersTable(users) {
+        function renderUsersTable() {
             const tbody = document.getElementById('users-table-body');
             tbody.innerHTML = '';
 
-            if (!users || users.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: var(--text-muted); padding: 2rem;">No users found in database.</td></tr>`;
+            if (adminUsers.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: var(--text-muted); padding: 2rem;">No registered personnel accounts found.</td></tr>';
                 return;
             }
 
-            users.forEach(u => {
+            adminUsers.forEach(u => {
                 const tr = document.createElement('tr');
+                const roleClass = u.role === 'admin' ? 'role-admin' : 'role-student';
+                const roleText = u.role === 'admin' ? 'ADMIN' : 'OPERATOR';
+                const initials = (u.name || 'ID').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+
                 tr.innerHTML = `
-                    <td><strong>#${u.id}</strong></td>
-                    <td style="font-size: 1.3rem;">${u.avatar || '☕'}</td>
-                    <td><strong>${u.name}</strong></td>
-                    <td><code>${u.email}</code></td>
-                    <td>${u.department}</td>
-                    <td><span class="role-pill ${u.role === 'admin' ? 'role-admin' : 'role-student'}">${u.role.toUpperCase()}</span></td>
-                    <td><strong style="color: var(--chai-cream);">${u.total_cups_logged}</strong> cups</td>
-                    <td style="font-size: 0.74rem; color: var(--text-muted);">${u.created_at}</td>
+                    <td style="font-weight: 700; color: #fff;">#${u.id}</td>
+                    <td>
+                        <span class="lb-avatar-col" style="width: 26px; height: 26px; font-size: 0.7rem;">${initials}</span>
+                    </td>
+                    <td style="font-weight: 700; color: #fff;">${u.name}</td>
+                    <td style="color: var(--text-secondary); font-family: var(--font-mono); font-size: 0.8rem;">${u.email}</td>
+                    <td style="color: var(--text-muted);">${u.department}</td>
+                    <td><span class="role-pill ${roleClass}">${roleText}</span></td>
+                    <td style="color: var(--chai-amber); font-weight: 700;">${u.total_cups_logged}</td>
+                    <td style="color: var(--text-muted); font-size: 0.75rem;">${u.created_at}</td>
                     <td>
                         <div style="display: flex; gap: 0.4rem;">
-                            <button class="btn btn-secondary btn-sm" onclick="openEditModal(${u.id})">✏️</button>
-                            <button class="btn btn-secondary btn-sm" onclick="openResetPwdModal(${u.id})">🔑</button>
-                            <button class="btn btn-danger btn-sm" onclick="deleteUser(${u.id}, '${u.email}')">🗑️</button>
+                            <button onclick="openEditUserModal(${u.id})" class="btn btn-secondary btn-sm" title="Edit User">Edit</button>
+                            <button onclick="openResetPasswordModal(${u.id}, '${u.email}')" class="btn btn-secondary btn-sm" title="Reset Password">Reset</button>
                         </div>
                     </td>
                 `;
@@ -455,22 +474,32 @@
             });
         }
 
-        function openEditModal(userId) {
-            const u = allUsers.find(x => x.id === userId);
-            if (!u) return;
-            document.getElementById('edit-user-id').value = u.id;
-            document.getElementById('edit-name').value = u.name;
-            document.getElementById('edit-email').value = u.email;
-            document.getElementById('edit-dept').value = u.department;
-            document.getElementById('edit-role').value = u.role;
+        function populateSettingsForm() {
+            if (adminSettings.threshold_calories) document.getElementById('cfg-calories').value = adminSettings.threshold_calories;
+            if (adminSettings.threshold_sugar) document.getElementById('cfg-sugar').value = adminSettings.threshold_sugar;
+            if (adminSettings.threshold_caffeine) document.getElementById('cfg-caffeine').value = adminSettings.threshold_caffeine;
+            if (adminSettings.anti_cheat_hamming_min) document.getElementById('cfg-hamming').value = adminSettings.anti_cheat_hamming_min;
+            if (adminSettings.tapri_name) document.getElementById('cfg-tapri').value = adminSettings.tapri_name;
+        }
+
+        function closeModals() {
+            document.querySelectorAll('.admin-modal-overlay').forEach(el => el.classList.add('hidden'));
+        }
+
+        function openEditUserModal(id) {
+            const user = adminUsers.find(u => u.id === id);
+            if (!user) return;
+            document.getElementById('edit-user-id').value = user.id;
+            document.getElementById('edit-name').value = user.name;
+            document.getElementById('edit-email').value = user.email;
+            document.getElementById('edit-dept').value = user.department;
+            document.getElementById('edit-role').value = user.role;
             document.getElementById('modal-edit-user').classList.remove('hidden');
         }
 
-        function openResetPwdModal(userId) {
-            const u = allUsers.find(x => x.id === userId);
-            if (!u) return;
-            document.getElementById('reset-user-id').value = u.id;
-            document.getElementById('reset-user-desc').textContent = `Resetting password for: ${u.name} (${u.email})`;
+        function openResetPasswordModal(id, email) {
+            document.getElementById('reset-user-id').value = id;
+            document.getElementById('reset-user-desc').textContent = `Configuring credentials for: ${email}`;
             document.getElementById('reset-new-password').value = '';
             document.getElementById('modal-reset-pwd').classList.remove('hidden');
         }
@@ -480,105 +509,80 @@
             document.getElementById('modal-create-user').classList.remove('hidden');
         }
 
-        async function deleteUser(userId, email) {
-            if (!confirm(`Are you sure you want to delete user "${email}"? This will delete all their chai logs and active sessions.`)) {
-                return;
-            }
-            try {
-                const res = await fetch(`/api/admin/users?id=${userId}`, { method: 'DELETE' });
-                const data = await res.json();
-                if (res.ok) {
-                    Chaiboard.showToast('User deleted from database.');
-                    loadAdminData();
-                } else {
-                    alert(data.error || 'Failed to delete user.');
-                }
-            } catch (e) {
-                alert('Connection error');
-            }
-        }
-
-        // Form Submit: Edit User
+        // Form Submit Handlers
         document.getElementById('form-edit-user').addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('edit-user-id').value;
-            const name = document.getElementById('edit-name').value.trim();
-            const email = document.getElementById('edit-email').value.trim();
-            const department = document.getElementById('edit-dept').value;
-            const role = document.getElementById('edit-role').value;
+            const payload = {
+                id,
+                name: document.getElementById('edit-name').value.trim(),
+                email: document.getElementById('edit-email').value.trim(),
+                department: document.getElementById('edit-dept').value,
+                role: document.getElementById('edit-role').value
+            };
 
-            try {
-                const res = await fetch('/api/admin/users', {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id, name, email, department, role })
-                });
-                const data = await res.json();
-                if (res.ok) {
-                    closeModals();
-                    Chaiboard.showToast('User updated successfully.');
-                    loadAdminData();
-                } else {
-                    alert(data.error || 'Update failed');
-                }
-            } catch (err) {
-                alert('Connection error');
+            const res = await fetch('/api/admin/users', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                closeModals();
+                Chaiboard.showToast('User record updated successfully');
+                loadAdminData();
+            } else {
+                const err = await res.json();
+                alert('Update error: ' + (err.error || 'Failed'));
             }
         });
 
-        // Form Submit: Reset Password
         document.getElementById('form-reset-pwd').addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('reset-user-id').value;
-            const password = document.getElementById('reset-new-password').value;
+            const new_password = document.getElementById('reset-new-password').value;
 
-            try {
-                const res = await fetch('/api/admin/reset-password', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id, password })
-                });
-                const data = await res.json();
-                if (res.ok) {
-                    closeModals();
-                    Chaiboard.showToast('Password reset successfully.');
-                } else {
-                    alert(data.error || 'Reset failed');
-                }
-            } catch (err) {
-                alert('Connection error');
+            const res = await fetch('/api/admin/reset-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, new_password })
+            });
+
+            if (res.ok) {
+                closeModals();
+                Chaiboard.showToast('Credentials updated successfully');
+            } else {
+                const err = await res.json();
+                alert('Reset error: ' + (err.error || 'Failed'));
             }
         });
 
-        // Form Submit: Create User
         document.getElementById('form-create-user').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const name = document.getElementById('create-name').value.trim();
-            const email = document.getElementById('create-email').value.trim();
-            const department = document.getElementById('create-dept').value;
-            const role = document.getElementById('create-role').value;
-            const password = document.getElementById('create-pwd').value;
+            const payload = {
+                name: document.getElementById('create-name').value.trim(),
+                email: document.getElementById('create-email').value.trim(),
+                department: document.getElementById('create-dept').value,
+                password: document.getElementById('create-password').value,
+                role: document.getElementById('create-role').value
+            };
 
-            try {
-                const res = await fetch('/api/admin/users', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, department, role, password })
-                });
-                const data = await res.json();
-                if (res.ok) {
-                    closeModals();
-                    Chaiboard.showToast('User created successfully.');
-                    loadAdminData();
-                } else {
-                    alert(data.error || 'Failed to create user');
-                }
-            } catch (err) {
-                alert('Connection error');
+            const res = await fetch('/api/admin/users', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                closeModals();
+                Chaiboard.showToast('Personnel account created');
+                loadAdminData();
+            } else {
+                const err = await res.json();
+                alert('Creation failed: ' + (err.error || 'Failed'));
             }
         });
 
-        // Form Submit: Save Settings
         document.getElementById('settings-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const payload = {
@@ -589,19 +593,17 @@
                 tapri_name: document.getElementById('cfg-tapri').value
             };
 
-            try {
-                const res = await fetch('/api/admin/settings', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                if (res.ok) {
-                    Chaiboard.showToast('Global settings updated in SQLite database!');
-                } else {
-                    alert('Failed to save settings.');
-                }
-            } catch (err) {
-                alert('Connection error');
+            const res = await fetch('/api/admin/settings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                Chaiboard.showToast('Global settings committed to SQL');
+                Chaiboard.notifyWindows('SETTINGS_UPDATED');
+            } else {
+                alert('Failed saving settings');
             }
         });
 
@@ -609,4 +611,3 @@
     </script>
 </body>
 </html>
-

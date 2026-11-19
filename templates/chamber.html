@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chaiboard | 3D Hero Chamber & Live Logging Window</title>
+    <title>Chaiboard | Intake Terminal & 3D Vessel Telemetry</title>
     <link rel="stylesheet" href="/static/css/style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         .chamber-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1.05fr 1fr;
             gap: 2rem;
             align-items: start;
         }
@@ -22,10 +22,10 @@
             position: relative;
             width: 100%;
             height: 480px;
-            background: rgba(0, 0, 0, 0.4);
+            background: radial-gradient(circle at 50% 50%, rgba(26, 32, 48, 0.6) 0%, rgba(10, 12, 18, 0.9) 100%);
             border-radius: var(--radius-lg);
             border: 1px solid var(--border-highlight);
-            box-shadow: inset 0 0 30px rgba(245, 158, 11, 0.15);
+            box-shadow: inset 0 0 35px rgba(245, 158, 11, 0.12);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -41,17 +41,17 @@
         .camera-scanner-view {
             position: relative;
             width: 100%;
-            height: 280px;
-            background: #000;
+            height: 290px;
+            background: #050608;
             border-radius: var(--radius-md);
             overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 2px solid rgba(245, 158, 11, 0.4);
-            margin-bottom: 1.2rem;
+            border: 2px solid rgba(245, 158, 11, 0.35);
+            margin-bottom: 1rem;
         }
-        #cam-feed, #cam-preview {
+        #cam-feed, #cam-preview, #image-upload-preview {
             width: 100%;
             height: 100%;
             object-fit: cover;
@@ -65,20 +65,20 @@
             justify-content: center;
         }
         .reticle-frame {
-            width: 180px;
-            height: 200px;
+            width: 190px;
+            height: 215px;
             border: 2px dashed rgba(245, 158, 11, 0.85);
-            border-radius: 12px;
+            border-radius: 14px;
             position: relative;
-            box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+            box-shadow: 0 0 25px rgba(245, 158, 11, 0.25);
         }
         .laser-sweep {
             position: absolute;
             width: 100%;
             height: 2px;
-            background: linear-gradient(90deg, transparent, #fbbf24, transparent);
-            box-shadow: 0 0 10px #fbbf24;
-            animation: laserSweep 2s ease-in-out infinite alternate;
+            background: linear-gradient(90deg, transparent, #38bdf8 50%, transparent);
+            box-shadow: 0 0 10px #38bdf8;
+            animation: laserSweep 2.2s ease-in-out infinite alternate;
         }
         @keyframes laserSweep {
             0% { top: 6%; }
@@ -89,26 +89,44 @@
             top: -24px;
             left: 0;
             background: var(--chai-amber);
-            color: #000;
+            color: #08090d;
             font-size: 0.65rem;
             font-weight: 800;
-            padding: 0.15rem 0.5rem;
+            padding: 0.2rem 0.55rem;
             border-radius: 4px;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.6px;
+        }
+        .upload-dropzone {
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-md);
+            padding: 0.65rem 1rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            transition: all 0.2s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.8rem;
+        }
+        .upload-dropzone:hover {
+            border-color: var(--chai-amber);
+            background: rgba(245, 158, 11, 0.05);
         }
         .verification-output {
             margin-top: 1.2rem;
             border-radius: var(--radius-md);
-            padding: 1.1rem;
-            animation: fadeIn 0.3s ease;
+            padding: 1.2rem;
+            animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .verify-ok {
             background: rgba(16, 185, 129, 0.12);
             border: 1px solid rgba(16, 185, 129, 0.45);
         }
         .verify-bad {
-            background: rgba(239, 68, 68, 0.12);
-            border: 1px solid rgba(239, 68, 68, 0.45);
+            background: rgba(239, 68, 68, 0.14);
+            border: 1px solid rgba(239, 68, 68, 0.5);
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(6px); }
@@ -118,48 +136,56 @@
 </head>
 <body>
 
-    <!-- Global Window Dock -->
+    <!-- Global Multi-Window Navigation Dock -->
     <header class="window-dock">
         <div class="dock-container">
             <a href="/chamber" class="brand-section">
-                <span class="brand-icon">🫖</span>
+                <div class="brand-logo-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 8h1a4 4 0 1 1 0 8h-1"></path>
+                        <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"></path>
+                        <line x1="6" y1="2" x2="6" y2="4"></line>
+                        <line x1="10" y1="2" x2="10" y2="4"></line>
+                        <line x1="14" y1="2" x2="14" y2="4"></line>
+                    </svg>
+                </div>
                 <div>
                     <div class="brand-name">CHAIBOARD</div>
-                    <div class="brand-sub">Campus Tea Leaderboard &amp; Health Engine</div>
+                    <div class="brand-sub">Industrial Beverage Intelligence Platform</div>
                 </div>
             </a>
 
             <!-- Multi-Window Navigation Switcher -->
             <nav class="nav-windows-list">
                 <a href="/chamber" class="window-nav-link active">
-                    <span>🫖 3D Chamber &amp; Logger</span>
-                    <button class="window-pop-btn" data-url="/chamber" data-title="ChaiChamber" title="Open in separate window">↗</button>
+                    <span>Intake Terminal &amp; 3D Model</span>
+                    <button class="window-pop-btn" data-url="/chamber" data-title="ChaiChamber" title="Open in separate window">&#8599;</button>
                 </a>
                 <a href="/metrics" class="window-nav-link">
-                    <span>📊 Health Engine</span>
-                    <button class="window-pop-btn" data-url="/metrics" data-title="ChaiMetrics" title="Open in separate window">↗</button>
+                    <span>Nutritional Telemetry</span>
+                    <button class="window-pop-btn" data-url="/metrics" data-title="ChaiMetrics" title="Open in separate window">&#8599;</button>
                 </a>
                 <a href="/leaderboard" class="window-nav-link">
-                    <span>🏆 Leaderboards</span>
-                    <button class="window-pop-btn" data-url="/leaderboard" data-title="ChaiLeaderboard" title="Open in separate window">↗</button>
+                    <span>Consumption Analytics</span>
+                    <button class="window-pop-btn" data-url="/leaderboard" data-title="ChaiLeaderboard" title="Open in separate window">&#8599;</button>
                 </a>
                 <a href="/profile" class="window-nav-link">
-                    <span>🪪 Chai Pass &amp; Logs</span>
-                    <button class="window-pop-btn" data-url="/profile" data-title="ChaiProfile" title="Open in separate window">↗</button>
+                    <span>Credential &amp; Intake Logs</span>
+                    <button class="window-pop-btn" data-url="/profile" data-title="ChaiProfile" title="Open in separate window">&#8599;</button>
                 </a>
                 <a href="/audit" class="window-nav-link">
-                    <span>🛡️ Security Vault</span>
-                    <button class="window-pop-btn" data-url="/audit" data-title="ChaiAudit" title="Open in separate window">↗</button>
+                    <span>Audit &amp; Fraud Ledger</span>
+                    <button class="window-pop-btn" data-url="/audit" data-title="ChaiAudit" title="Open in separate window">&#8599;</button>
                 </a>
             </nav>
 
             <div class="user-dock-actions">
-                <button id="dock-sound-btn" class="btn btn-ghost btn-sm">🔊 Sound ON</button>
+                <button id="dock-sound-btn" class="btn btn-ghost btn-sm">Audio FX: Active</button>
                 <div class="student-badge-pill">
-                    <span id="dock-student-avatar" style="font-size: 1.2rem;">☕</span>
+                    <span id="dock-student-avatar" class="student-avatar-badge">ID</span>
                     <div class="student-meta">
-                        <span id="dock-student-name" class="student-name-text">Loading...</span>
-                        <span id="dock-student-sub" class="student-sub-text">Student Session</span>
+                        <span id="dock-student-name" class="student-name-text">Loading Session...</span>
+                        <span id="dock-student-sub" class="student-sub-text">Active Operator</span>
                     </div>
                 </div>
                 <a id="dock-logout-btn" href="#" class="btn btn-ghost btn-sm">Sign Out</a>
@@ -167,31 +193,31 @@
         </div>
     </header>
 
-    <!-- Window Main Content -->
+    <!-- Main Content -->
     <main class="page-window-container">
         <div class="window-header-banner">
             <div>
-                <h1 class="window-title"><span>🫖</span> 3D Cutting Chai Chamber &amp; AI Live Logger</h1>
+                <h1 class="window-title animated-h3">3D Cutting Chai Model &amp; Computer Vision Terminal</h1>
                 <p class="window-desc">
-                    Interactive WebGL Cutting Glass with real-time fluid refraction, slosh physics, and MobileNet image-authenticated logging.
+                    Physically based WebGL cutting glass simulation with real-time refraction (IOR 1.517), fluid slosh dynamics, and strict dual-stage computer vision fraud verification.
                 </p>
             </div>
             <div>
                 <button id="btn-trigger-slosh" class="btn btn-secondary">
-                    💫 Tilt &amp; Slosh Physics
+                    Interactive Fluid Dynamics
                 </button>
             </div>
         </div>
 
         <div class="chamber-grid">
-            <!-- Left: Interactive 3D Cutting Glass -->
-            <div class="card" style="padding: 1.2rem;">
+            <!-- Left: Interactive 3D Cutting Chai Glass Model -->
+            <div class="card" style="padding: 1.4rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
-                    <div style="font-size: 0.82rem; font-weight: 700; color: var(--chai-cream); text-transform: uppercase; letter-spacing: 0.6px;">
-                        Interactive WebGL 3D Hero Glass
+                    <div style="font-size: 0.8rem; font-weight: 700; color: var(--chai-cream); text-transform: uppercase; letter-spacing: 0.6px;">
+                        Interactive WebGL 3D Vessel Visualizer
                     </div>
-                    <span id="glass-status-badge" class="btn btn-sm btn-ghost" style="font-size: 0.72rem; color: var(--chai-amber);">
-                        ● 360° Drag Orbit Ready
+                    <span id="glass-status-badge" class="badge" style="background: rgba(245, 158, 11, 0.15); color: var(--chai-amber); border: 1px solid var(--border-color);">
+                        360° Drag Orbit &bull; Parallax Active
                     </span>
                 </div>
 
@@ -199,78 +225,97 @@
                     <div id="chai-3d-container"></div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; text-align: center;">
-                    <div style="background: rgba(0,0,0,0.3); padding: 0.75rem; border-radius: var(--radius-md);">
-                        <span id="display-cups-today" style="font-size: 1.8rem; font-weight: 800; color: var(--chai-cream); display: block; line-height: 1.1;">0</span>
-                        <span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Logged Cups Today</span>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.2rem; text-align: center;">
+                    <div style="background: rgba(0,0,0,0.35); padding: 0.85rem; border-radius: var(--radius-md); border: 1px solid rgba(255,255,255,0.06);">
+                        <span id="display-cups-today" style="font-size: 2rem; font-weight: 800; color: var(--chai-cream); display: block; line-height: 1.1;">0</span>
+                        <span style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Verified Units Today</span>
                     </div>
-                    <div style="background: rgba(0,0,0,0.3); padding: 0.75rem; border-radius: var(--radius-md);">
-                        <span id="display-volume-today" style="font-size: 1.8rem; font-weight: 800; color: var(--chai-amber); display: block; line-height: 1.1;">0 ml</span>
-                        <span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Cutting Chai Volume</span>
+                    <div style="background: rgba(0,0,0,0.35); padding: 0.85rem; border-radius: var(--radius-md); border: 1px solid rgba(255,255,255,0.06);">
+                        <span id="display-volume-today" style="font-size: 2rem; font-weight: 800; color: var(--chai-amber); display: block; line-height: 1.1;">0 ml</span>
+                        <span style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Cumulative Intake</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Right: Live Camera & AI Anti-Cheat Verification -->
+            <!-- Right: Computer Vision Authentication Terminal -->
             <div class="card">
-                <div style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.5rem;">
-                    <span>📸</span> Image-Authenticated Logging
+                <div style="font-size: 1.15rem; font-weight: 800; margin-bottom: 0.35rem; color: #fff;">
+                    Computer Vision Intake Authentication
                 </div>
-                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
-                    In-app camera photo required. Validates brown cutting tea liquid via MobileNet and enforces 12-hour pHash duplicate rejection.
+                <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.1rem;">
+                    Captures live optical frame or user image. Analyzes fluted glass geometry, warm amber milk tea spectrum, liquid fill cohesion, and enforces 12-hour pHash duplicate rejection. Only authentic cutting chai in glass is accepted.
                 </p>
 
-                <!-- Camera Viewfinder -->
+                <!-- Camera / Upload Viewfinder -->
                 <div class="camera-scanner-view">
                     <video id="cam-feed" autoplay playsinline muted></video>
-                    <canvas id="cam-preview" class="hidden" width="320" height="280"></canvas>
+                    <canvas id="cam-preview" class="hidden" width="320" height="290"></canvas>
+                    <img id="image-upload-preview" class="hidden" alt="Uploaded Image Preview" />
 
                     <div class="scanner-hud-overlay">
                         <div class="reticle-frame">
-                            <span class="reticle-pill">MOBILENET TEA RETICLE</span>
+                            <span class="reticle-pill">ALIGN CUTTING GLASS HERE</span>
                             <div class="laser-sweep"></div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Image File Input & Switcher -->
+                <div class="upload-dropzone" id="dropzone-area">
+                    <div style="display: flex; align-items: center; gap: 0.6rem;">
+                        <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary);">
+                            Load External Image File for Testing
+                        </span>
+                    </div>
+                    <div>
+                        <input type="file" id="image-file-input" accept="image/*" style="display: none;" />
+                        <button type="button" id="btn-browse-file" class="btn btn-secondary btn-sm">
+                            Select Image
+                        </button>
                     </div>
                 </div>
 
                 <!-- Customization Form -->
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 1rem;">
                     <div class="form-group" style="margin-bottom: 0;">
-                        <label for="blend-select" style="font-size: 0.78rem;">Cutting Chai Blend</label>
-                        <select id="blend-select" class="form-control" style="padding: 0.55rem; font-size: 0.85rem;">
-                            <option value="classic">Standard Tapri Cutting (100ml)</option>
-                            <option value="masala">Kadak Masala Chai (+5 kcal)</option>
-                            <option value="adrak">Adrak Strong Chai (+3 kcal)</option>
-                            <option value="elaichi">Shahi Elaichi Special (+5 kcal)</option>
+                        <label for="blend-select" style="font-size: 0.76rem;">Beverage Formulation</label>
+                        <select id="blend-select" class="form-control" style="padding: 0.55rem; font-size: 0.84rem;">
+                            <option value="classic">Standard Cutting Tea (100ml)</option>
+                            <option value="masala">Spiced Masala Infusion (+5 kcal)</option>
+                            <option value="adrak">Ginger Extract Blend (+3 kcal)</option>
+                            <option value="elaichi">Cardamom Infusion (+5 kcal)</option>
                         </select>
                     </div>
 
                     <div class="form-group" style="margin-bottom: 0;">
-                        <label for="sugar-select" style="font-size: 0.78rem;">Sugar Preference</label>
-                        <select id="sugar-select" class="form-control" style="padding: 0.55rem; font-size: 0.85rem;">
+                        <label for="sugar-select" style="font-size: 0.76rem;">Sweetness Profile</label>
+                        <select id="sugar-select" class="form-control" style="padding: 0.55rem; font-size: 0.84rem;">
                             <option value="standard">Standard Sweet (7.5g sugar)</option>
-                            <option value="light">Kam Cheeni / Light (3.5g sugar)</option>
-                            <option value="sugarfree">Fika / Zero Sugar (0g sugar)</option>
-                            <option value="extra">Ekdum Meethi (12.0g sugar)</option>
+                            <option value="light">Reduced Sugar (3.5g sugar)</option>
+                            <option value="sugarfree">Unsweetened (0.0g sugar)</option>
+                            <option value="extra">Elevated Sugar (12.0g sugar)</option>
                         </select>
                     </div>
                 </div>
 
                 <button id="btn-snap-log" class="btn btn-primary full-width">
-                    🔍 Verify Cutting Chai &amp; Log to SQL Database
+                    Authenticate Image &amp; Commit to Database
                 </button>
 
-                <!-- Anti-Cheat Testing Scenarios (PRD Section 3) -->
+                <!-- Fraud Prevention Test Diagnostics -->
                 <div style="margin-top: 1rem; background: rgba(0,0,0,0.3); border: 1px dashed var(--border-color); border-radius: var(--radius-md); padding: 0.85rem;">
-                    <div style="font-size: 0.72rem; color: var(--chai-cream); text-transform: uppercase; font-weight: 700; margin-bottom: 0.4rem;">
-                        🛡️ Anti-Cheat &amp; Fraud Prevention Test Scenarios:
+                    <div style="font-size: 0.72rem; color: var(--chai-cream); text-transform: uppercase; font-weight: 700; margin-bottom: 0.5rem; letter-spacing: 0.5px;">
+                        Compliance &amp; Fraud Diagnostics Suite:
                     </div>
-                    <div style="display: flex; gap: 0.6rem;">
-                        <button id="btn-test-duplicate" class="btn btn-danger btn-sm" style="flex: 1;">
-                            ⚠️ Test Duplicate Re-upload (Hamming &lt; 5 Rejection)
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <button id="btn-test-authentic" class="btn btn-secondary btn-sm" style="flex: 1; min-width: 140px;">
+                            Test Authentic Sample
                         </button>
-                        <button id="btn-test-nontea" class="btn btn-secondary btn-sm" style="flex: 1;">
-                            🧪 Test Non-Chai Object (MobileNet Rejection)
+                        <button id="btn-test-nontea" class="btn btn-danger btn-sm" style="flex: 1; min-width: 140px;">
+                            Test Fraud (Non-Chai / Invalid)
+                        </button>
+                        <button id="btn-test-duplicate" class="btn btn-danger btn-sm" style="flex: 1; min-width: 140px;">
+                            Test Replay Fraud (&lt; 12h)
                         </button>
                     </div>
                 </div>
@@ -284,13 +329,17 @@
     <!-- Scripts -->
     <script src="/static/js/audio.js"></script>
     <script src="/static/js/three-chai.js"></script>
+    <script src="/static/js/tubes-background.js"></script>
     <script src="/static/js/common.js"></script>
 
     <script>
         let heroGlass = null;
         let videoStream = null;
+        let currentUploadedBase64 = null;
         const videoEl = document.getElementById('cam-feed');
         const canvasEl = document.getElementById('cam-preview');
+        const imgPreviewEl = document.getElementById('image-upload-preview');
+        const fileInput = document.getElementById('image-file-input');
 
         // Start Camera
         async function startCamera() {
@@ -302,86 +351,99 @@
                     videoEl.srcObject = videoStream;
                     videoEl.classList.remove('hidden');
                     canvasEl.classList.add('hidden');
+                    imgPreviewEl.classList.add('hidden');
                     return;
                 } catch (e) {
-                    console.warn('Camera stream unavailable, switching to simulated canvas:', e);
+                    console.warn('Camera access unavailable:', e);
                 }
             }
             // Fallback Simulated Viewfinder
             videoEl.classList.add('hidden');
+            imgPreviewEl.classList.add('hidden');
             canvasEl.classList.remove('hidden');
-            drawSimulatedTea(canvasEl.getContext('2d'), true);
+            drawSimulatedCuttingChai(canvasEl.getContext('2d'), true);
         }
 
-        function drawSimulatedTea(ctx, isTea = true) {
-            ctx.fillStyle = '#1e140f';
-            ctx.fillRect(0, 0, 320, 280);
+        function drawSimulatedCuttingChai(ctx, isAuthentic = true) {
+            ctx.fillStyle = '#080a0f';
+            ctx.fillRect(0, 0, 320, 290);
 
-            if (!isTea) {
-                ctx.fillStyle = '#374151';
-                ctx.fillRect(40, 60, 240, 160);
-                ctx.fillStyle = '#e5e7eb';
-                ctx.font = '16px sans-serif';
-                ctx.fillText('Notebook & Pen (Non-Tea)', 60, 140);
+            if (!isAuthentic) {
+                // Fraud simulation: Car / Notebook non-tea object
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(30, 50, 260, 180);
+                ctx.fillStyle = '#94a3b8';
+                ctx.font = '14px sans-serif';
+                ctx.fillText('NON-TEA OBJECT (FRAUD SIMULATION)', 45, 145);
+                currentUploadedBase64 = canvasEl.toDataURL('image/jpeg');
                 return;
             }
 
-            // Wooden table
-            ctx.fillStyle = '#2d1609';
-            ctx.fillRect(0, 0, 320, 280);
+            // Authentic Cutting Chai Glass simulation:
+            // Background table
+            ctx.fillStyle = '#161922';
+            ctx.fillRect(0, 0, 320, 290);
 
-            // Cutting Glass
+            // Stainless Steel Tapri Base
+            ctx.fillStyle = '#2d3748';
             ctx.beginPath();
-            ctx.moveTo(110, 60);
-            ctx.lineTo(210, 60);
-            ctx.lineTo(190, 220);
-            ctx.lineTo(130, 220);
+            ctx.ellipse(160, 235, 75, 18, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Cutting Glass Tumbler Outlines
+            ctx.beginPath();
+            ctx.moveTo(105, 55);
+            ctx.lineTo(215, 55);
+            ctx.lineTo(192, 225);
+            ctx.lineTo(128, 225);
             ctx.closePath();
 
-            // Amber tea liquid
-            const grad = ctx.createLinearGradient(0, 60, 0, 220);
-            grad.addColorStop(0, '#e58e38');
-            grad.addColorStop(1, '#8f400e');
+            // Rich warm Kadak Cutting Chai liquid
+            const grad = ctx.createLinearGradient(0, 55, 0, 225);
+            grad.addColorStop(0, '#c46922');
+            grad.addColorStop(0.3, '#b45309');
+            grad.addColorStop(1, '#8f3e09');
             ctx.fillStyle = grad;
             ctx.fill();
 
-            // Foam
-            ctx.fillStyle = 'rgba(255, 220, 175, 0.8)';
+            // Glass facet reflections
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+            ctx.lineWidth = 2.5;
             ctx.beginPath();
-            ctx.ellipse(160, 70, 44, 10, 0, 0, Math.PI * 2);
+            ctx.moveTo(118, 65);
+            ctx.lineTo(135, 218);
+            ctx.moveTo(202, 65);
+            ctx.lineTo(185, 218);
+            ctx.stroke();
+
+            // Creamy tea froth surface
+            ctx.fillStyle = '#e8a86a';
+            ctx.beginPath();
+            ctx.ellipse(160, 68, 48, 11, 0, 0, Math.PI * 2);
             ctx.fill();
+
+            currentUploadedBase64 = canvasEl.toDataURL('image/jpeg');
         }
 
-        // Compute 64-bit dHash on canvas
-        function computeCanvasDHash(source) {
-            const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = 9;
-            tempCanvas.height = 8;
-            const tCtx = tempCanvas.getContext('2d');
-            tCtx.drawImage(source, 0, 0, 9, 8);
+        // File Upload Handler
+        document.getElementById('btn-browse-file').addEventListener('click', () => {
+            fileInput.click();
+        });
 
-            const imgData = tCtx.getImageData(0, 0, 9, 8).data;
-            const grays = [];
-            for (let i = 0; i < imgData.length; i += 4) {
-                const g = Math.floor(0.299 * imgData[i] + 0.587 * imgData[i+1] + 0.114 * imgData[i+2]);
-                grays.push(g);
-            }
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
 
-            let binary = '';
-            for (let row = 0; row < 8; row++) {
-                for (let col = 0; col < 8; col++) {
-                    const l = grays[row * 9 + col];
-                    const r = grays[row * 9 + col + 1];
-                    binary += l < r ? '1' : '0';
-                }
-            }
-
-            let hex = '';
-            for (let i = 0; i < 64; i += 4) {
-                hex += parseInt(binary.substr(i, 4), 2).toString(16);
-            }
-            return { binary, hex: '0x' + hex.toUpperCase() };
-        }
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                currentUploadedBase64 = event.target.result;
+                imgPreviewEl.src = currentUploadedBase64;
+                imgPreviewEl.classList.remove('hidden');
+                videoEl.classList.add('hidden');
+                canvasEl.classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+        });
 
         async function refreshMetrics() {
             try {
@@ -402,29 +464,44 @@
         async function executeVerification(mode = 'normal') {
             const btn = document.getElementById('btn-snap-log');
             btn.disabled = true;
-            btn.textContent = 'Analyzing frame with MobileNet & Computing pHash...';
-            if (window.chaiAudio) window.chaiAudio.playPour();
-
-            const snapCanvas = document.createElement('canvas');
-            snapCanvas.width = 320;
-            snapCanvas.height = 280;
-            const sCtx = snapCanvas.getContext('2d');
-
-            if (!videoEl.classList.contains('hidden') && videoEl.videoWidth > 0) {
-                sCtx.drawImage(videoEl, 0, 0, 320, 280);
-            } else {
-                drawSimulatedTea(sCtx, mode !== 'non_tea');
+            btn.textContent = 'Executing Computer Vision & Forensic Analysis...';
+            if (window.chaiAudio && typeof window.chaiAudio.playPour === 'function') {
+                window.chaiAudio.playPour();
             }
 
-            const { binary, hex } = computeCanvasDHash(snapCanvas);
+            let imagePayload = currentUploadedBase64;
+
+            // If webcam stream is active and user didn't explicitly upload an image file
+            if (!videoEl.classList.contains('hidden') && videoEl.videoWidth > 0 && !imagePayload) {
+                const snapCanvas = document.createElement('canvas');
+                snapCanvas.width = 320;
+                snapCanvas.height = 290;
+                const sCtx = snapCanvas.getContext('2d');
+                sCtx.drawImage(videoEl, 0, 0, 320, 290);
+                imagePayload = snapCanvas.toDataURL('image/jpeg', 0.88);
+            }
+
+            if (!imagePayload) {
+                // If in testing mode, generate appropriate frame
+                const snapCanvas = document.createElement('canvas');
+                snapCanvas.width = 320;
+                snapCanvas.height = 290;
+                drawSimulatedCuttingChai(snapCanvas.getContext('2d'), mode !== 'non_tea');
+                imagePayload = snapCanvas.toDataURL('image/jpeg', 0.88);
+            }
+
+            if (mode === 'non_tea') {
+                const snapCanvas = document.createElement('canvas');
+                snapCanvas.width = 320;
+                snapCanvas.height = 290;
+                drawSimulatedCuttingChai(snapCanvas.getContext('2d'), false);
+                imagePayload = snapCanvas.toDataURL('image/jpeg', 0.88);
+            }
 
             const payload = {
-                phash_binary: binary,
-                phash_hex: hex,
+                image_data: imagePayload,
                 blend: document.getElementById('blend-select').value,
                 sugar_level: document.getElementById('sugar-select').value,
-                mobilenet_confidence: mode === 'non_tea' ? 22.4 : 96.8,
-                is_tea_liquid: mode !== 'non_tea',
                 simulate_fraud_flag: mode === 'duplicate' ? 'duplicate' : (mode === 'non_tea' ? 'non_tea' : null)
             };
 
@@ -437,17 +514,21 @@
                 const result = await res.json();
                 renderVerificationCard(result);
                 if (result.status === 'success') {
-                    if (window.chaiAudio) window.chaiAudio.playScanSuccess();
+                    if (window.chaiAudio && typeof window.chaiAudio.playScanSuccess === 'function') {
+                        window.chaiAudio.playScanSuccess();
+                    }
                     await refreshMetrics();
                     if (window.Chaiboard) window.Chaiboard.notifyWindows('CHAI_LOGGED', { log: result.log });
                 } else {
-                    if (window.chaiAudio) window.chaiAudio.playWarning();
+                    if (window.chaiAudio && typeof window.chaiAudio.playWarning === 'function') {
+                        window.chaiAudio.playWarning();
+                    }
                 }
             } catch (err) {
-                alert('Server error verifying chai upload');
+                alert('Server error verifying cutting chai upload');
             } finally {
                 btn.disabled = false;
-                btn.textContent = '🔍 Verify Cutting Chai & Log to SQL Database';
+                btn.textContent = 'Authenticate Image & Commit to Database';
             }
         }
 
@@ -461,25 +542,25 @@
 
             if (isSuccess) {
                 card.innerHTML = `
-                    <div style="font-weight: 800; font-size: 1.05rem; display: flex; align-items: center; gap: 0.5rem;">
-                        <span>✅</span> Chai Authenticated &amp; Recorded to SQL Database
+                    <div style="font-weight: 800; font-size: 1.05rem; display: flex; align-items: center; gap: 0.5rem; color: #34d399;">
+                        <span>[VERIFIED AUTHENTIC]</span> Cutting Chai Glass Confirmed
                     </div>
                     <p style="font-size: 0.82rem; margin: 0.4rem 0 0.8rem 0; color: #a7f3d0;">${res.message}</p>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; font-size: 0.78rem; background: rgba(0,0,0,0.3); padding: 0.6rem; border-radius: var(--radius-sm);">
-                        <div><strong>Blend:</strong> ${res.log.blend_name}</div>
-                        <div><strong>Tongue Temp:</strong> ~${res.log.tongue_temp_c}°C</div>
-                        <div><strong>pHash (64-bit):</strong> <code>${res.log.phash_hex}</code></div>
-                        <div><strong>Hamming Check:</strong> Passed (&ge; 5)</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.45rem; font-size: 0.78rem; background: rgba(0,0,0,0.35); padding: 0.7rem; border-radius: var(--radius-sm); border: 1px solid rgba(16, 185, 129, 0.25);">
+                        <div><strong>Vessel Type:</strong> 16-Facet Glass Tumbler</div>
+                        <div><strong>Formulation:</strong> ${res.log.blend_name}</div>
+                        <div><strong>Serving Temp:</strong> ${res.log.tongue_temp_c}&deg;C</div>
+                        <div><strong>pHash (64-bit):</strong> <code style="font-family: var(--font-mono);">${res.log.phash_hex}</code></div>
                     </div>
                 `;
             } else {
                 card.innerHTML = `
-                    <div style="font-weight: 800; font-size: 1.05rem; display: flex; align-items: center; gap: 0.5rem; color: #fca5a5;">
-                        <span>🚫</span> Verification Failed &amp; Flagged to Audit Log
+                    <div style="font-weight: 800; font-size: 1.05rem; display: flex; align-items: center; gap: 0.5rem; color: #f87171;">
+                        <span>[FRAUD DETECTED]</span> Verification Failed &amp; Flagged
                     </div>
-                    <p style="font-size: 0.82rem; margin: 0.4rem 0 0.8rem 0; color: #fca5a5;">${res.reason || res.error}</p>
-                    <div style="font-size: 0.74rem; color: #fca5a5; line-height: 1.4;">
-                        🛡️ Anti-Cheat Alert: Real in-app live camera required. Gallery re-uploads or duplicate snapshots within 12 hours are rejected and audited in the SQL database.
+                    <p style="font-size: 0.84rem; margin: 0.4rem 0 0.8rem 0; color: #fca5a5; font-weight: 600;">${res.error || res.reason}</p>
+                    <div style="font-size: 0.76rem; color: #cbd5e1; line-height: 1.45; background: rgba(0,0,0,0.35); padding: 0.7rem; border-radius: var(--radius-sm); border: 1px solid rgba(239, 68, 68, 0.25);">
+                        <strong>Compliance Criteria:</strong> Verification requires an authentic Indian cutting chai glass with characteristic milk tea caramel liquid. Replay attacks (&lt; 12h hash collision), empty cups, opaque mugs, flat surfaces, or non-tea images are rejected and archived in the immutable security audit database.
                     </div>
                 `;
             }
@@ -492,8 +573,9 @@
             await refreshMetrics();
 
             document.getElementById('btn-snap-log').addEventListener('click', () => executeVerification('normal'));
-            document.getElementById('btn-test-duplicate').addEventListener('click', () => executeVerification('duplicate'));
+            document.getElementById('btn-test-authentic').addEventListener('click', () => executeVerification('authentic'));
             document.getElementById('btn-test-nontea').addEventListener('click', () => executeVerification('non_tea'));
+            document.getElementById('btn-test-duplicate').addEventListener('click', () => executeVerification('duplicate'));
 
             document.getElementById('btn-trigger-slosh').addEventListener('click', () => {
                 if (heroGlass) heroGlass.triggerSlosh();
@@ -502,4 +584,3 @@
     </script>
 </body>
 </html>
-

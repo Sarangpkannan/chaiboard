@@ -49,9 +49,13 @@ class TestChaiboardBackend(unittest.TestCase):
         self.assertTrue(dist_ab < 5)
 
     def test_04_database_and_admin_management(self):
-        test_email = "test.admin@example.com"
+        import time
+        ts = int(time.time())
+        test_email = f"test.admin.{ts}@example.com"
+        updated_email = f"updated.admin.{ts}@example.com"
         pwd_hash, salt = auth.hash_password("Pass1234")
         student_id = database.create_student("Test Admin", test_email, pwd_hash, salt, "Computer Science", role='admin')
+        self.assertIsNotNone(student_id)
         
         # Verify retrieval
         student = database.get_student_by_email(test_email)
@@ -59,7 +63,7 @@ class TestChaiboardBackend(unittest.TestCase):
         self.assertEqual(student['role'], "admin")
 
         # Test Admin update
-        ok, msg = database.update_student_admin(student['id'], "Updated Admin", "updated.admin@example.com", "Electronics & Comm", "admin")
+        ok, msg = database.update_student_admin(student['id'], "Updated Admin", updated_email, "Electronics & Comm", "admin")
         self.assertTrue(ok)
 
         # Test Admin settings

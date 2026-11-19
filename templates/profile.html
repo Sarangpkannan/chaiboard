@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chaiboard | Student Chai Pass &amp; Logs Window</title>
+    <title>Chaiboard | Credential Identity &amp; Intake History</title>
     <link rel="stylesheet" href="/static/css/style.css">
     <style>
         .profile-layout-grid {
@@ -17,12 +17,12 @@
                 grid-template-columns: 1fr;
             }
         }
-        .chai-pass-card {
-            background: linear-gradient(145deg, #241711, #100c0a);
+        .credential-pass-card {
+            background: linear-gradient(145deg, #181d2a, #0b0d14);
             border: 2px solid var(--border-highlight);
             border-radius: var(--radius-lg);
-            padding: 1.8rem;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7), inset 0 0 20px rgba(245, 158, 11, 0.15);
+            padding: 2rem;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75), inset 0 0 25px rgba(245, 158, 11, 0.12);
             position: relative;
         }
         .log-table {
@@ -31,7 +31,7 @@
             font-size: 0.84rem;
         }
         .log-table th, .log-table td {
-            padding: 0.75rem 0.9rem;
+            padding: 0.8rem 0.95rem;
             text-align: left;
             border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
@@ -39,54 +39,62 @@
             color: var(--text-muted);
             text-transform: uppercase;
             font-size: 0.72rem;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.6px;
         }
     </style>
 </head>
 <body>
 
-    <!-- Global Window Dock -->
+    <!-- Global Multi-Window Navigation Dock -->
     <header class="window-dock">
         <div class="dock-container">
             <a href="/chamber" class="brand-section">
-                <span class="brand-icon">🫖</span>
+                <div class="brand-logo-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 8h1a4 4 0 1 1 0 8h-1"></path>
+                        <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"></path>
+                        <line x1="6" y1="2" x2="6" y2="4"></line>
+                        <line x1="10" y1="2" x2="10" y2="4"></line>
+                        <line x1="14" y1="2" x2="14" y2="4"></line>
+                    </svg>
+                </div>
                 <div>
                     <div class="brand-name">CHAIBOARD</div>
-                    <div class="brand-sub">Campus Tea Leaderboard &amp; Health Engine</div>
+                    <div class="brand-sub">Industrial Beverage Intelligence Platform</div>
                 </div>
             </a>
 
-            <!-- Multi-Window Navigation Switcher -->
+            <!-- Navigation Links -->
             <nav class="nav-windows-list">
                 <a href="/chamber" class="window-nav-link">
-                    <span>🫖 3D Chamber &amp; Logger</span>
-                    <button class="window-pop-btn" data-url="/chamber" data-title="ChaiChamber" title="Open in separate window">↗</button>
+                    <span>Intake Terminal &amp; 3D Model</span>
+                    <button class="window-pop-btn" data-url="/chamber" data-title="ChaiChamber" title="Open in separate window">&#8599;</button>
                 </a>
                 <a href="/metrics" class="window-nav-link">
-                    <span>📊 Health Engine</span>
-                    <button class="window-pop-btn" data-url="/metrics" data-title="ChaiMetrics" title="Open in separate window">↗</button>
+                    <span>Nutritional Telemetry</span>
+                    <button class="window-pop-btn" data-url="/metrics" data-title="ChaiMetrics" title="Open in separate window">&#8599;</button>
                 </a>
                 <a href="/leaderboard" class="window-nav-link">
-                    <span>🏆 Leaderboards</span>
-                    <button class="window-pop-btn" data-url="/leaderboard" data-title="ChaiLeaderboard" title="Open in separate window">↗</button>
+                    <span>Consumption Analytics</span>
+                    <button class="window-pop-btn" data-url="/leaderboard" data-title="ChaiLeaderboard" title="Open in separate window">&#8599;</button>
                 </a>
                 <a href="/profile" class="window-nav-link active">
-                    <span>🪪 Chai Pass &amp; Logs</span>
-                    <button class="window-pop-btn" data-url="/profile" data-title="ChaiProfile" title="Open in separate window">↗</button>
+                    <span>Credential &amp; Intake Logs</span>
+                    <button class="window-pop-btn" data-url="/profile" data-title="ChaiProfile" title="Open in separate window">&#8599;</button>
                 </a>
                 <a href="/audit" class="window-nav-link">
-                    <span>🛡️ Security Vault</span>
-                    <button class="window-pop-btn" data-url="/audit" data-title="ChaiAudit" title="Open in separate window">↗</button>
+                    <span>Audit &amp; Fraud Ledger</span>
+                    <button class="window-pop-btn" data-url="/audit" data-title="ChaiAudit" title="Open in separate window">&#8599;</button>
                 </a>
             </nav>
 
             <div class="user-dock-actions">
-                <button id="dock-sound-btn" class="btn btn-ghost btn-sm">🔊 Sound ON</button>
+                <button id="dock-sound-btn" class="btn btn-ghost btn-sm">Audio FX: Active</button>
                 <div class="student-badge-pill">
-                    <span id="dock-student-avatar" style="font-size: 1.2rem;">☕</span>
+                    <span id="dock-student-avatar" class="student-avatar-badge">ID</span>
                     <div class="student-meta">
-                        <span id="dock-student-name" class="student-name-text">Loading...</span>
-                        <span id="dock-student-sub" class="student-sub-text">Student Session</span>
+                        <span id="dock-student-name" class="student-name-text">Loading Session...</span>
+                        <span id="dock-student-sub" class="student-sub-text">Active Operator</span>
                     </div>
                 </div>
                 <a id="dock-logout-btn" href="#" class="btn btn-ghost btn-sm">Sign Out</a>
@@ -98,73 +106,73 @@
     <main class="page-window-container">
         <div class="window-header-banner">
             <div>
-                <h1 class="window-title"><span>🪪</span> Official Campus Chai Pass &amp; Verified History</h1>
+                <h1 class="window-title animated-h3">Operator Credential Identity &amp; Dispensation History</h1>
                 <p class="window-desc">
-                    Your institutional tea identification pass and full database log audit of all authenticated cuttings.
+                    Verified personnel identification credential and cryptographically audited database ledger of all authenticated beverage intakes.
                 </p>
             </div>
             <button onclick="window.print()" class="btn btn-secondary">
-                🖨️ Print Digital Pass
+                Print Identity Certificate
             </button>
         </div>
 
         <div class="profile-layout-grid">
-            <!-- Left: Digital Chai Pass Card -->
+            <!-- Left: Credential Pass Card -->
             <div>
-                <div class="chai-pass-card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed rgba(245, 158, 11, 0.4); padding-bottom: 0.8rem; margin-bottom: 1.2rem;">
-                        <span style="font-size: 0.74rem; font-weight: 800; color: var(--chai-cream); letter-spacing: 1px;">CHAIBOARD • CAMPUS PASS</span>
-                        <span id="card-avatar" style="font-size: 2rem;">☕</span>
+                <div class="credential-pass-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed rgba(245, 158, 11, 0.4); padding-bottom: 0.9rem; margin-bottom: 1.4rem;">
+                        <span style="font-size: 0.72rem; font-weight: 800; color: var(--chai-cream); letter-spacing: 1px;">CHAIBOARD &bull; VERIFIED OPERATOR</span>
+                        <span id="card-badge" class="badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4);">COMPLIANT</span>
                     </div>
 
-                    <h2 id="card-name" style="font-size: 1.45rem; font-weight: 800; color: #fff;">Student Name</h2>
-                    <div id="card-email" style="font-size: 0.85rem; color: var(--chai-amber); font-family: monospace; margin: 0.2rem 0;">student@example.com</div>
-                    <div id="card-meta" style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.4rem;">Computer Science</div>
+                    <h2 id="card-name" style="font-size: 1.5rem; font-weight: 800; color: #fff; letter-spacing: -0.02em;">Personnel Name</h2>
+                    <div id="card-email" style="font-size: 0.84rem; color: var(--chai-amber); font-family: var(--font-mono); margin: 0.25rem 0;">operator@example.com</div>
+                    <div id="card-meta" style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.5rem;">Assigned Department</div>
 
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; background: rgba(0,0,0,0.4); padding: 0.8rem; border-radius: var(--radius-sm); margin-bottom: 1.4rem; text-align: center;">
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; background: rgba(0,0,0,0.45); padding: 0.9rem; border-radius: var(--radius-sm); margin-bottom: 1.5rem; text-align: center; border: 1px solid rgba(255,255,255,0.06);">
                         <div>
                             <span style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; display: block;">Today</span>
-                            <span id="card-cups-today" style="font-size: 1.2rem; font-weight: 800; color: #fff;">0</span>
+                            <span id="card-cups-today" style="font-size: 1.25rem; font-weight: 800; color: #fff;">0</span>
                         </div>
                         <div>
-                            <span style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; display: block;">Active Streak</span>
-                            <span id="card-streak" style="font-size: 1.2rem; font-weight: 800; color: var(--chai-amber);">0 Days 🔥</span>
+                            <span style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; display: block;">Streak</span>
+                            <span id="card-streak" style="font-size: 1.25rem; font-weight: 800; color: var(--chai-amber);">0 Days</span>
                         </div>
                         <div>
-                            <span style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; display: block;">All-Time</span>
-                            <span id="card-all-time" style="font-size: 1.2rem; font-weight: 800; color: var(--chai-cream);">0</span>
+                            <span style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; display: block;">Cumulative</span>
+                            <span id="card-all-time" style="font-size: 1.25rem; font-weight: 800; color: var(--chai-cream);">0</span>
                         </div>
                     </div>
 
-                    <div style="text-align: center; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 0.8rem;">
-                        <div style="font-family: monospace; font-size: 1.2rem; letter-spacing: 4px; color: var(--chai-cream); opacity: 0.8;">||||| ||||||| |||| |||||||| |||||</div>
-                        <div id="card-hash" style="font-size: 0.68rem; color: var(--text-muted); font-family: monospace; margin-top: 0.3rem;">SEC_HASH: 0xFA391823B1E40812</div>
+                    <div style="text-align: center; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 0.9rem;">
+                        <div style="font-family: var(--font-mono); font-size: 1.15rem; letter-spacing: 5px; color: var(--chai-cream); opacity: 0.75;">||||| ||||||| |||| |||||||| |||||</div>
+                        <div id="card-hash" style="font-size: 0.7rem; color: var(--text-muted); font-family: var(--font-mono); margin-top: 0.35rem;">SEC_HASH: 0x0000000000000000</div>
                     </div>
                 </div>
             </div>
 
             <!-- Right: Database Chai Log History Table -->
             <div class="card">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                    <h3 style="font-size: 1.15rem; font-weight: 700;">📜 Verified Chai Logs (SQL Records)</h3>
-                    <span style="font-size: 0.75rem; color: var(--text-muted);">64-bit pHash Protected</span>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem;">
+                    <h3 class="animated-h3" style="font-size: 1.15rem; font-weight: 800; color: #fff;">Verified Dispensation Records (SQL Database)</h3>
+                    <span class="badge" style="background: rgba(255,255,255,0.06); color: var(--text-secondary);">64-bit dHash Verification</span>
                 </div>
 
                 <div style="overflow-x: auto;">
                     <table class="log-table">
                         <thead>
                             <tr>
-                                <th>Blend</th>
+                                <th>Formulation</th>
                                 <th>Sugar (g)</th>
                                 <th>Energy (kcal)</th>
-                                <th>Temp (°C)</th>
+                                <th>Temp (&deg;C)</th>
                                 <th>pHash Fingerprint</th>
                                 <th>Timestamp</th>
                             </tr>
                         </thead>
                         <tbody id="history-table-body">
                             <tr>
-                                <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading verified logs...</td>
+                                <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">Retrieving verified intake records...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -174,6 +182,7 @@
     </main>
 
     <script src="/static/js/audio.js"></script>
+    <script src="/static/js/tubes-background.js"></script>
     <script src="/static/js/common.js"></script>
     <script>
         async function loadProfileData() {
@@ -186,16 +195,15 @@
                 document.getElementById('card-name').textContent = s.name;
                 document.getElementById('card-email').textContent = s.email;
                 document.getElementById('card-meta').textContent = s.department;
-                document.getElementById('card-avatar').textContent = s.avatar || '☕';
-                document.getElementById('card-cups-today').textContent = `${m.cups_today} Cups`;
-                document.getElementById('card-streak').textContent = `${m.streak} Days 🔥`;
-                document.getElementById('card-all-time').textContent = `${m.all_time_cups} Cups`;
+                document.getElementById('card-cups-today').textContent = `${m.cups_today} Units`;
+                document.getElementById('card-streak').textContent = `${m.streak} Days`;
+                document.getElementById('card-all-time').textContent = `${m.all_time_cups} Units`;
 
                 const tbody = document.getElementById('history-table-body');
                 tbody.innerHTML = '';
 
                 if (!data.history || data.history.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">No cutting chai logged yet. Use the 3D Chamber to log your first cup!</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">No intake telemetry logged yet. Record an entry in the Intake Terminal.</td></tr>`;
                     return;
                 }
 
@@ -204,11 +212,11 @@
                 data.history.forEach(log => {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
-                        <td><strong>${log.blend_name}</strong></td>
+                        <td style="color: var(--chai-cream); font-weight: 700;">${log.blend_name}</td>
                         <td>${log.sugar_grams}g</td>
                         <td>${log.calories_kcal} kcal</td>
-                        <td>${log.tongue_temp_c}°C</td>
-                        <td><code style="background: rgba(255,255,255,0.1); padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.76rem;">${log.phash_hex}</code></td>
+                        <td style="color: var(--chai-amber); font-weight: 600;">${log.tongue_temp_c}&deg;C</td>
+                        <td><code style="background: rgba(255,255,255,0.08); padding: 0.15rem 0.45rem; border-radius: 4px; font-size: 0.75rem; font-family: var(--font-mono);">${log.phash_hex}</code></td>
                         <td style="color: var(--text-muted); font-size: 0.78rem;">${log.logged_at}</td>
                     `;
                     tbody.appendChild(tr);
@@ -222,4 +230,3 @@
     </script>
 </body>
 </html>
-
