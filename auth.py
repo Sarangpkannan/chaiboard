@@ -51,7 +51,9 @@ def authenticate_student(email: str, password: str):
         return None, "Invalid password credentials."
 
     # Generate cryptographically secure session token
-    token = create_session(student['id'])
+    token = secrets.token_hex(32)
+    expires_at = datetime.now(timezone.utc) + timedelta(days=7)
+    database.create_session(token, student['id'], expires_at)
 
     return {
         'token': token,
@@ -64,10 +66,3 @@ def authenticate_student(email: str, password: str):
             'avatar': student['avatar']
         }
     }, None
-
-def create_session(student_id: int) -> str:
-    """Creates a new session token and persists it to the database."""
-    token = secrets.token_hex(32)
-    expires_at = datetime.now(timezone.utc) + timedelta(days=7)
-    database.create_session(token, student_id, expires_at)
-    return token
